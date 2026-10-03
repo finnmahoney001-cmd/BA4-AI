@@ -19,7 +19,9 @@ The supplied Amiga Forever readme permits personal non-commercial use and requir
 
 ## Data and authentication
 
-The user approved labeled placeholders. `data.js` contains three demonstration records and three numbered slot placeholders; they are not game facts or real categories. Replace these records and provide a verified `calculate` function only when workbook data and formulas are supplied. Calculations and numerical differences currently show unavailable states rather than invented values. Item images go in `images/`.
+The supplied Bit Heroes Builder (2).xlsx now provides 1,176 source records, 24 selection fields, 30 bonus labels, mainhand elements, and Set/Myth/Ancient effect descriptions. The planner follows its Equipped sheet: controls at the top, bonuses left, loadout middle, effects right. Native selectors and searchable choosers use only workbook-supported names and types. Builds preserve equipment, rune rarities, enchants, and accessory upgrades.
+
+Numerical totals intentionally remain unavailable. The workbook contains 43 ordinary formulas with broken #REF! references and additional incomplete calculation logic. Its cached example totals are not used as live calculations. Item images remain labeled placeholders. The seven game screenshots are kept as references for later styling, not used in this revision. Original workbook/PDF files remain unchanged. Older numbered placeholder builds retain their names but their obsolete placeholder selections are no longer valid equipment.
 
 The user-supplied public Supabase project URL and publishable key are configured in `config.js`. The app loads Supabase from its CDN, redirects signed-out visitors to login, and redirects successful sessions to the root planner. No database tables or visitor profiles are created. Live sign-up/sign-in still need verification with a user account. In Supabase Authentication URL Configuration, set Site URL to the published website address so confirmation emails return to the correct site. `?preview=1` works only on local/file URLs, not on a published host.
 

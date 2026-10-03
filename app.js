@@ -56,6 +56,7 @@ const BUILD_KEY='bh-builds-v1', DRAFT_KEY='bh-draft-v1';
 function validEquipment(equipment) {
   const result={};
   for(const slot of data.slots) if(data.items.some(item=>item.id===equipment?.[slot.id]&&item.slot===slot.id)) result[slot.id]=equipment[slot.id];
+  if(equipment?._settings && typeof equipment._settings==='object') result._settings={...equipment._settings};
   return result;
 }
 function readBuilds() {
@@ -84,51 +85,6 @@ function artwork(item,compact=false) {
   const art=element('div','[ADD: image of equipment item]','art-placeholder'+(compact?' compact-art':''));
   art.setAttribute('role','img'); art.setAttribute('aria-label','Missing image for '+item.name); return art;
 }
-if(page==='planner') {
-  let equipment={'slot-1':'placeholder-1'};
-  try {const draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); if(draft) equipment=validEquipment(draft);} catch {}
-  const loaded=readBuilds().find(build=>build.id===query.get('build'));
-  if(loaded) {equipment={...loaded.equipment}; $('#build-name').value=loaded.name;}
-  const linked=data.items.find(item=>item.id===query.get('item')); if(linked) equipment[linked.slot]=linked.id;
-  let selected=linked?.slot || data.slots[0].id;
-  const rows=[...document.querySelectorAll('[data-slot]')];
-  function render() {
-    rows.forEach(row=>{row.setAttribute('aria-pressed',String(row.dataset.slot===selected)); row.querySelector('.slot-state').textContent=equipmentName(equipment,row.dataset.slot);});
-    $('#detail-slot').textContent=data.slots.find(slot=>slot.id===selected).label;
-    const item=data.items.find(item=>item.id===equipment[selected]);
-    $('#item-title').textContent=item?.name || 'No equipment selected';
-    $('#item-description').textContent=item?.description || 'Choose an item for this equipment slot.';
-    $('#item-art').replaceChildren(artwork(item || {name:'equipment item',image:''}));
-    $('#remove').disabled=!item; $('#change').textContent=item?'Change equipment':'Choose equipment';
-    const results=calculate(equipment);
-    document.querySelectorAll('[data-stat]').forEach(node=>node.textContent=statValue(results,node.dataset.stat));
-    $('#calculation-status').textContent=results?'Results updated for the current equipment.':'Values need the supplied workbook and verified formulas.';
-    try {localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));} catch {}
-  }
-  rows.forEach(row=>row.addEventListener('click',()=>{selected=row.dataset.slot; announce(''); render();}));
-  $('#change').addEventListener('click',()=>{
-    $('#chooser-results').replaceChildren();
-    const available=data.items.filter(item=>item.slot===selected);
-    available.forEach(item=>{
-      const button=element('button',item.name,'chooser-item'); button.type='button';
-      button.addEventListener('click',()=>{equipment[selected]=item.id; render(); $('#item-chooser').close(); announce('Equipment selected. Calculation state updated.');});
-      $('#chooser-results').append(button);
-    });
-    if(!available.length) $('#chooser-results').append(element('p','No items supplied for this slot.','quiet'));
-    $('#item-chooser').showModal();
-  });
-  $('#close-chooser').addEventListener('click',()=>$('#item-chooser').close());
-  $('#remove').addEventListener('click',()=>{delete equipment[selected]; render(); announce('Equipment removed. Calculation state updated.');});
-  $('#reset').addEventListener('click',()=>{equipment={}; selected=data.slots[0].id; $('#build-name').value=''; render(); announce('Build reset. All equipment slots are empty.');});
-  $('#save').addEventListener('click',()=>{
-    const builds=readBuilds();
-    const build={id:'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:{...equipment}};
-    if(storeBuilds([...builds,build])) announce('Build saved locally. Open Build Closet to view or compare it.');
-  });
-  const search=$('#search');
-  function filter() {let count=0; rows.forEach(row=>{row.hidden=!row.textContent.toLowerCase().includes(search.value.trim().toLowerCase()); if(!row.hidden) count++;}); $('#empty-search').hidden=count!==0;}
-  search.addEventListener('input',filter); $('#clear-search').addEventListener('click',()=>{search.value=''; filter(); search.focus();}); render();
-}
 if(page==='closet') {
   const selected=new Set();
   function renderCards() {
@@ -136,8 +92,9 @@ if(page==='closet') {
     for(const build of builds) {
       const card=document.createElement('article'); card.className='panel build-card'; card.append(element('h2',build.name));
       const list=document.createElement('dl'); list.className='build-equipment';
-      data.slots.forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.label),element('dd',equipmentName(build.equipment,slot.id))); list.append(row);}); card.append(list);
-      const results=calculate(build.equipment); data.stats.forEach(stat=>card.append(element('p',stat.label+': '+statValue(results,stat.id),'technical saved-stat')));
+      data.slots.filter(slot=>build.equipment[slot.id]).forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.group==='Enchants'?'Enchant '+slot.label:slot.label),element('dd',equipmentName(build.equipment,slot.id))); list.append(row);});
+      Object.entries(build.equipment._settings||{}).filter(([key])=>!key.startsWith('type-')).forEach(([key,value])=>{const row=document.createElement('div');row.append(element('dt',key.replaceAll('-',' ')),element('dd',String(value)));list.append(row);}); card.append(list);
+      const results=calculate(build.equipment); data.stats.slice(0,3).forEach(stat=>card.append(element('p',stat.label+': '+statValue(results,stat.id),'technical saved-stat')));
       const actions=document.createElement('div'); actions.className='actions';
       const open=element('a','Load build','button-link'); open.href=route('index.html?build='+encodeURIComponent(build.id));
       const label=document.createElement('label'); label.className='compare-choice';
@@ -158,6 +115,8 @@ if(page==='closet') {
       row.append(element('span',note,'difference-label')); $('#comparison-content').append(row); return row;
     }
     data.slots.forEach(slot=>{const different=(builds[0].equipment[slot.id]||'')!==(builds[1].equipment[slot.id]||''); comparisonRow(slot.label,builds.map(build=>equipmentName(build.equipment,slot.id)),different?'Different equipment':'Same equipment',different);});
+    const settings=new Set(builds.flatMap(build=>Object.keys(build.equipment._settings||{})));
+    settings.forEach(key=>{const values=builds.map(build=>build.equipment._settings?.[key]||'Not set'); comparisonRow(key.replaceAll('-',' '),values,values[0]===values[1]?'Same setting':'Different setting',values[0]!==values[1]);});
     const results=builds.map(build=>calculate(build.equipment));
     data.stats.forEach(stat=>{
       const a=results[0]?.[stat.id], b=results[1]?.[stat.id]; const known=typeof a==='number'&&typeof b==='number'&&Number.isFinite(a)&&Number.isFinite(b);
@@ -173,10 +132,10 @@ if(page==='library') {
   function renderLibrary() {
     const needle=$('#library-search').value.trim().toLowerCase();
     const items=data.items.filter(item=>(!slotFilter.value||item.slot===slotFilter.value)&&(item.name+' '+item.description).toLowerCase().includes(needle));
-    slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value)); $('#library-results').replaceChildren(); $('#library-empty').hidden=items.length>0; $('#result-count').textContent=items.length+' placeholder records';
+    slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value)); $('#library-results').replaceChildren(); $('#library-empty').hidden=items.length>0; $('#result-count').textContent=items.length+' workbook records';
     items.forEach(item=>{
       const card=document.createElement('article'); card.className='panel item-card';
-      card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',item.name),element('p',item.description,'quiet'),element('p','Bonuses: not supplied','technical saved-stat'));
+      card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',item.name),element('p',item.description,'quiet'),element('p',item.kind+' · Totals awaiting validation','technical saved-stat'));
       const link=element('a','Use in planner','button-link'); link.href=route('index.html?item='+encodeURIComponent(item.id)); card.append(link); $('#library-results').append(card);
     });
   }
