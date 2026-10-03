@@ -1,177 +1,44 @@
 # Bit Heroes Build Planner
 
-## Concept
-A dark, compact build-planning tool for Bit Heroes players who already understand the game's basic systems and want to experiment with equipment they may not own. The interface should make complicated build information easy to scan without flattening it into a generic or overly simple website.
+## Selected direction
+Scheme 3 (Command deck) is the single website design. Promote its homepage to root index.html and use the same visual system for closet.html, library.html, and login.html. Remove the scheme-a, scheme-b, and scheme-c folders after promotion. Keep synced sources/ read-only.
 
-## References
-Bit Heroes is the primary visual reference. Borrow only broad system-level ideas such as compact inventory organization, game-like panels, item-focused presentation, and the feeling of navigating a game utility.
+## Concept and references
+A dark, compact equipment planning tool for existing Bit Heroes players. Use an organized equipment manifest, clear item details, and immediate build results. Borrow broad inventory-management ideas only; do not copy proprietary game artwork, exact layouts, logos, or fonts. Avoid marketing, corporate dashboard styling, decorative animation, and background information unrelated to the active tool.
 
-Do not copy Bit Heroes names beyond necessary game terminology, logos, interface graphics, proprietary artwork, exact layouts, text, images, or fonts.
+## Palette
+Background #101318; panel #181D24; raised panel #222934; primary text #F2F4F7; secondary text #AAB2BF; accent #5BC0EB; border #343D49; positive #66D17A; negative #E46B6B. Cyan marks actions, selections, and keyboard focus. Positive/negative colors apply only to known numerical differences, not judgments that one build is better.
 
-Modern web applications are a secondary reference. Borrow their clear hierarchy, predictable navigation, searchable databases, readable stat displays, and immediate button feedback.
+## Typography
+Use the two user-supplied local fonts instead of Google Fonts. Unzip the archives without changing the original font filenames; retain their original readme files.
 
-The final design should feel influenced by Bit Heroes without looking like a recreation of the game interface.
+- Edit Undo (editundo.ttf): page titles, section headings, item/build names, descriptions, explanatory text, and ordinary interface copy. Display titles 32px desktop and 26px mobile; body/descriptions 18px with generous line height. Use the regular solid version, not Line or Dot.
+- Amiga Forever (amiga4ever.ttf): equipment-slot identifiers, statistics, bonus fields, calculated values, comparison data, technical metadata, and small technical labels. Technical text 12px or 16px; large results 24px. Use the standard variant from the archive.
 
-## Colour Palette
-The palette is intentionally dark and digital rather than directly copying Bit Heroes.
+Load the TTF files with @font-face from fonts/edit-undo/ and fonts/amiga-forever/. Fonts work locally without a network connection or system installation. Avoid synthetic bold. Font archives are assets, not instructions to install software. Keep both font readmes with the font files. Amiga Forever's supplied license permits personal non-commercial use and requires the creator's consent before redistribution; review it before publishing or distributing the font publicly.
 
-Background: #101318
-Used for the main page background.
+## Layout and navigation
+Desktop: fixed left navigation rail, 222px wide (190px on smaller desktops). Build Planner, Build Closet, and Library remain visible. Log Out sits at the bottom of the rail. Current page has a cyan border and left selection marker. Main area uses a responsive 12-column grid, square panels, restrained rules, and compact padding. Constrain maximum content width.
 
-Panel: #181D24
-Used for primary tool panels, equipment areas, search areas, and navigation surfaces.
+Phone: convert the rail into a top header with all three navigation links visible. Stack the work panels, comparison cards, and equipment details. On phones, the statistics strip becomes three compact rows with each technical label beside its value. Keep controls at least 44px high, strong text contrast, descriptive labels, and visible keyboard focus. No page-level horizontal scrolling.
 
-Raised Panel: #222934
-Used for selected items, comparison cards, filter sections, and visually raised controls.
+## Build Planner — index.html
+Keep the selected scheme 3 hierarchy: title/description and save/reset actions, results strip first, equipment manifest beside selected-item details. Support selecting a slot, opening an item chooser, choosing/changing/removing an item, immediate result-state updates, searching slots, resetting the build, naming/saving locally, and loading a saved build from the closet. Images are gray framed placeholders with descriptive accessible text until supplied. Show unavailable statistics as a dash with an explicit explanation; never guess formulas.
 
-Primary Text: #F2F4F7
-Used for headings, important stats, labels, and primary content.
+## Build Closet — closet.html
+Display saved build cards with build name, equipment, unavailable stat placeholders, load/delete controls, and a clear compare selection. Allow exactly two selected builds; expose a comparison panel with build identities, side-by-side equipment/stat data, and explicit same/different or unavailable states. On phones stack the two build summaries and comparison entries. Mark actual equipment-selection differences; do not invent numerical differences or rank builds. Show a useful empty state linking to the planner.
 
-Secondary Text: #AAB2BF
-Used for descriptions, secondary statistics, and supporting information.
+## Library — library.html
+Prominent search, visible grouped filters, clear-filters control, item result cards, item name, image placeholder, relevant available information, and an empty state. Search and filters combine and update immediately. With no supplied game data, use labeled demonstration placeholder records only. Filter the placeholder records by their three numbered placeholder slot labels; these are layout samples, not claims about real game equipment categories. Derive future categories only from supplied data. Allow opening an item's details and choosing it for the planner. Never show fictional real item names, bonuses, rarities, tiers, or formulas.
 
-Accent: #5BC0EB
-Used for selected states, active navigation, important actions, and focused controls.
+## Log In — login.html
+A dark page with one centered panel: site name, one-line description, email/password fields, Log In, Sign Up, and a status/error area. No artwork or marketing. Load Supabase from its CDN, use public browser settings only, check signed-in sessions on normal application URLs, and redirect signed-out visitors here. Redirect to index.html after a successful authenticated session; show confirmation instructions if email confirmation is required. Log Out returns here. Never create database tables or visitor profiles.
 
-Positive: #66D17A
-Used where a stat or comparison represents an increase.
+## Data and review boundary
+The user approved placeholders because no workbook, verified equipment data, formulas, images, or public Supabase settings are available. Provide the complete page structures and data-independent interactions now. Keep clearly labeled placeholder records and calculation states separate from real data. Real stat calculation and actual authentication cannot be verified until their inputs are supplied.
 
-Negative: #E46B6B
-Used where a stat or comparison represents a decrease.
+Keep ?preview=1 as an explicit local design-review mode only on localhost, loopback, or file URLs. A hosted page cannot bypass authentication using the preview query. Normal root application URLs are gated. No account information is saved by application code; only build selections are stored locally. Preserve previously saved scheme 3 placeholder builds when migrating storage.
 
-Border: #343D49
-Used for panel outlines, separators, item slots, and input borders.
+## Assets and delivery
+Plain HTML, CSS, and JavaScript only; no framework, package manager, or build step. All website links and local assets are relative. Put user item images under images/. Every page has a title, a one-line description, and shared locally authored share artwork. Never generate fake game assets. No decorative transitions or animated counters. Document remaining data/auth requirements in README.md and verify desktop and phone layouts before delivery.
 
-The accent colour may later be adjusted toward a Bit Heroes-inspired colour after seeing the site with actual game assets.
-
-## Typefaces
-Use free Google Fonts only.
-
-Display and major headings: Bungee
-Used sparingly to give major page headings and important tool labels a game-like character without making the entire interface difficult to read.
-
-Page title: 32px desktop, 26px mobile.
-Section heading: 20px.
-Small game-style labels: 14px to 16px.
-
-Body and interface: Inter
-
-Body text: 16px.
-Buttons: 15px, medium or semibold.
-Item names: 15px, semibold.
-Secondary information: 13px to 14px.
-Large calculated statistics: 22px to 28px, semibold.
-
-Most of the site should use Inter. Bungee should be limited to places where the extra character is useful.
-
-## Layout and Grid
-Use a compact, structured interface inspired by inventory and character-management screens.
-
-Desktop pages use a responsive 12-column grid.
-
-Primary content should remain readable rather than stretching indefinitely across very large screens.
-
-Panels should align consistently and share clear edges.
-
-Build Planner should prioritize equipment selection and calculated statistics at the same time. On wide screens these can sit beside each other. On phones they stack vertically.
-
-Build Closet should use a repeatable card system for saved builds. Comparison mode should clearly place two selected builds beside each other on desktop and stack them on mobile.
-
-Library should use a searchable and filterable layout. Search remains prominent. Filters are grouped clearly instead of hidden inside complicated menus.
-
-Spacing should be compact but not cramped:
-4px for tiny internal separations.
-8px for related controls.
-16px for standard panel padding.
-24px between major sections.
-32px to 48px between major page regions.
-
-## Image Treatment
-Item artwork should normally appear inside framed slots rather than full-bleed.
-
-Frames should have simple dark borders and consistent dimensions.
-
-Do not turn the site into a collage.
-
-Game images should remain recognizable and should not receive heavy visual effects.
-
-Where an image has not yet been provided, use the required grey placeholder:
-[ADD: image of ...]
-
-Every image must have descriptive alt text.
-
-## Movement
-Do not use page transitions or decorative animation.
-
-Navigation should feel immediate.
-
-Buttons should clearly change state when hovered, focused, pressed, or selected, but should not animate between pages.
-
-Live stat changes should update immediately without animated counters.
-
-## Log-In Page
-login.html is a temporary front door and may be removed later.
-
-Use a very dark background with one centered login panel.
-
-The page should contain:
-Site name.
-Short one-line description.
-Email field.
-Password field.
-Log In button.
-Sign Up button or clear Sign Up option.
-Small area for authentication errors.
-
-Keep decoration minimal.
-
-Do not place game artwork, complicated previews, marketing sections, or unnecessary information here.
-
-After successful authentication, send the user directly to index.html.
-
-## Menu
-Use persistent navigation on every signed-in page.
-
-Primary links:
-Build Planner
-Build Closet
-Library
-
-The current page should be visually obvious.
-
-Log Out should remain visible but secondary to the main navigation.
-
-Desktop navigation may sit across the top of the interface.
-
-On phones, use a compact menu that still exposes all three main pages without making navigation difficult to find.
-
-## Buttons
-Buttons should be rectangular or slightly rounded rather than heavily pill-shaped.
-
-Primary actions use the accent colour.
-
-Secondary actions use the raised panel colour and clear borders.
-
-Selected item or filter buttons should have an obvious persistent selected state.
-
-Avoid oversized buttons.
-
-Every button should clearly communicate where it goes or what it changes.
-
-## Tone of Voice
-Direct, compact, and written for players who already understand Bit Heroes.
-
-Do not over-explain common game concepts.
-
-Labels should prioritize recognizable game terminology and clear numbers.
-
-Help text should exist where needed but stay secondary to the actual tool.
-
-Avoid marketing language.
-
-## Five Never Rules
-1. Never make the interface look like a generic corporate dashboard.
-2. Never hide important navigation or filters behind unclear interactions.
-3. Never add decorative transitions, loading theatrics, or unnecessary animation.
-4. Never overwhelm a page with background information that is not required to build, compare, or find items.
-5. Never copy Bit Heroes interface artwork, exact layouts, branding, proprietary fonts, or visual identity.
