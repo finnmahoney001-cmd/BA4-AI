@@ -13,8 +13,8 @@ if(page==='planner') {
   function field(label,id,options,value,onChange) {
     const wrap=element('div','','workbook-field'), name=element('label',label,'technical'); name.htmlFor=id;
     const select=document.createElement('select'); select.id=id;
-    options.forEach(option=>{const node=element('option',option.label);node.value=option.value;select.append(node);});
-    select.value=value;select.addEventListener('change',()=>onChange(select.value));wrap.append(name,select);return {wrap,select};
+    options.forEach(option=>{const node=element('option',option.label);node.value=option.value;node.dataset.kind=option.value;select.append(node);});
+    select.value=value;select.dataset.kind=value;select.addEventListener('change',()=>{select.dataset.kind=select.value;onChange(select.value);});wrap.append(name,select);return {wrap,select};
   }
   for(const group of ['Main Equips','Runes','Enchants']) {
     const panel=element('section','','panel controls-panel');panel.append(element('h2',group));
@@ -46,8 +46,8 @@ if(page==='planner') {
   function updateOptions(slotId) {
     const select=selectors.get(slotId), type=typeSelectors.get(slotId)?.value;
     select.replaceChildren();const empty=element('option','Empty slot');empty.value='';select.append(empty);
-    data.items.filter(item=>item.slot===slotId&&(!type||item.kind===type)).forEach(item=>{const option=element('option',item.name);option.value=item.id;select.append(option);});
-    select.value=equipment[slotId]||'';
+    data.items.filter(item=>item.slot===slotId&&(!type||item.kind===type)).forEach(item=>{const option=element('option',item.name);option.value=item.id;option.dataset.kind=item.kind;select.append(option);});
+    select.value=equipment[slotId]||'';select.dataset.kind=itemFor(slotId)?.kind||'';
   }
   for(const slot of data.slots.filter(slot=>slot.group==='Main Equips')) {
     const button=element('button','','loadout-tile');button.type='button';button.dataset.equipmentTile=slot.id;
@@ -73,7 +73,8 @@ if(page==='planner') {
     }
   }
   function render() {
-    selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;updateOptions(slot);});
+    selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
+    document.querySelectorAll('[id^=rarity-]').forEach(select=>select.dataset.kind=select.value);
     tileButtons.forEach((button,slot)=>{const item=itemFor(slot);button.dataset.kind=item?.kind||'Empty';button.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',item?.name||'Empty slot'),element('span',item?.kind||'Empty','type-badge'));button.setAttribute('aria-pressed',String(selected===slot));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
     const item=itemFor(selected);$('#detail-slot').textContent=data.slots.find(x=>x.id===selected).label;$('#item-title').textContent=item?.name||'Empty slot';$('#item-description').textContent=item?.description||'Choose an item from the workbook.';$('#remove').disabled=!item;
@@ -85,7 +86,7 @@ if(page==='planner') {
   function chooser() {
     const needle=$('#chooser-search').value.trim().toLowerCase();$('#chooser-results').replaceChildren();
     const items=data.items.filter(item=>item.slot===selected&&(!typeSelectors.get(selected)?.value||typeSelectors.get(selected).value===item.kind)&&item.name.toLowerCase().includes(needle));
-    for(const item of items) {const button=element('button',item.name+' · '+item.kind,'chooser-item');button.addEventListener('click',()=>{equipment[selected]=item.id;render();$('#item-chooser').close();announce('Item selected. Workbook effects updated.');});$('#chooser-results').append(button);}
+    for(const item of items) {const button=element('button',item.name+' · '+item.kind,'chooser-item');button.dataset.kind=item.kind;button.addEventListener('click',()=>{equipment[selected]=item.id;render();$('#item-chooser').close();announce('Item selected. Workbook effects updated.');});$('#chooser-results').append(button);}
     if(!items.length)$('#chooser-results').append(element('p','No matching workbook items.','quiet'));
   }
   $('#change').addEventListener('click',()=>{$('#chooser-title').textContent='Choose '+data.slots.find(x=>x.id===selected).label;$('#chooser-search').value='';chooser();$('#item-chooser').showModal();});
