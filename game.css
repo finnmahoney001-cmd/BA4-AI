@@ -63,3 +63,16 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 .setup-group dl[data-group]>div{border:2px solid #111f2a;box-shadow:inset 0 2px #5c7282;padding:10px;min-width:0}
 .setup-group dl[data-group] dt{font-size:9px}.setup-group dl[data-group] dd{font-size:16px;line-height:1.5}
 @media(max-width:760px){[data-group="Runes"],[data-group="Enchants"]{gap:12px 5px!important;padding:10px!important}[data-group="Runes"]>.selection-field,[data-group="Enchants"]>.selection-field{padding:5px;border-width:2px}[data-group="Runes"] .selection-field>label{font-size:8px;overflow-wrap:anywhere}[data-group="Runes"] .workbook-field label{font-size:7px;overflow-wrap:anywhere}[data-group="Runes"] select,[data-group="Enchants"] select{font-size:13px;padding:5px 1px;border-width:2px}[data-group="Runes"] .workbook-field select{font-size:9px}.setup-group dl[data-group]>div{padding:6px}.setup-group dl[data-group] dt{font-size:8px}.setup-group dl[data-group] dd{font-size:14px}}
+.mechanics-controls { margin: 24px 0; padding-bottom: 20px; }
+.mechanics-controls > .control-grid { padding: 16px; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; }
+.mechanics-controls > p { margin: 0 16px; }
+.combat-options { margin: 12px 16px; }
+.combat-options summary { min-height: 44px; cursor: pointer; color: #bce8ef; }
+.combat-options .control-grid { padding: 12px 0; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; }
+.mechanics-details { margin: 12px 0; border: 2px solid #718696; background: #26343f; padding: 12px; }
+.mechanics-details summary { cursor: pointer; color: #bce8ef; min-height: 32px; }
+.contribution { border-top: 1px solid #657b8a; padding: 10px 0; }
+.contribution h3 { line-height: 1.8; }
+.contribution p { margin: 4px 0; }
+.mechanics-details p { overflow-wrap: anywhere; }
+@media(max-width:600px) { .mechanics-controls > .control-grid,.combat-options .control-grid { grid-template-columns: minmax(0,1fr); } }

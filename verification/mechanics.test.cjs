@@ -1,0 +1,34 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const context={window:{}};vm.createContext(context);
+for(const file of ['data.js','mechanics-data.js','mechanics.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
+const data=context.window.BH_DATA,engine=context.window.BH_ENGINE;
+const id=(name,slot)=>{const x=data.items.find(x=>x.name===name&&x.slot===slot);assert.ok(x,`${name} in ${slot}`);return x.id;};
+const equip=(entries,settings={})=>Object.assign(Object.fromEntries(entries.map(([slot,name])=>[slot,id(name,slot)])),{_settings:settings});
+const get=(report,label)=>report.values[data.stats.find(x=>x.label===label).id];
+let count=0;
+function test(name,fn){fn();count++;console.log('PASS '+name);}
+test('Character bases',()=>{const r=engine.evaluate();assert.equal(get(r,'Crit Chance'),10);assert.equal(get(r,'Crit Dmg'),50);assert.equal(get(r,'Evade'),2.5);});
+test('T12+ Ancient innate bonuses; unique description corrected',()=>{const r=engine.evaluate(equip([['mainhand','Harvester']]));assert.equal(get(r,'Damage'),5);assert.equal(get(r,'DR'),5);assert.ok(data.items.find(x=>x.id===id('Polychromatic Blaster','mainhand')).description.includes('Mythic'));});
+test('Starweave unlocks third threshold with two real pieces',()=>{const r=engine.evaluate(equip([['head','Hellfire'],['body','Hellfire'],['neck','Starweave']]));assert.equal(get(r,'Block'),8);assert.deepEqual(r.sets.map(x=>x.threshold).join(','),'2,3');});
+test('Starweave never manufactures a two-piece set from one item',()=>{assert.equal(engine.evaluate(equip([['head','Hellfire'],['neck','Starweave']])).sets.length,0);});
+test('Two Starweaves add only one effective set piece',()=>{const r=engine.evaluate(equip([['head','Hellfire'],['body','Hellfire'],['neck','Starweave'],['ring','Starweave']]));assert.equal(r.sets.at(-1).threshold,3);});
+test('Poly doubles one Mythic gear, excludes accessory and mount',()=>{const r=engine.evaluate(equip([['offhand','Polychromatic Blaster'],['mainhand','Cometfall'],['accessory','Ascendancy'],['mount','Dracus']]));assert.equal(get(r,'Quad Strike'),2);assert.equal(r.multipliers.poly,true);assert.equal(get(r,'Empower'),12);});
+test('Two Mythic ordinary gear pieces disable Poly',()=>{const r=engine.evaluate(equip([['offhand','Polychromatic Blaster'],['mainhand','Cometfall'],['head','Veilage']]));assert.equal(get(r,'Quad Strike'),1);assert.equal(r.multipliers.poly,false);});
+test('Two Elementariums double major runes once',()=>{const r=engine.evaluate(equip([['head','Elementarium'],['body','Elementarium'],['major-1','NokaiBlock']],{'rarity-major-1':'Myth'}));assert.equal(get(r,'Block'),12);assert.equal(get(r,'DR'),10);});
+test('Verified Mythic Voik value',()=>{assert.equal(get(engine.evaluate(equip([['major-1','VoikDeflect']],{'rarity-major-1':'Myth'})),'Deflect'),1.5);});
+test('Single-stat and dual-stat Mythic enchants',()=>{const r=engine.evaluate(equip([['enchant-1','Block'],['enchant-2','Block, Damage'],['enchant-3','Damage, Deflect']]));assert.equal(get(r,'Block'),7.5);assert.equal(get(r,'Damage'),2.5);assert.equal(get(r,'Deflect'),.7);});
+test('W3-4TY copies flat two-piece set bonus',()=>{const r=engine.evaluate(equip([['head','Hellfire'],['body','Hellfire'],['offhand','W3-4TY (2-piece)']]));assert.equal(get(r,'DR'),13);});
+test('Witchum enchant doubling is not doubled twice by W3-4TY',()=>{const pieces=data.items.filter(x=>x.setName==='Witchum'&&x.slot!=='offhand').slice(0,3);const entries=pieces.map(x=>[x.slot,x.name]);const r=engine.evaluate(equip([...entries,['offhand','W3-4TY (3-piece)'],['enchant-1','Damage']]));assert.equal(r.multipliers.enchant,2);assert.equal(get(r,'Damage'),10);});
+test('Full set effects are cumulative',()=>{const r=engine.evaluate(equip(['mainhand','offhand','head','body','neck','ring'].map(s=>[s,'Featherfall'])));assert.equal(get(r,'Damage'),4);assert.equal(get(r,'Speed'),4);assert.equal(get(r,'Dual Strike'),4);assert.equal(get(r,'Empower'),4);assert.equal(get(r,'Quad Strike'),2);});
+test('Clover effective probabilities remain distinct from raw bonuses',()=>{const r=engine.evaluate(equip([['neck','64-bit Clover']]));assert.equal(get(r,'Crit Chance'),10);assert.equal(r.luck['Crit Chance'],19);assert.equal(engine.lucky(75),93.75);});
+test('Accessory upgrade setting changes bonuses',()=>{const a=engine.evaluate(equip([['accessory','Ascendancy']]));const b=engine.evaluate(equip([['accessory','Ascendancy']],{'accessory-upgrades':'No Upgrades'}));assert.equal(get(a,'Crit Chance'),72);assert.equal(get(b,'Crit Chance'),60);});
+test('Probabilities cap without losing the source sum',()=>{const entries=[['accessory','Tatooi'],...['major-1','major-2','major-3','major-4'].map(s=>[s,'NokaiBlock'])];const settings=Object.fromEntries(['major-1','major-2','major-3','major-4'].map(s=>['rarity-'+s,'Myth']));const r=engine.evaluate(equip(entries,settings));assert.equal(r.raw.Block,104);assert.equal(get(r,'Block'),100);});
+test('Evolvium is a ring with defensive upgrade choices',()=>{const r=engine.evaluate(equip([['ring','Evolvium (Defense)']],{'evo-level':'4','evo-1':'+5% Damage Reduction','evo-2':'+5% Evade Chance','evo-3':'+10% Vampirism','evo-4':'+10% Barrier'}));assert.equal(get(r,'DR'),10);assert.equal(get(r,'Evade'),7.5);assert.equal(get(r,'Vampirism'),10);assert.equal(get(r,'Barrier'),10);});
+test('Legacy Evolvium variants migrate to one ring',()=>{const normalized=data.normalizeEquipment({mainhand:'wb-503'});assert.equal(normalized.mainhand,undefined);assert.equal(normalized.ring,'wb-493');assert.equal(normalized._settings['evo-level'],'4');assert.equal(get(engine.evaluate(normalized),'Damage'),10);});
+test('Supported SP-skill conditional bonus needs snapshot context',()=>{const entries=[['neck','Frostybite']];assert.equal(get(engine.evaluate(equip(entries)),'Damage'),0);assert.equal(get(engine.evaluate(equip(entries,{'combat-mode':'snapshot','skill-sp':'1'})),'Damage'),5);});
+test('Weighted resistance uses weak element zero',()=>{const r=engine.evaluate(equip([['mainhand','Harvester'],['neck','Quetzal Sorrow']]));assert.equal(r.elemental.Physical.dr,8);assert.equal(r.elemental.Fire.dr,3.75);});
+test('No free slot accepts an item from another equipment slot',()=>{assert.equal(get(engine.evaluate({head:id('Harvester','mainhand')}),'Damage'),0);});
+test('Sacramentum team effects do not become personal proc bonuses',()=>{const r=engine.evaluate(equip([['ring','Sacramentum']],{sacramentum:'Support'}));assert.equal(r.raw['Team Life Steal'],15);assert.equal(get(r,'Life Steal'),0);});
+test('First-attack meta bonuses apply only to selected snapshot',()=>{const r=engine.evaluate(equip([['meta','Vend']],{'combat-mode':'snapshot','first-incoming':'yes','rarity-meta':'Myth'}));assert.equal(get(r,'Evade'),32.5);assert.equal(get(engine.evaluate(equip([['meta','Vend']])),'Evade'),2.5);});
+console.log(`${count} mechanics checks passed.`);
+

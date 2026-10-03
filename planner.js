@@ -1,4 +1,4 @@
-// Workbook layout and selections. Numeric calculation is deliberately separate.
+// Workbook layout and selections; shared researched mechanics drive all results.
 if(page==='planner') {
   let equipment={};
   try {equipment=validEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'));} catch {}
@@ -10,6 +10,15 @@ if(page==='planner') {
   const selectors=new Map(), typeSelectors=new Map(), tileButtons=new Map();
   const itemFor=slot=>data.items.find(item=>item.id===equipment[slot]);
   const settings=()=>equipment._settings || (equipment._settings={});
+  const mechanicsPanel=element('section','','panel mechanics-controls');
+  mechanicsPanel.append(element('h2','Ancient options & combat conditions'));
+  const ancientControls=element('div','','control-grid');mechanicsPanel.append(ancientControls);
+  const combatBox=element('details','','combat-options');combatBox.append(element('summary','Optional combat snapshot'));
+  const combatControls=element('div','','control-grid');combatBox.append(combatControls);mechanicsPanel.append(combatBox);
+  function setting(label,key,options,defaultValue,parent=combatControls) {
+    const control=field(label,key,options.map(value=>({value,label:value})),settings()[key]||defaultValue,value=>{settings()[key]=value;render();});
+    parent.append(control.wrap);return control;
+  }
   function field(label,id,options,value,onChange) {
     const wrap=element('div','','workbook-field'), name=element('label',label,'technical'); name.htmlFor=id;
     const select=document.createElement('select'); select.id=id;
@@ -43,6 +52,45 @@ if(page==='planner') {
     }
     $('#workbook-controls').append(panel);
   }
+  $('#workbook-controls').after(mechanicsPanel);
+  setting('Totals','combat-mode',['permanent','snapshot'],'permanent');
+  setting('Your HP %','self-hp',['100','90','75','70','60','50','40','30','25','20','10'],'100');
+  setting('Target HP %','target-hp',['100','90','75','70','60','50','40','30','25','20','10'],'100');
+  setting('Current SP','current-sp',['0','1','2','3','4','5','6'],'0');
+  setting('Skill SP cost','skill-sp',['0','1','2','3','4','5','6'],'0');
+  setting('Shielded','shielded',['no','yes'],'no');
+  setting('Health in team','health-rank',['unspecified','lowest','highest'],'unspecified');
+  setting('Team state','team-state',['unspecified','all','last'],'unspecified');
+  setting('Mainhand weapon type','weapon-type',['Other','Sword','Spear','Bow','Staff','Laser'],'Other');
+  setting('Enemies alive','enemies',['1','2','3','4','5'],'1');
+  setting('Allies alive including you','allies',['1','2','3','4','5'],'1');
+  setting('First attack received from opponent','first-incoming',['no','yes'],'no');
+  setting('First attack against opponent','first-outgoing',['no','yes'],'no');
+  setting('Target shielded','target-shielded',['no','yes'],'no');
+  setting('Target status','target-status',['none','rooted','bleeding'],'none');
+  setting('Attack type','attack-type',['ordinary','projectile'],'ordinary');
+  mechanicsPanel.append(element('p','Permanent totals are the default. Snapshot adds supported bonuses for the conditions you choose. Triggered skills and temporary stacks remain listed as effects.','quiet'));
+  function renderAncientOptions() {
+    ancientControls.replaceChildren();
+    const ring=itemFor('ring'),meta=ring&&window.BH_MECHANICS.items[ring.id];
+    if(meta?.evoMode) {
+      setting('Evolvium upgrades','evo-level',['0','1','2','3','4'],'0',ancientControls);
+      window.BH_MECHANICS.evolvium[meta.evoMode].forEach((row,i)=>{
+        if(i<Number(settings()['evo-level']||0))setting('Evolvium '+row[0],'evo-'+(i+1),row.slice(1),row[1],ancientControls);
+      });
+    }
+    if(meta?.ancient==='Sacramentum')setting('Sacramentum reforge','sacramentum',['Offensive','Defensive','Support'],'Offensive',ancientControls);
+    for(const slot of ['head','body']) {
+      const item=itemFor(slot),facts=item&&window.BH_MECHANICS.items[item.id],options=window.BH_MECHANICS.amplifiers[facts?.ancient];
+      if(options) {
+        const control=field(item.name+' amplifier','amplifier-'+slot,options.map((row,i)=>({value:String(i),label:(row[0]||'SP / Shield')+' · '+row[1]})),settings()['amplifier-'+slot]||'0',value=>{settings()['amplifier-'+slot]=value;render();});ancientControls.append(control.wrap);
+      }
+    }
+    const mount=itemFor('mount');if(mount&&window.BH_MECHANICS.items[mount.id]?.mountRoll)setting('Mount rolled bonus %','mount-roll',['1','2','3','4','5','6','7','8'],'1',ancientControls);
+    for(const slot of ['mainhand','offhand','head','body','neck','ring']) {const item=itemFor(slot);if(item&&window.BH_MECHANICS.items[item.id]?.gearRoll)setting(item.name+' rolled bonus %','gear-roll-'+slot,['1','2','3','4','5','6','7','8'],'1',ancientControls);}
+    if(!ancientControls.childElementCount)ancientControls.append(element('p','Equip Evolvium, an amplifier Ancient, Sacramentum or a rolled mount to choose its bonuses.','quiet'));
+    for(const select of combatControls.querySelectorAll('select'))select.value=settings()[select.id]||select.options[0].value;
+  }
   function updateOptions(slotId) {
     const select=selectors.get(slotId), type=typeSelectors.get(slotId)?.value;
     select.replaceChildren();const empty=element('option','Empty slot');empty.value='';select.append(empty);
@@ -54,22 +102,19 @@ if(page==='planner') {
     tileButtons.set(slot.id,tile);$('#loadout-grid').append(tile);
   }
   data.stats.forEach(stat=>{const row=element('div','','bonus-line');row.append(element('span',stat.label,'technical'));const value=element('span','—','technical');value.dataset.stat=stat.id;row.append(value);$('#bonus-list').append(row);});
-  function renderEffects() {
-    $('#set-effects').replaceChildren();const counts=new Map();
-    Object.keys(equipment).forEach(slot=>{const item=itemFor(slot);if(item?.setName)counts.set(item.setName,(counts.get(item.setName)||0)+1);});
-    const poly=Object.keys(equipment).some(slot=>itemFor(slot)?.kind==='Ancient'&&itemFor(slot)?.name==='Poly');
+  function renderEffects(report) {
+    $('#set-effects').replaceChildren();
     for(let threshold=2;threshold<=6;threshold++) {
       const block=element('div','','set-threshold');block.append(element('h3',threshold+' pieces','technical'));let matches=0;
-      counts.forEach((count,name)=>{
-        const effective=count+(poly&&count>=2?1:0),text=data.setEffects[name]?.[threshold];
-        if(effective>=threshold&&text){const p=element('p',text);p.prepend(element('strong',name+' · '));block.append(p);matches++;}
+      report.sets.filter(set=>set.threshold===threshold).forEach(set=>{
+        const p=element('p',set.text);p.prepend(element('strong',set.name+' · '+set.count+' equipped'+(set.effective>set.count?' + Starweave':'')+(set.copied?' · W3-4TY':'' )+' · '));block.append(p);matches++;
       });
       if(!matches)block.append(element('p','No active bonus at this threshold.','quiet'));$('#set-effects').append(block);
     }
     for(const [kind,id] of [['Myth','#myth-effects'],['Ancient','#ancient-effects']]) {
       const items=Object.keys(equipment).map(itemFor).filter(item=>item?.kind===kind&&item.source.startsWith(kind+'-Gear!'));
       $(id).replaceChildren();items.forEach(item=>{const entry=element('div','','effect-entry');entry.append(element('h3',item.name),element('p',item.description));$(id).append(entry);});
-      if(!items.length)$(id).append(element('p','Equip '+kind.toLowerCase()+' gear to see its workbook effects.','quiet'));
+      if(!items.length)$(id).append(element('p','Equip '+kind.toLowerCase()+' gear to see its unique effects.','quiet'));
     }
   }
   function render() {
@@ -77,10 +122,16 @@ if(page==='planner') {
     document.querySelectorAll('[id^=rarity-]').forEach(select=>select.dataset.kind=select.value);
     tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',item?.name||'Empty slot'),element('span',item?.kind||'Empty','type-badge'));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
-    const item=itemFor(selected);$('#detail-slot').textContent=data.slots.find(x=>x.id===selected).label;$('#item-title').textContent=item?.name||'Empty slot';$('#item-description').textContent=item?.description||'Choose an item from the workbook.';$('#remove').disabled=!item;
     // Equipped!C8 uses an exact lookup and defaults to Physical when unmatched.
-    $('#mainhand-element').textContent=itemFor('mainhand')?(data.mainhandElements?.[itemFor('mainhand').name]||'Physical'):'Select a mainhand';
-    const results=calculate(equipment);document.querySelectorAll('[data-stat]').forEach(node=>node.textContent=statValue(results,node.dataset.stat));
+    const report=data.evaluate(equipment),results=report.values;
+    $('#mainhand-element').textContent=itemFor('mainhand')?report.mhElement:'Select a mainhand';
+    document.querySelectorAll('[data-stat]').forEach(node=>{
+      node.textContent=statValue(results,node.dataset.stat);
+      const label=data.stats.find(x=>x.id===node.dataset.stat).label;
+      node.title=(report.contributions[label]||[]).map(x=>x.source+': '+x.value+'%').join('\n')||'No bonuses in this category.';
+    });
+    $('#calculation-status').textContent=report.ctx.enabled?'Snapshot totals include supported selected conditions.':'Permanent totals. Combat conditions and proc effects are listed separately.';
+    renderAncientOptions();
     $('#setup-name').textContent=$('#build-name').value.trim()||'Untitled build';
     $('#setup-extras').replaceChildren();
     for(const group of ['Runes','Enchants']) {
@@ -89,17 +140,30 @@ if(page==='planner') {
     }
     const info=element('section','','setup-group');info.append(element('h3','Build settings'));const list=document.createElement('dl');
     for(const [label,value] of [['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);
-    renderEffects();try{localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));}catch{}
+    renderEffects(report);renderMechanics(report);try{localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));}catch{}
   }
-  function chooser() {
-    const needle=$('#chooser-search').value.trim().toLowerCase();$('#chooser-results').replaceChildren();
-    const items=data.items.filter(item=>item.slot===selected&&(!typeSelectors.get(selected)?.value||typeSelectors.get(selected).value===item.kind)&&item.name.toLowerCase().includes(needle));
-    for(const item of items) {const button=element('button',item.name+' · '+item.kind,'chooser-item');button.dataset.kind=item.kind;button.addEventListener('click',()=>{equipment[selected]=item.id;render();$('#item-chooser').close();announce('Item selected. Workbook effects updated.');});$('#chooser-results').append(button);}
-    if(!items.length)$('#chooser-results').append(element('p','No matching workbook items.','quiet'));
+  function renderMechanics(report) {
+    const root=$('#mechanics-summary');root.replaceChildren();
+    function details(label){const box=element('details','','mechanics-details');box.append(element('summary',label));root.append(box);return box;}
+    const breakdown=details('Bonus contributions');
+    for(const [label,entries] of Object.entries(report.contributions)) {
+      const row=element('section','','contribution');row.append(element('h3',label+' · '+Number((report.raw[label]||0).toFixed(3))+'%','technical'));
+      entries.forEach(entry=>row.append(element('p',entry.source+' · '+(entry.value>0?'+':'')+entry.value+'%')));breakdown.append(row);
+    }
+    const elemental=details('Elemental damage & resistance');elemental.append(element('p','Weighted totals by attack element. DR caps at 75% after weighting.','quiet'));
+    for(const [name,values] of Object.entries(report.elemental))elemental.append(element('p',name+' · Damage '+values.damage+'% · DR '+values.dr+'%','technical'));
+    if(Object.keys(report.luck).length) {
+      const luck=details('Clover · effective combat chances');luck.append(element('p','Two favorable rolls. Gear bonuses remain visible in the bonus list.','quiet'));
+      Object.entries(report.luck).forEach(([name,value])=>luck.append(element('p',name+' · '+value+'%','technical')));
+    }
+    const effects=details('All active effects & special bonuses');
+    report.effects.forEach(entry=>{const p=element('p',entry.text);p.prepend(element('strong',entry.source+' · '));effects.append(p);});
+    Object.entries(report.raw).filter(([key])=>!data.stats.some(x=>x.label===key)).forEach(([key,value])=>effects.append(element('p',key+' · '+value+(['Max SP','SP per Turn','Freeze stacks'].includes(key)?'':'%'),'technical')));
+    const notes=details('Calculation coverage');notes.append(element('p','Personal bonus percentages, T12+ Ancient passives, matched Mythic elemental bonuses, active set thresholds, rune rarities and Mythic enchants. Equipment base Power/Stamina/Agility, unspecified random rolls and a full battle simulation are outside these totals.','quiet'));
+    report.warnings.forEach(text=>notes.append(element('p',text,'quiet')));
+    if(settings()['migration-note'])notes.append(element('p',settings()['migration-note'],'quiet'));
+    if(report.warnings.length){notes.open=true;$('#calculation-status').textContent+=' '+report.warnings.length+' source/roll notice(s) — see Calculation coverage.';}
   }
-  $('#change').addEventListener('click',()=>{$('#chooser-title').textContent='Choose '+data.slots.find(x=>x.id===selected).label;$('#chooser-search').value='';chooser();$('#item-chooser').showModal();});
-  $('#chooser-search').addEventListener('input',chooser);$('#close-chooser').addEventListener('click',()=>$('#item-chooser').close());
-  $('#remove').addEventListener('click',()=>{delete equipment[selected];render();announce('Item removed. Workbook effects updated.');});
   $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});$('#accessory-upgrades').value='Fully Upgraded';settings()['accessory-upgrades']='Fully Upgraded';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
   $('#save').addEventListener('click',()=>{const builds=readBuilds();const build={id:'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds,build]))announce('Build saved with equipment, runes, enchants, and upgrade settings.');});
   typeSelectors.forEach((select,slot)=>select.value=settings()['type-'+slot]||itemFor(slot)?.kind||'');render();

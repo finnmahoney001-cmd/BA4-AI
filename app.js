@@ -54,6 +54,7 @@ $('#auth-form')?.addEventListener('submit',async event=>{
 if($('#preview-link')) $('#preview-link').hidden=!localReview;
 const BUILD_KEY='bh-builds-v1', DRAFT_KEY='bh-draft-v1';
 function validEquipment(equipment) {
+  equipment=data.normalizeEquipment?data.normalizeEquipment(equipment):equipment;
   const result={};
   for(const slot of data.slots) if(data.items.some(item=>item.id===equipment?.[slot.id]&&item.slot===slot.id)) result[slot.id]=equipment[slot.id];
   if(equipment?._settings && typeof equipment._settings==='object') result._settings={...equipment._settings};
@@ -78,7 +79,7 @@ function calculate(equipment) {
   if(typeof data.calculate!=='function') return null;
   try {return data.calculate(equipment);} catch {return null;}
 }
-function statValue(results,id) {const value=results?.[id]; return typeof value==='number'&&Number.isFinite(value)?String(value):'—';}
+function statValue(results,id) {const value=results?.[id]; return typeof value==='number'&&Number.isFinite(value)?Number(value.toFixed(3))+'%':'—';}
 const equipmentName=(equipment,slotId)=>data.items.find(item=>item.id===equipment[slotId])?.name || 'Empty slot';
 function artwork(item,compact=false) {
   if(item.image) {const image=document.createElement('img'); image.src=item.image; image.alt=item.name; image.className='item-image'; return image;}
@@ -95,6 +96,7 @@ if(page==='closet') {
       data.slots.filter(slot=>build.equipment[slot.id]).forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.group==='Enchants'?'Enchant '+slot.label:slot.label),element('dd',equipmentName(build.equipment,slot.id))); list.append(row);});
       Object.entries(build.equipment._settings||{}).filter(([key])=>!key.startsWith('type-')).forEach(([key,value])=>{const row=document.createElement('div');row.append(element('dt',key.replaceAll('-',' ')),element('dd',String(value)));list.append(row);}); card.append(list);
       const results=calculate(build.equipment); data.stats.slice(0,3).forEach(stat=>card.append(element('p',stat.label+': '+statValue(results,stat.id),'technical saved-stat')));
+      if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)card.append(element('p',report.warnings.join(' '),'quiet'));}
       const actions=document.createElement('div'); actions.className='actions';
       const open=element('a','Load build','button-link'); open.href=route('index.html?build='+encodeURIComponent(build.id));
       const label=document.createElement('label'); label.className='compare-choice';

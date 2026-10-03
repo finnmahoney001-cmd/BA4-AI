@@ -6,7 +6,7 @@ One website using the selected Command deck design (scheme 3), promoted to the p
 
 Open `login.html`, then choose **Open local design preview** to review the pages without configuring authentication. Alternatively, open `index.html?preview=1` on a local server or as a file URL. The site needs no installation, package manager, or build step.
 
-- `index.html`: equipment planner, item chooser, removal/reset, naming/saving, and saved-build loading.
+- `index.html`: equipment planner, selectors, Empty-slot removal/reset, naming/saving, and saved-build loading.
 - `closet.html`: local saved builds, equipment/stat displays, two-build comparison, load and delete controls.
 - `library.html`: item records, combined search and visible slot filters, reset filters, empty states, and selection into the planner.
 - `login.html`: email/password login and sign-up form, confirmation/errors, and the authentication gate.
@@ -21,7 +21,7 @@ The supplied Amiga Forever readme permits personal non-commercial use and requir
 
 The supplied Bit Heroes Builder (2).xlsx now provides 1,176 source records, 24 selection fields, 30 bonus labels, mainhand elements, and Set/Myth/Ancient effect descriptions. The planner follows its Equipped sheet: controls at the top, bonuses left, loadout middle, effects right. Native selectors and searchable choosers use only workbook-supported names and types. Builds preserve equipment, rune rarities, enchants, and accessory upgrades.
 
-Numerical totals intentionally remain unavailable. The workbook contains 43 ordinary formulas with broken #REF! references and additional incomplete calculation logic. Its cached example totals are not used as live calculations. Item images remain labeled placeholders. The seven game screenshots inform the current original CSS styling: metal frames, title plaques, recessed controls, raised action buttons, and labeled source-type inventory borders. The screenshots are retained locally as references and are not embedded in the website. Original workbook/PDF files remain unchanged. Older numbered placeholder builds retain their names but their obsolete placeholder selections are no longer valid equipment.
+Live bonus calculations now use mechanics-data.js and mechanics.js on Planner and Closet. The original workbook remains unchanged; cached totals and broken formulas are not used. Read MECHANICS.md for researched rules, source links and coverage boundaries. The removed bottom item card has no remaining handlers. Equipment removal uses Empty slot. Ancient upgrade/reforge choices and optional combat conditions are saved with each build. Item images retain their existing placeholders.
 
 The user-supplied public Supabase project URL and publishable key are configured in `config.js`. The app loads Supabase from its CDN, redirects signed-out visitors to login, and redirects successful sessions to the root planner. No database tables or visitor profiles are created. Live sign-up/sign-in still need verification with a user account. In Supabase Authentication URL Configuration, set Site URL to the published website address so confirmation emails return to the correct site. `?preview=1` works only on local/file URLs, not on a published host.
 
@@ -34,3 +34,6 @@ Desktop and phone rendering, requested font roles, chooser/remove controls, libr
 This is a good point to commit the single website. No upload, deployment, or commit was performed automatically. The workspace root AGENTS.md preserves the local mirror rules; the downloadable website ZIP uses the supplied project AGENTS.md.
 
 The planner has Edit Build and Full Setup tabs. Full Setup shows the current equipment, rune/rarity, enchant, element, upgrade, bonus and effect summaries without editing controls. Legendary/Leg now uses the supplied yellow reference.
+
+## Mechanics verification
+23 deterministic mechanics cases pass in verification/mechanics.test.cjs. Desktop browser checks verify live totals and a read-only Full Setup. The optional combat panel is collapsed by default. No new authentication or deployment changes were made.
