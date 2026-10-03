@@ -21,7 +21,7 @@ The supplied Amiga Forever readme permits personal non-commercial use and requir
 
 The user approved labeled placeholders. `data.js` contains three demonstration records and three numbered slot placeholders; they are not game facts or real categories. Replace these records and provide a verified `calculate` function only when workbook data and formulas are supplied. Calculations and numerical differences currently show unavailable states rather than invented values. Item images go in `images/`.
 
-Supply only the public Supabase project URL and browser publishable/anon key in `config.js`. The app loads Supabase from its CDN, redirects signed-out visitors to login, and redirects successful sessions to the root planner. No database tables or visitor profiles are created. Real sign-up/sign-in have not been validated without those public settings. `?preview=1` works only on local/file URLs, not on a published host.
+The user-supplied public Supabase project URL and publishable key are configured in `config.js`. The app loads Supabase from its CDN, redirects signed-out visitors to login, and redirects successful sessions to the root planner. No database tables or visitor profiles are created. Live sign-up/sign-in still need verification with a user account. In Supabase Authentication URL Configuration, set Site URL to the published website address so confirmation emails return to the correct site. `?preview=1` works only on local/file URLs, not on a published host.
 
 Builds are saved to browser storage. Previously saved scheme 3 placeholder builds migrate automatically when present. No account information is stored by application code. A draft is retained between planner visits.
 
