@@ -74,7 +74,7 @@ if(page==='planner') {
   }
   function render() {
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;updateOptions(slot);});
-    tileButtons.forEach((button,slot)=>{const item=itemFor(slot);button.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',item?.name||'Empty slot'));button.setAttribute('aria-pressed',String(selected===slot));});
+    tileButtons.forEach((button,slot)=>{const item=itemFor(slot);button.dataset.kind=item?.kind||'Empty';button.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',item?.name||'Empty slot'),element('span',item?.kind||'Empty','type-badge'));button.setAttribute('aria-pressed',String(selected===slot));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
     const item=itemFor(selected);$('#detail-slot').textContent=data.slots.find(x=>x.id===selected).label;$('#item-title').textContent=item?.name||'Empty slot';$('#item-description').textContent=item?.description||'Choose an item from the workbook.';$('#remove').disabled=!item;
     // Equipped!C8 uses an exact lookup and defaults to Physical when unmatched.

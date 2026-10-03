@@ -134,7 +134,7 @@ if(page==='library') {
     const items=data.items.filter(item=>(!slotFilter.value||item.slot===slotFilter.value)&&(item.name+' '+item.description).toLowerCase().includes(needle));
     slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value)); $('#library-results').replaceChildren(); $('#library-empty').hidden=items.length>0; $('#result-count').textContent=items.length+' workbook records';
     items.forEach(item=>{
-      const card=document.createElement('article'); card.className='panel item-card';
+      const card=document.createElement('article'); card.className='panel item-card'; card.dataset.kind=item.kind;
       card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',item.name),element('p',item.description,'quiet'),element('p',item.kind+' · Totals awaiting validation','technical saved-stat'));
       const link=element('a','Use in planner','button-link'); link.href=route('index.html?item='+encodeURIComponent(item.id)); card.append(link); $('#library-results').append(card);
     });
