@@ -75,4 +75,8 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 .contribution h3 { line-height: 1.8; }
 .contribution p { margin: 4px 0; }
 .mechanics-details p { overflow-wrap: anywhere; }
+.item-image { image-rendering: pixelated; width: 100%; }
+.selection-art .item-image { height: 72px; margin: 4px auto 12px; }
+.setup-group .item-image { height: 64px; margin: 8px auto; }
+.loadout-tile .item-image { background: #192630; border: 3px solid #617583; padding: 12px; }
 @media(max-width:600px) { .mechanics-controls > .control-grid,.combat-options .control-grid { grid-template-columns: minmax(0,1fr); } }

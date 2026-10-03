@@ -37,3 +37,7 @@ The planner has Edit Build and Full Setup tabs. Full Setup shows the current equ
 
 ## Mechanics verification
 23 deterministic mechanics cases pass in verification/mechanics.test.cjs. Desktop browser checks verify live totals and a read-only Full Setup. The optional combat panel is collapsed by default. No new authentication or deployment changes were made.
+
+## Equipment artwork
+
+The upload bundle now includes 532 local equipment sprites from the Bit Heroes Wiki. Full Setup, item selectors, enchant tiles and Library use the files under images/equipment/. Source URLs and unavailable artwork are recorded in IMAGE-SOURCES.md and images/image-manifest.json. Upload the entire images folder alongside the HTML and JavaScript files.
