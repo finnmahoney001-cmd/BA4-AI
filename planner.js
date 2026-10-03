@@ -18,9 +18,9 @@ if(page==='planner') {
   }
   for(const group of ['Main Equips','Runes','Enchants']) {
     const panel=element('section','','panel controls-panel');panel.append(element('h2',group));
-    const grid=element('div','','control-grid');panel.append(grid);
+    const grid=element('div','','control-grid');grid.dataset.group=group;panel.append(grid);
     for(const slot of data.slots.filter(slot=>slot.group===group)) {
-      const wrap=element('div','','selection-field'), label=element('label',slot.label,'technical'); label.htmlFor='select-'+slot.id;wrap.append(label);
+      const wrap=element('div','','selection-field'), label=element('label',slot.label,'technical'); label.htmlFor='select-'+slot.id;wrap.dataset.slot=slot.id;wrap.append(label);
       const types=[...new Set(data.items.filter(item=>item.slot===slot.id).map(item=>item.kind))];
       if(group==='Main Equips') {
         const type=field('Type for '+slot.label,'type-'+slot.id,[{value:'',label:'All types'},...types.map(x=>({value:x,label:x}))],itemFor(slot.id)?.kind||'',value=>{
@@ -84,8 +84,8 @@ if(page==='planner') {
     $('#setup-name').textContent=$('#build-name').value.trim()||'Untitled build';
     $('#setup-extras').replaceChildren();
     for(const group of ['Runes','Enchants']) {
-      const section=element('section','','setup-group');section.append(element('h3',group));const list=document.createElement('dl');
-      data.slots.filter(slot=>slot.group===group).forEach(slot=>{const row=document.createElement('div'),item=itemFor(slot.id),rarity=item&&settings()['rarity-'+slot.id];row.append(element('dt',slot.label,'technical'),element('dd',(item?.name||'Empty slot')+(rarity?' · '+rarity:'')));list.append(row);});section.append(list);$('#setup-extras').append(section);
+      const section=element('section','','setup-group');section.append(element('h3',group));const list=document.createElement('dl');list.dataset.group=group;
+      data.slots.filter(slot=>slot.group===group).forEach(slot=>{const row=document.createElement('div');row.dataset.slot=slot.id;const item=itemFor(slot.id),rarity=item&&settings()['rarity-'+slot.id];row.append(element('dt',slot.label,'technical'),element('dd',(item?.name||'Empty slot')+(rarity?' · '+rarity:'')));list.append(row);});section.append(list);$('#setup-extras').append(section);
     }
     const info=element('section','','setup-group');info.append(element('h3','Build settings'));const list=document.createElement('dl');
     for(const [label,value] of [['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);

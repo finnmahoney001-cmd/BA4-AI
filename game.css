@@ -44,3 +44,22 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 #setup-extras{padding:0 16px 16px}.setup-group{margin-top:16px}.setup-group h3{padding:10px 12px;background:#354c5e;border-bottom:3px solid #142631;font-size:21px}
 .setup-group dl{margin:0}.setup-group dl>div{padding:12px;border-bottom:2px solid #152731;background:#243847}.setup-group dt{font-size:10px;color:#bdcfdc;line-height:1.8}.setup-group dd{margin:6px 0 0;overflow-wrap:anywhere;font-size:18px}
 @media(max-width:760px){.planner-tabs [role=tab]{min-width:0;flex:1}.setup-name{font-size:22px}#setup-extras{padding:0 12px 12px}}
+/* Spatial rune and enchant boards, shared by editing and Full Setup. */
+[data-group="Runes"],[data-group="Enchants"]{display:grid!important;position:relative;isolation:isolate;gap:16px 10px!important;padding:20px!important;border:3px solid #11202b;background:#202d38;box-shadow:inset 0 3px #617583,inset 0 -4px #111b24}
+[data-group="Runes"]{grid-template-columns:repeat(8,minmax(0,1fr))!important;grid-template-rows:repeat(3,auto);background-image:linear-gradient(32deg,transparent 49.5%,#475369 50%,transparent 50.5%),linear-gradient(-32deg,transparent 49.5%,#475369 50%,transparent 50.5%)}
+[data-group="Runes"]>[data-slot]{grid-column:span 2;min-width:0}
+[data-group="Runes"]>[data-slot="relic"]{grid-area:1/1/2/3}
+[data-group="Runes"]>[data-slot="major-1"]{grid-area:1/3/2/5}
+[data-group="Runes"]>[data-slot="major-2"]{grid-area:1/5/2/7}
+[data-group="Runes"]>[data-slot="artifact"]{grid-area:1/7/2/9}
+[data-group="Runes"]>[data-slot="minor-1"]{grid-area:2/2/3/4}
+[data-group="Runes"]>[data-slot="meta"]{grid-area:2/4/3/6;border-color:#82619b}
+[data-group="Runes"]>[data-slot="minor-2"]{grid-area:2/6/3/8}
+[data-group="Runes"]>[data-slot="major-3"]{grid-area:3/3/4/5}
+[data-group="Runes"]>[data-slot="major-4"]{grid-area:3/5/4/7}
+[data-group="Enchants"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:auto;background:#202d38}
+[data-group="Enchants"]>[data-slot]{min-width:0}
+@media(max-width:760px){[data-group="Enchants"]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+.setup-group dl[data-group]>div{border:2px solid #111f2a;box-shadow:inset 0 2px #5c7282;padding:10px;min-width:0}
+.setup-group dl[data-group] dt{font-size:9px}.setup-group dl[data-group] dd{font-size:16px;line-height:1.5}
+@media(max-width:760px){[data-group="Runes"],[data-group="Enchants"]{gap:12px 5px!important;padding:10px!important}[data-group="Runes"]>.selection-field,[data-group="Enchants"]>.selection-field{padding:5px;border-width:2px}[data-group="Runes"] .selection-field>label{font-size:8px;overflow-wrap:anywhere}[data-group="Runes"] .workbook-field label{font-size:7px;overflow-wrap:anywhere}[data-group="Runes"] select,[data-group="Enchants"] select{font-size:13px;padding:5px 1px;border-width:2px}[data-group="Runes"] .workbook-field select{font-size:9px}.setup-group dl[data-group]>div{padding:6px}.setup-group dl[data-group] dt{font-size:8px}.setup-group dl[data-group] dd{font-size:14px}}
