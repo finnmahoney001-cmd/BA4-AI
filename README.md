@@ -32,3 +32,5 @@ Builds are saved to browser storage. Previously saved scheme 3 placeholder build
 Desktop and phone rendering, requested font roles, chooser/remove controls, library filters, saving/loading, comparison, and signed-out redirects were checked. Evidence is in `verification/`. Sharing includes local SVG artwork; some messaging platforms may require raster artwork and published metadata URLs before deployment.
 
 This is a good point to commit the single website. No upload, deployment, or commit was performed automatically. The workspace root AGENTS.md preserves the local mirror rules; the downloadable website ZIP uses the supplied project AGENTS.md.
+
+The planner has Edit Build and Full Setup tabs. Full Setup shows the current equipment, rune/rarity, enchant, element, upgrade, bonus and effect summaries without editing controls. Legendary/Leg now uses the supplied yellow reference.
