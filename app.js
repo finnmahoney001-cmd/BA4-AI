@@ -95,11 +95,10 @@ if(page==='closet') {
       const card=document.createElement('article'); card.className='panel build-card'; card.append(element('h2',build.name));
       const equipped=data.slots.filter(slot=>build.equipment[slot.id]);
       card.append(element('p',equipped.length+' equipped slots','quiet build-count'));
-      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Build details'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
-      const list=document.createElement('dl'); list.className='build-equipment';
-      data.slots.filter(slot=>build.equipment[slot.id]).forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.group==='Enchants'?'Enchant '+slot.label:slot.label),element('dd',equipmentName(build.equipment,slot.id)+(build.equipment._settings?.['rarity-'+slot.id]?' · '+(build.equipment._settings['rarity-'+slot.id]==='Myth'?'Mythic':'Legendary'):''))); list.append(row);});
-      Object.entries(build.equipment._settings||{}).filter(([key])=>!key.startsWith('type-')).forEach(([key,value])=>{const row=document.createElement('div');row.append(element('dt',key.replaceAll('-',' ')),element('dd',String(value)));list.append(row);}); details.append(list);
+      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
       const results=calculate(build.equipment),stats=element('div','','build-stat-strip');data.stats.slice(0,3).forEach(stat=>{const statNode=element('p','','saved-stat');statNode.append(element('span',stat.label),element('strong',statValue(results,stat.id),'technical'));stats.append(statNode);});card.append(stats);
+      const bonuses=document.createElement('dl');bonuses.className='closet-bonuses';
+      data.stats.forEach(stat=>{const row=element('div','','bonus-line');row.append(element('dt',stat.label,'technical'),element('dd',statValue(results,stat.id),'technical'));bonuses.append(row);});details.append(bonuses);
       if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)details.append(element('p',report.warnings.join(' '),'quiet'));}
       card.append(details);
       const actions=document.createElement('div'); actions.className='actions';
@@ -139,13 +138,21 @@ if(page==='library') {
   const group=item=>item.slot.startsWith('major-')?'major':item.slot.startsWith('minor-')?'minor':item.slot.startsWith('enchant-')?'enchant':item.slot;
   const categories=[...data.slots.filter(s=>s.group==='Main Equips').map(s=>[s.id,s.label]),['relic','Relic'],['artifact','Artifact'],['minor','Minor Rune'],['major','Major Rune'],['meta','Meta Rune'],['enchant','Enchant']];
   const labels=Object.fromEntries(categories);
-  categories.forEach(([value,label])=>{const option=element('option',label);option.value=value;slotFilter.append(option);});
+
   const seen=new Set(),catalog=data.items.filter(item=>{const key=group(item)+'|'+BH_UI.name(item)+'|'+item.kind;if(seen.has(key))return false;seen.add(key);return true;});
-  function updateKinds(){const selected=kindFilter.value;kindFilter.replaceChildren(element('option','All types'));kindFilter.firstChild.value='';const kinds=[...new Set(catalog.filter(item=>!slotFilter.value||group(item)===slotFilter.value).map(item=>item.kind))].filter(k=>!['Rune','Enchant'].includes(k)).sort();kinds.forEach(kind=>{const option=element('option',kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind);option.value=kind;kindFilter.append(option);});kindFilter.value=kinds.includes(selected)?selected:'';kindFilter.disabled=!kinds.length;}
+  const categoryRules=new Map(),typeRules=new Map();
+  function matchesRule(rules,value){const included=[...rules].filter(([,mode])=>mode==='include').map(([key])=>key);return rules.get(value)!=='exclude'&&(!included.length||included.includes(value));}
+  function setupFilter(container,entries,rules,allLabel){
+    const options=container.querySelector('.filter-options');
+    entries.forEach(([value,text])=>{const row=element('label','','filter-rule');row.append(element('span',text));const select=document.createElement('select');select.setAttribute('aria-label',(container===slotFilter?'Category: ':'Item type: ')+text+' filter');[['','Any'],['include','Include'],['exclude','Exclude']].forEach(([mode,label])=>{const option=element('option',label);option.value=mode;select.append(option);});select.addEventListener('change',()=>{if(select.value)rules.set(value,select.value);else rules.delete(value);updateFilterLabel(container,rules,allLabel);renderLibrary();});row.append(select);options.append(row);});
+  }
+  function updateFilterLabel(container,rules,allLabel){const included=[...rules.values()].filter(mode=>mode==='include').length,excluded=[...rules.values()].filter(mode=>mode==='exclude').length;container.querySelector('summary').textContent=rules.size?included+' included / '+excluded+' excluded':allLabel;container.classList.toggle('filter-active',rules.size>0);}
+  setupFilter(slotFilter,categories,categoryRules,'All categories');
+  setupFilter(kindFilter,[...new Set(catalog.map(item=>item.kind))].sort().map(kind=>[kind,kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind]),typeRules,'All types');
   function renderLibrary() {
     const needle=$('#library-search').value.trim().toLowerCase();
-    const items=catalog.filter(item=>(!slotFilter.value||group(item)===slotFilter.value)&&(!kindFilter.value||item.kind===kindFilter.value)&&(BH_UI.label(item)+' '+item.name+' '+item.description).toLowerCase().includes(needle));
-    slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value));$('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');
+    const items=catalog.filter(item=>matchesRule(categoryRules,group(item))&&matchesRule(typeRules,item.kind)&&(BH_UI.label(item)+' '+item.name+' '+item.description).toLowerCase().includes(needle));
+    $('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');
     items.sort(BH_UI.compare).forEach(item=>{
       const card=document.createElement('article');card.className='panel item-card';card.dataset.kind=item.kind;
       let rarity=data.rarities[item.slot]?.[0];
@@ -178,8 +185,11 @@ if(page==='library') {
       });card.append(add);$('#library-results').append(card);
     });
   }
-  $('#library-search').addEventListener('input',renderLibrary);slotFilter.addEventListener('change',()=>{updateKinds();renderLibrary();});kindFilter.addEventListener('change',renderLibrary);
-  $('#library-clear').addEventListener('click',()=>{$('#library-search').value='';slotFilter.value='';kindFilter.value='';updateKinds();renderLibrary();$('#library-search').focus();});updateKinds();renderLibrary();
+  $('#library-search').addEventListener('input',renderLibrary);
+  $('#library-clear').addEventListener('click',()=>{$('#library-search').value='';categoryRules.clear();typeRules.clear();[slotFilter,kindFilter].forEach(container=>container.querySelectorAll('select').forEach(select=>select.value=''));updateFilterLabel(slotFilter,categoryRules,'All categories');updateFilterLabel(kindFilter,typeRules,'All types');renderLibrary();$('#library-search').focus();});
+  document.addEventListener('click',event=>{[slotFilter,kindFilter].forEach(container=>{if(!container.contains(event.target))container.open=false;});});
+  [slotFilter,kindFilter].forEach(container=>container.addEventListener('keydown',event=>{if(event.key==='Escape'){container.open=false;container.querySelector('summary').focus();}}));
+  renderLibrary();
 }
 
 authenticate();

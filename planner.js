@@ -81,7 +81,8 @@ if(page==='planner') {
     data.items.filter(item=>item.slot===slotId&&(!type||item.kind===type)).sort(BH_UI.compare).forEach(item=>{const option=element('option',BH_UI.name(item));option.value=item.id;option.dataset.kind=item.kind;select.append(option);});
     select.value=equipment[slotId]||'';select.dataset.kind=itemFor(slotId)?.kind||'';dropdowns.get(slotId).refresh();
   }
-  for(const slot of data.slots.filter(slot=>slot.group==='Main Equips')) {
+  for(const slotId of ['mainhand','neck','head','ring','body','accessory','offhand','pet','mount']) {
+    const slot=data.slots.find(slot=>slot.id===slotId);
     const tile=element('article','','loadout-tile');tile.dataset.equipmentTile=slot.id;
     tileButtons.set(slot.id,tile);$('#loadout-grid').append(tile);
   }
