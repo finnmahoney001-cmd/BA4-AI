@@ -88,16 +88,20 @@ function artwork(item,compact=false) {
   art.setAttribute('role','img'); art.setAttribute('aria-label','Missing image for '+item.name); return art;
 }
 if(page==='closet') {
-  const selected=new Set();
+  const selected=new Set(),expanded=new Set();
   function renderCards() {
     const builds=readBuilds(); $('#saved-builds').replaceChildren(); $('#closet-empty').hidden=builds.length>0;
     for(const build of builds) {
       const card=document.createElement('article'); card.className='panel build-card'; card.append(element('h2',build.name));
+      const equipped=data.slots.filter(slot=>build.equipment[slot.id]);
+      card.append(element('p',equipped.length+' equipped slots','quiet build-count'));
+      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Build details'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
       const list=document.createElement('dl'); list.className='build-equipment';
-      data.slots.filter(slot=>build.equipment[slot.id]).forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.group==='Enchants'?'Enchant '+slot.label:slot.label),element('dd',equipmentName(build.equipment,slot.id))); list.append(row);});
-      Object.entries(build.equipment._settings||{}).filter(([key])=>!key.startsWith('type-')).forEach(([key,value])=>{const row=document.createElement('div');row.append(element('dt',key.replaceAll('-',' ')),element('dd',String(value)));list.append(row);}); card.append(list);
-      const results=calculate(build.equipment); data.stats.slice(0,3).forEach(stat=>card.append(element('p',stat.label+': '+statValue(results,stat.id),'technical saved-stat')));
-      if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)card.append(element('p',report.warnings.join(' '),'quiet'));}
+      data.slots.filter(slot=>build.equipment[slot.id]).forEach(slot=>{const row=document.createElement('div'); row.append(element('dt',slot.group==='Enchants'?'Enchant '+slot.label:slot.label),element('dd',equipmentName(build.equipment,slot.id)+(build.equipment._settings?.['rarity-'+slot.id]?' · '+(build.equipment._settings['rarity-'+slot.id]==='Myth'?'Mythic':'Legendary'):''))); list.append(row);});
+      Object.entries(build.equipment._settings||{}).filter(([key])=>!key.startsWith('type-')).forEach(([key,value])=>{const row=document.createElement('div');row.append(element('dt',key.replaceAll('-',' ')),element('dd',String(value)));list.append(row);}); details.append(list);
+      const results=calculate(build.equipment),stats=element('div','','build-stat-strip');data.stats.slice(0,3).forEach(stat=>{const statNode=element('p','','saved-stat');statNode.append(element('span',stat.label),element('strong',statValue(results,stat.id),'technical'));stats.append(statNode);});card.append(stats);
+      if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)details.append(element('p',report.warnings.join(' '),'quiet'));}
+      card.append(details);
       const actions=document.createElement('div'); actions.className='actions';
       const open=element('a','Load build','button-link'); open.href=route('index.html?build='+encodeURIComponent(build.id));
       const label=document.createElement('label'); label.className='compare-choice';
@@ -131,7 +135,7 @@ if(page==='closet') {
   }); renderCards();
 }
 if(page==='library') {
-  const slotFilter=$('#slot-filter'),kindFilter=$('#kind-filter');
+  const slotFilter=$('#slot-filter'),kindFilter=$('#kind-filter'),lastAdded=new Map();
   const group=item=>item.slot.startsWith('major-')?'major':item.slot.startsWith('minor-')?'minor':item.slot.startsWith('enchant-')?'enchant':item.slot;
   const categories=[...data.slots.filter(s=>s.group==='Main Equips').map(s=>[s.id,s.label]),['relic','Relic'],['artifact','Artifact'],['minor','Minor Rune'],['major','Major Rune'],['meta','Meta Rune'],['enchant','Enchant']];
   const labels=Object.fromEntries(categories);
@@ -158,7 +162,7 @@ if(page==='library') {
         try {
           const draft=validEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'));
           const compatible=data.slots.filter(slot=>group({slot:slot.id})===group(item)).map(slot=>slot.id);
-          const slot=compatible.find(slot=>!draft[slot])||item.slot;
+          const slot=BH_UI.nextSlot(compatible,draft,lastAdded.get(group(item)));
           const target=data.items.find(candidate=>candidate.slot===slot&&candidate.kind===item.kind&&BH_UI.name(candidate)===BH_UI.name(item));
           if(!target)throw new Error('No compatible slot found for this item.');
           const previous=data.items.find(candidate=>candidate.id===draft[slot]);
@@ -167,7 +171,7 @@ if(page==='library') {
           draft[slot]=target.id;
           if(rarity&&data.rarities[slot]?.includes(rarity))draft._settings['rarity-'+slot]=rarity;
           if(data.slots.find(s=>s.id===slot)?.group==='Main Equips')draft._settings['type-'+slot]=target.kind;
-          const saved=validEquipment(draft);localStorage.setItem(DRAFT_KEY,JSON.stringify(saved));
+          const saved=validEquipment(draft);localStorage.setItem(DRAFT_KEY,JSON.stringify(saved));lastAdded.set(group(item),slot);
           $('#library-status').textContent='Equipped '+BH_UI.name(target)+(rarity?' ('+(rarity==='Myth'?'Mythic':'Legendary')+')':'')+' in '+data.slots.find(s=>s.id===slot).label+'.'+(previous&&previous.id!==target.id?' Replaced '+BH_UI.name(previous)+'.':'');
           add.textContent='Added to Planner';
         } catch(error) {$('#library-status').textContent='Could not add this item. '+(error.name==='QuotaExceededError'?'Browser storage is full.':error.name==='SyntaxError'?'The current draft could not be read.':error.message);}

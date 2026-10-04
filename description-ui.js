@@ -26,12 +26,21 @@ window.BH_UI=(()=>{
   const trigger=document.createElement('button'),list=document.createElement('div'),search=searchable?document.createElement('input'):null;
   trigger.type='button';trigger.className='item-choice';trigger.id='choice-'+select.id;trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label',label);
   list.className='item-choice-list';list.id=trigger.id+'-list';list.role='listbox';list.setAttribute('aria-label',label+' items');list.hidden=true;trigger.setAttribute('aria-controls',list.id);
-  select.hidden=true;select.after(trigger,list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
+  select.hidden=true;select.after(trigger);document.body.append(list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
   if(search){search.type='search';search.className='enchant-search';search.id='search-'+select.id;search.placeholder='Search enchants…';search.autocomplete='off';search.setAttribute('aria-label','Search enchants for '+label);search.role='combobox';search.setAttribute('aria-autocomplete','list');search.setAttribute('aria-controls',list.id);search.setAttribute('aria-expanded','false');trigger.before(search);}
   function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');search?.setAttribute('aria-expanded','false');}
   function refresh(){trigger.textContent=itemLabel(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());if(search)search.value='';close();}
   const buttons=()=>[...list.querySelectorAll('button[role="option"]')];
-  function position(){list.style.top=(trigger.offsetTop+trigger.offsetHeight+4)+'px';list.style.left='0px';const bounds=list.getBoundingClientRect(),parent=select.parentElement.getBoundingClientRect();if(bounds.right>innerWidth-12)list.style.left=(Math.max(12,innerWidth-bounds.width-12)-parent.left)+'px';}
+  function position(){
+   const rect=trigger.getBoundingClientRect(),gap=5,margin=8;
+   const width=Math.min(Math.max(rect.width,280),innerWidth-margin*2);list.style.width=width+'px';
+   list.style.left=Math.max(margin,Math.min(rect.left,innerWidth-width-margin))+'px';
+   const below=Math.max(0,innerHeight-rect.bottom-gap-margin),above=Math.max(0,rect.top-gap-margin),up=below<Math.min(340,list.scrollHeight)&&above>below;
+   list.style.maxHeight=Math.min(340,up?above:below)+'px';
+   list.style.top=(up?Math.max(margin,rect.top-gap-list.getBoundingClientRect().height):rect.bottom+gap)+'px';
+  }
+  window.addEventListener('resize',()=>{if(!list.hidden)position();});
+  window.addEventListener('scroll',event=>{if(!list.hidden&&!list.contains(event.target))close();},true);
   function open(last=false,keepFocus=false){
    list.replaceChildren();const query=search?.value.trim().toLowerCase()||'';
    let options=[...select.options].filter(option=>!query||(option.value&&name(getItem(option.value)).toLowerCase().includes(query)));
@@ -66,5 +75,6 @@ window.BH_UI=(()=>{
   document.addEventListener('focusin',e=>show(e.target.closest('[data-description]')));document.addEventListener('focusout',hide);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});window.addEventListener('scroll',hide,true);
  });
- return {name,label:itemLabel,compare,description,describe,dropdown};
+ const nextSlot=(slots,equipment,previous)=>slots.find(slot=>!equipment[slot])||slots[(slots.indexOf(previous)+1)%slots.length];
+ return {name,label:itemLabel,compare,description,describe,dropdown,nextSlot};
 })();
