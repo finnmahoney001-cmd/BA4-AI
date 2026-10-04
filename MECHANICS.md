@@ -1,5 +1,15 @@
 # Bit Heroes mechanics audit
 
+## Bulk selection and upgrade ticks — 4 October 2026
+
+Category and item-type menus now provide Include all and Exclude all controls. They preserve the current search. Planner bulk selectors apply an enchant to all six slots or a major rune and rarity to all four slots, resolving each slot's own catalog ID. Individual slot choices remain available.
+
+Pet and accessory upgrade controls now use integer sliders from 0 through 4. Older No Upgrades and Fully Upgraded saved values map to 0 and 4. Pet trigger chances use the researched base chance plus the per-upgrade increment. Descriptions show separate Spread and Designated chance/power lines and the effect action, without maximum-upgrade prose. Designated remains unavailable for pets that cannot reforge or have no upgrades.
+
+Accessory bonuses interpolate the researched base and +4 values across the four upgrades. Entries whose upgrade increments are unverified retain their verified values and uncertainty notice. This supersedes historical binary upgrade-control descriptions below.
+
+Bulk/upgrades, placeholder-effects, mechanics, conditional-bonuses and catalog-audit tests passed. Browser checks confirmed six matching enchants, four Mythic major runes, pet upgrade 2 descriptions, and both bulk filter menus returning the searched result after switching off and on. Screenshots: verification/upgrade-ticks.png and verification/library-bulk-filters.png.
+
 ## Conditional bonus display — 4 October 2026
 
 The Bonus % list now shows permanent values on the right and potential additional conditional values in teal parentheses to their left. bonusSummary evaluates permanent rules and a separate potential preview without modifying saved settings or the ordinary combat evaluator. Existing researched HP/SP/first-hit/health-rank/team/enemy rules use their supported upper bounds. Conditional multipliers and downstream conversions are included; Argiz uses its published maximum of five DR stacks. These are additional source sums, not an active combat snapshot or a capped combined chance. Opposing health/team conditions may apply at different times. Proc healing/damage and unsupported temporary rules stay in effects. Hover lists source contributions.

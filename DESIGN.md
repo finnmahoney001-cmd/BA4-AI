@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner
 
+## Bulk controls and upgrade ticks
+
+Category and Item type dropdowns start with Include all / Exclude all buttons. Planner Enchants and Major Runes have a separate searchable Apply to all selector; Major Runes includes a rarity selector. Individual slots stay editable. Pet and Accessory upgrades use a compact integer slider with labeled 0–4 ticks. Pet hover text shows two lines: Spread: X% to do A–B%; Designated: X% to do A–B%. Keep the effect action underneath, without upgrade/reforging explanation.
+
 ## Conditional bonus display
 
 Bonus rows show potential additional conditional percentages in parentheses immediately left of the permanent percentage. Use pale teal #A9E4DF for conditional values and retain the existing cream static value and right alignment. Hide parentheses when no supported conditional bonus exists. Apply to Full Setup and saved-build bonus lists. Hover explains the combat dependency and that conditions need not be active simultaneously.

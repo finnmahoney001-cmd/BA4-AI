@@ -11,6 +11,7 @@
   d.items=d.items.filter(x=>!m.items[x.id]?.legacyVariant&&x.name!=='MythDef');
   d.normalizeEquipment=input=>{
     const out={...input,_settings:{...input?._settings}};
+    for(const key of ['pet-upgrades','accessory-upgrades'])out._settings[key]=String(upgradeLevel(out._settings,key));
     for(const item of d.items){
       const migration=m.items[item.id]?.slotMigration;
       if(migration&&out[migration.from]===item.id){
@@ -86,7 +87,7 @@
       if(item.kind==='Enchant')factor=enchantMultiplier;
       if(item.slot==='mount')factor*=mountMultiplier;
       let bonuses=facts.bonuses;
-      if(item.slot==='accessory'&&settings['accessory-upgrades']==='No Upgrades')bonuses=facts.unupgraded||bonuses;
+      if(item.slot==='accessory')bonuses=accessoryBonuses(item,settings);
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
       if(settings['t12-'+item.slot]==='true'||settings['t12-'+item.slot]===true)add(name+' · T12+',facts.tierBonuses,factor);
       for(const condition of facts.conditional||[])if(active(condition.when,ctx))add(name+' · combat condition',condition.bonuses,factor);
@@ -240,10 +241,22 @@
   };
   function petDescription(item,settings={}) {
     const pet=window.BH_MECHANICS.items[item.id]?.petTrigger;if(!pet)return item.description;
-    const upgraded=settings['pet-upgrades']!=='No Upgrades',chance=pet.base+(upgraded?4*pet.increment:0);
-    const designated=!pet.reforgable?'Unavailable (cannot reforge)':Number((chance*2).toFixed(3))+'%'+(upgraded?'':' (requires an upgrade before reforging)');
-    return 'Spread: '+Number(chance.toFixed(3))+'%; Designated: '+designated+'. '+(upgraded?'Fully upgraded (+4).':'No upgrades.')+' Effect: '+pet.action+'; power '+pet.power+'. Reforging selects one trigger; effect power stays the same.';
+    const level=upgradeLevel(settings,'pet-upgrades'),chance=round(pet.base+level*pet.increment),power=pet.power.replace(/\s*-\s*/g,'–');
+    const designated=!pet.reforgable?'Unavailable (cannot reforge)':level===0?'Unavailable (requires an upgrade)':round(chance*2)+'% to do '+power;
+    return 'Spread: '+chance+'% to do '+power+'\nDesignated: '+designated+'\n'+pet.action+'.';
   }
-  window.BH_ENGINE={evaluate,lucky,petDescription};
+  function upgradeLevel(settings={},key) {
+    const value=settings[key];if(value==='No Upgrades')return 0;
+    if(value===undefined||value===null||value===''||value==='Fully Upgraded')return 4;
+    return Math.round(bounded(value,0,4,4));
+  }
+  function accessoryBonuses(item,settings={}) {
+    const facts=m.items[item.id]||{},full=facts.bonuses||{},base=facts.unupgraded;
+    if(!base)return full;
+    const level=upgradeLevel(settings,'accessory-upgrades'),values={};
+    for(const key of new Set([...Object.keys(base),...Object.keys(full)]))values[key]=round((base[key]||0)+((full[key]||0)-(base[key]||0))*level/4);
+    return values;
+  }
+  window.BH_ENGINE={evaluate,lucky,petDescription,upgradeLevel,accessoryBonuses};
 })();
 

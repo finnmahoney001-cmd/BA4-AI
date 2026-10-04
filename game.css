@@ -158,3 +158,12 @@ body{background-color:var(--bg)}
 .bonus-values{display:inline-flex;align-items:center;justify-content:flex-end;gap:12px;white-space:nowrap}
 .bonus-line .bonus-values .conditional-bonus{color:#a9e4df}
 .bonus-line .bonus-values .static-bonus{color:#e5c397}
+.filter-bulk{display:flex;gap:8px;position:sticky;top:0;z-index:1;background:#3b2b24;padding:6px 0 12px}
+.filter-bulk button{flex:1;padding:8px;font-size:16px;min-height:38px}
+.bulk-selection{display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px;padding:12px;margin-bottom:16px;background:#302219;border:2px solid #795d43}
+.bulk-selection>.workbook-field{flex:1;min-width:190px;max-width:440px}
+.upgrade-control{align-self:start;gap:8px}
+.upgrade-control input[type=range]{width:100%;margin:8px 0 0;padding:0;min-height:24px;accent-color:#f2b544;cursor:pointer}
+.upgrade-ticks{display:flex;justify-content:space-between;font:9px var(--technical);color:#e5c397;padding:0 7px}
+.upgrade-control output{font-size:10px;color:#f2b544}
+.description-popup,.item-card .quiet{white-space:pre-line}

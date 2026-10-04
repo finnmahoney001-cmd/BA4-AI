@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner Specification
 
+## Bulk controls and upgrade ticks
+
+Add Include all / Exclude all inside both Library filter dropdowns; update all rules and results together without closing the list. Add explicit searchable Apply to all controls for six enchants and four major runes, matching each compatible slot's item ID; apply the selected major rarity to all four. Allow bulk clearing and retain independent slot editing. Replace Pet and Accessory upgrade choices with integer 0–4 sliders defaulting to 4. Restore old Fully Upgraded/No Upgrades saves as 4/0. Compute accessory values from verified base plus each published increment; unknown increments stay unverified. Pet chance updates at every tick; effect power remains unchanged. Descriptions show Spread: X% to do A–B% and Designated: X% to do A–B%, followed by the effect action. Preserve explicit unavailability for pets that cannot reforge or have zero upgrades. No max-upgrade prose in descriptions.
+
 ## Conditional bonus display
 
 Keep permanent bonuses in their current right-hand position. Show a separate parenthesized potential additional conditional value directly to their left in a contrasting shade. Calculate from equipped items, unlocked set thresholds, selected rune rarities and existing researched condition rules, using supported upper bounds for HP/SP/team/enemy scaling. These are potential additions, not assumed active totals; mutually exclusive conditions may occur at different times. Keep proc damage/healing and unsupported effects separate. Share the display between Planner and saved builds without reintroducing combat controls or changing saved settings.

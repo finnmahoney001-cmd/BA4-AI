@@ -165,12 +165,18 @@ if(page==='library') {
   function matchesRule(rules,value){return rules.get(value)!=='exclude';}
   function setupFilter(container,entries,rules,allLabel){
     const options=container.querySelector('.filter-options');
+    const bulk=element('div','','filter-bulk');
+    for(const [mode,label] of [['include','Include all'],['exclude','Exclude all']]){
+      const button=element('button',label);button.type='button';button.setAttribute('aria-label',label+(container===slotFilter?' categories':' item types'));
+      button.addEventListener('click',()=>{for(const key of rules.keys())rules.set(key,mode);options.querySelectorAll('select').forEach(select=>select.value=mode);updateFilterLabel(container,rules,allLabel);renderLibrary();});bulk.append(button);
+    }options.append(bulk);
     entries.forEach(([value,text])=>{const row=element('label','','filter-rule');row.append(element('span',text));const select=document.createElement('select');select.setAttribute('aria-label',(container===slotFilter?'Category: ':'Item type: ')+text+' filter');[['include','Include'],['exclude','Exclude']].forEach(([mode,label])=>{const option=element('option',label);option.value=mode;select.append(option);});select.addEventListener('change',()=>{rules.set(value,select.value);updateFilterLabel(container,rules,allLabel);renderLibrary();});rules.set(value,'include');row.append(select);options.append(row);});
   }
   function updateFilterLabel(container,rules,allLabel){const included=[...rules.values()].filter(mode=>mode==='include').length,excluded=[...rules.values()].filter(mode=>mode==='exclude').length;container.querySelector('summary').textContent=excluded?included+' included / '+excluded+' excluded':allLabel;container.classList.toggle('filter-active',excluded>0);}
   setupFilter(slotFilter,categories,categoryRules,'All categories');
   setupFilter(kindFilter,[...new Set(catalog.map(item=>item.kind))].sort().map(kind=>[kind,kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind]),typeRules,'All types');
   function renderLibrary() {
+    try{BH_UI.setContext(data.normalizeEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'))._settings);}catch{BH_UI.setContext({});}
     const needle=$('#library-search').value.trim().toLowerCase();
     const items=catalog.filter(item=>matchesRule(categoryRules,group(item))&&matchesRule(typeRules,item.kind)&&(BH_UI.label(item)+' '+item.name+' '+(item.aliases||[]).join(' ')+' '+item.description).toLowerCase().includes(needle));
     $('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');

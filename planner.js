@@ -23,8 +23,35 @@ if(page==='planner') {
     options.forEach(option=>{const node=element('option',option.label);node.value=option.value;node.dataset.kind=option.value;select.append(node);});
     select.value=value;select.dataset.kind=value;select.addEventListener('change',()=>{select.dataset.kind=select.value;onChange(select.value);});wrap.append(name,select);return {wrap,select};
   }
+  const bulkControls=[];
+  function bulkSelector(panel,major){
+    const slots=data.slots.filter(slot=>major?slot.id.startsWith('major-'):slot.id.startsWith('enchant-')).map(slot=>slot.id);
+    const wrap=element('div','','bulk-selection'),label=major?'All major runes':'All enchants';
+    const choice=field(label,major?'bulk-major':'bulk-enchants',[{value:'',label:'Choose for all'},{value:'__clear',label:'Empty all slots'},...data.items.filter(item=>item.slot===slots[0]).sort(BH_UI.compare).map(item=>({value:item.id,label:BH_UI.name(item)}))],'',()=>{});
+    wrap.append(choice.wrap);let rarity;
+    if(major){rarity=field('All major rune rarity','bulk-major-rarity',[{value:'',label:'Mixed rarities'},{value:'Leg',label:'Legendary'},{value:'Myth',label:'Mythic'}],'Leg',value=>{
+      if(!value)return;
+      slots.forEach(slot=>{settings()['rarity-'+slot]=value;$('#rarity-'+slot).value=value;});render();
+    });wrap.append(rarity.wrap);}
+    choice.select.addEventListener('change',()=>{
+      if(!choice.select.value)return;
+      if(major&&!rarity.select.value)rarity.select.value='Leg';
+      equipment=BH_UI.applyAll(equipment,slots,data.items.find(item=>item.id===choice.select.value),rarity?.select.value);
+      if(major)slots.forEach(slot=>$('#rarity-'+slot).value=rarity.select.value);
+      render();announce(major?'Applied to all four major rune slots.':'Applied to all six enchant slots.');
+    });
+    const menu=BH_UI.dropdown(choice.select,label,id=>data.items.find(item=>item.id===id),()=>rarity?.select.value||'Leg',true);
+    bulkControls.push({slots,select:choice.select,menu,rarity:rarity?.select});panel.append(wrap);
+  }
+  function upgradeSlider(grid,label,key){
+    const wrap=element('div','','workbook-field upgrade-control'),name=element('label',label,'technical'),input=document.createElement('input'),output=element('output','','technical');
+    input.type='range';input.id=key;input.min='0';input.max='4';input.step='1';input.value=String(BH_ENGINE.upgradeLevel(settings(),key));name.htmlFor=key;output.id=key+'-value';output.htmlFor=key;
+    const ticks=element('div','','upgrade-ticks');for(let n=0;n<=4;n++)ticks.append(element('span',String(n)));
+    input.addEventListener('input',()=>{settings()[key]=input.value;render();});settings()[key]=input.value;wrap.append(name,input,ticks,output);grid.append(wrap);
+  }
   for(const group of ['Main Equips','Runes','Enchants']) {
     const panel=element('section','','panel controls-panel');panel.append(element('h2',group));
+    if(group==='Runes'||group==='Enchants')bulkSelector(panel,group==='Runes');
     const grid=element('div','','control-grid');grid.dataset.group=group;panel.append(grid);
     for(const slot of data.slots.filter(slot=>slot.group===group)) {
       const wrap=element('div','','selection-field'), label=element('label',slot.label,'technical'); label.htmlFor='select-'+slot.id;wrap.dataset.slot=slot.id;wrap.append(label);
@@ -49,8 +76,7 @@ if(page==='planner') {
       grid.append(wrap);
     }
     if(group==='Main Equips') {
-      const upgrade=field('Accessory upgrades','accessory-upgrades',[{value:'Fully Upgraded',label:'Fully Upgraded'},{value:'No Upgrades',label:'No Upgrades'}],settings()['accessory-upgrades']||'Fully Upgraded',value=>{settings()['accessory-upgrades']=value;render();});settings()['accessory-upgrades']=upgrade.select.value;grid.append(upgrade.wrap);
-      const petUpgrade=field('Pet upgrades','pet-upgrades',[{value:'Fully Upgraded',label:'Fully Upgraded'},{value:'No Upgrades',label:'No Upgrades'}],settings()['pet-upgrades']||'Fully Upgraded',value=>{settings()['pet-upgrades']=value;render();});settings()['pet-upgrades']=petUpgrade.select.value;grid.append(petUpgrade.wrap);
+      upgradeSlider(grid,'Accessory upgrades','accessory-upgrades');upgradeSlider(grid,'Pet upgrades','pet-upgrades');
       const elementField=element('div','','workbook-field');elementField.append(element('span','MH Element','technical'),element('p','Select a mainhand','technical'));elementField.lastChild.id='mainhand-element';grid.append(elementField);
     }
     $('#workbook-controls').append(panel);
@@ -118,7 +144,12 @@ if(page==='planner') {
   function render() {
     equipment=data.normalizeEquipment(equipment);
     BH_UI.setContext(settings());
-    $('#pet-upgrades').value=settings()['pet-upgrades']||'Fully Upgraded';
+    for(const key of ['pet-upgrades','accessory-upgrades']){$('#'+key).value=settings()[key];$('#'+key+'-value').textContent=settings()[key]+' / 4';}
+    bulkControls.forEach(control=>{
+      const first=itemFor(control.slots[0]),same=first&&control.slots.every(slot=>BH_UI.name(itemFor(slot))===BH_UI.name(first));
+      control.select.value=same?first.id:control.slots.every(slot=>!itemFor(slot))?'__clear':'';control.menu.refresh();
+      if(control.rarity){const value=settings()['rarity-'+control.slots[0]];control.rarity.value=control.slots.every(slot=>settings()['rarity-'+slot]===value)?value:'';}
+    });
     tierChecks.forEach(({tick,tierLabel},slot)=>{const item=itemFor(slot);tierLabel.hidden=!item||(typeof item.tier==='number'&&item.tier>=12);tick.checked=settings()['t12-'+slot]==='true';const bonuses=window.BH_MECHANICS.items[itemFor(slot)?.id]?.tierBonuses||{};tierLabel.dataset.description=Object.entries(bonuses).map(([k,v])=>k+' +'+v+'%').join('\n')||'No additional tier bonus recorded for this item.';});
     selectionArt.forEach((holder,slot)=>{const item=itemFor(slot);holder.replaceChildren();holder.hidden=!item?.image;if(item?.image)holder.append(artwork(item,true));});
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
@@ -165,7 +196,7 @@ if(page==='planner') {
     if(settings()['migration-note'])notes.append(element('p',settings()['migration-note'],'quiet'));
     if(report.warnings.length){notes.open=true;$('#calculation-status').textContent+=' '+report.warnings.length+' source/roll notice(s) — see Calculation coverage.';}
   }
-  $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});$('#accessory-upgrades').value='Fully Upgraded';settings()['accessory-upgrades']='Fully Upgraded';settings()['pet-upgrades']='Fully Upgraded';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
+  $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});settings()['accessory-upgrades']='4';settings()['pet-upgrades']='4';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
   $('#save').addEventListener('click',()=>{const builds=readBuilds();const build={id:'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds,build]))announce('Build saved with equipment, runes, enchants, and upgrade settings.');});
   typeSelectors.forEach((select,slot)=>select.value=settings()['type-'+slot]||itemFor(slot)?.kind||'');render();
   const tabs=[$('#edit-tab'),$('#setup-tab')];

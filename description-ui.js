@@ -8,6 +8,12 @@ window.BH_UI=(()=>{
   if(!item)return 'Choose an item for this slot.';
   const meta=facts.items[item.id];
   if(item.slot==='pet')return window.BH_ENGINE.petDescription(item,settings);
+  if(item.slot==='accessory'&&Object.keys(meta?.bonuses||{}).length){
+   const bonuses=window.BH_ENGINE.accessoryBonuses(item,settings);
+   const values=Object.entries(bonuses).map(([stat,value])=>value+'% '+stat).join(', ');
+   const special=(meta.effects||[]).flatMap(text=>text.split(/[,|]/)).map(text=>text.trim()).filter(text=>/when |overkill|chance to |up to|first |once /i.test(text)&&!/Each upgrade|Fully upgraded/i.test(text));
+   return values+(special.length?'\n'+special.join(', '):'')+(meta.unresolved?'\n'+meta.unresolved:'');
+  }
   if(item.kind==='Rune') {
    const stat=meta?.runeStat||({Dar:'Gold Find',Quindi:'Capture Rate',Vryn:'Item Find',Zyrk:'Experience',Sol:'Redirect',Erlun:'Max Shield'}[meta?.rune]);
    const rarityName=rarity==='Myth'?'Mythic':'Legendary';
@@ -28,9 +34,10 @@ window.BH_UI=(()=>{
   trigger.type='button';trigger.className='item-choice';trigger.id='choice-'+select.id;trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label',label);
   list.className='item-choice-list';list.id=trigger.id+'-list';list.role='listbox';list.setAttribute('aria-label',label+' items');list.hidden=true;trigger.setAttribute('aria-controls',list.id);
   select.hidden=true;select.after(trigger);document.body.append(list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
-  if(search){search.type='search';search.className='enchant-search';search.id='search-'+select.id;search.placeholder='Search enchants…';search.autocomplete='off';search.setAttribute('aria-label','Search enchants for '+label);search.role='combobox';search.setAttribute('aria-autocomplete','list');search.setAttribute('aria-controls',list.id);search.setAttribute('aria-expanded','false');trigger.before(search);}
+  const searchType=/rune/i.test(label)?'runes':'enchants';
+  if(search){search.type='search';search.className='enchant-search';search.id='search-'+select.id;search.placeholder='Search '+searchType+'…';search.autocomplete='off';search.setAttribute('aria-label','Search '+searchType+' for '+label);search.role='combobox';search.setAttribute('aria-autocomplete','list');search.setAttribute('aria-controls',list.id);search.setAttribute('aria-expanded','false');trigger.before(search);}
   function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');search?.setAttribute('aria-expanded','false');}
-  function refresh(){trigger.textContent=itemLabel(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());if(search)search.value='';close();}
+  function refresh(){trigger.textContent=getItem(select.value)?itemLabel(getItem(select.value)):(select.selectedOptions[0]?.textContent||'Empty slot');trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());if(search)search.value='';close();}
   const buttons=()=>[...list.querySelectorAll('button[role="option"]')];
   function position(){
    const rect=trigger.getBoundingClientRect(),gap=5,margin=8;
@@ -49,10 +56,10 @@ window.BH_UI=(()=>{
    for(const option of options){
     const item=getItem(option.value),button=document.createElement('button'),title=document.createElement('strong'),detail=document.createElement('small');
     button.type='button';button.role='option';button.tabIndex=-1;button.setAttribute('aria-selected',String(option.selected));button.dataset.kind=item?.kind||'';
-    title.textContent=itemLabel(item);button.append(title);if(item&&item.kind!=='Set'){detail.textContent=description(item,getRarity());button.append(detail);describe(button,item,getRarity());}
+    title.textContent=item?itemLabel(item):option.textContent;button.append(title);if(item&&item.kind!=='Set'){detail.textContent=description(item,getRarity());button.append(detail);describe(button,item,getRarity());}
     button.onclick=()=>{select.value=option.value;close();select.dispatchEvent(new Event('change'));trigger.focus();};list.append(button);
    }
-   if(!options.length){const empty=document.createElement('p');empty.className='choice-empty';empty.role='status';empty.textContent='No matching enchants. Try another name.';list.append(empty);}
+   if(!options.length){const empty=document.createElement('p');empty.className='choice-empty';empty.role='status';empty.textContent='No matching '+searchType+'. Try another name.';list.append(empty);}
    list.hidden=false;position();trigger.setAttribute('aria-expanded','true');search?.setAttribute('aria-expanded','true');
    if(!keepFocus){const nodes=buttons();(last?nodes.at(-1):nodes.find(n=>n.getAttribute('aria-selected')==='true')||nodes[0])?.focus();}
   }
@@ -77,5 +84,11 @@ window.BH_UI=(()=>{
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});window.addEventListener('scroll',hide,true);
  });
  const nextSlot=(slots,equipment,previous)=>slots.find(slot=>!equipment[slot])||slots[(slots.indexOf(previous)+1)%slots.length];
- return {name,label:itemLabel,compare,description,describe,dropdown,nextSlot,setContext};
+ const applyAll=(equipment,slots,item,rarity)=>{
+  const targets=slots.map(slot=>item?window.BH_DATA.items.find(candidate=>candidate.slot===slot&&candidate.kind===item.kind&&name(candidate)===name(item)):null);
+  if(item&&targets.some(target=>!target))throw new Error('This item is not available in every target slot.');
+  const out={...equipment,_settings:{...equipment._settings}};
+  slots.forEach((slot,index)=>{if(item)out[slot]=targets[index].id;else delete out[slot];if(rarity)out._settings['rarity-'+slot]=rarity;});return out;
+ };
+ return {name,label:itemLabel,compare,description,describe,dropdown,nextSlot,setContext,applyAll};
 })();
