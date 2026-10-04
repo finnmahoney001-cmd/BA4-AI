@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner Specification
 
+## Compare and Library bulk correction
+
+Compare both saved builds using bonusSummary, displaying conditional potential in contrasting parentheses beside permanent percentages. Report the second build minus the first separately for permanent and conditional bonuses. Preserve source hover descriptions and uncertainty about simultaneous conditions. Put the Pet upgrade slider directly below the Accessory slider in a shared grid wrapper. Library enchant selection fills all six compatible slot IDs in one action, overwriting previous enchant choices, without navigating or resetting filters.
+
 ## Bulk controls and upgrade ticks
 
 Add Include all / Exclude all inside both Library filter dropdowns; update all rules and results together without closing the list. Add explicit searchable Apply to all controls for six enchants and four major runes, matching each compatible slot's item ID; apply the selected major rarity to all four. Allow bulk clearing and retain independent slot editing. Replace Pet and Accessory upgrade choices with integer 0–4 sliders defaulting to 4. Restore old Fully Upgraded/No Upgrades saves as 4/0. Compute accessory values from verified base plus each published increment; unknown increments stay unverified. Pet chance updates at every tick; effect power remains unchanged. Descriptions show Spread: X% to do A–B% and Designated: X% to do A–B%, followed by the effect action. Preserve explicit unavailability for pets that cannot reforge or have zero upgrades. No max-upgrade prose in descriptions.

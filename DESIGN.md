@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner
 
+## Compare and Library bulk correction
+
+Compare uses the same permanent and conditional bonus display as saved builds. Show separate permanent and conditional differences; do not combine conditional potential into the permanent value. Stack Pet upgrades immediately underneath Accessory upgrades in one grid cell. Library Use in Planner applies an enchant to all six slots while preserving the Library page and filters.
+
 ## Bulk controls and upgrade ticks
 
 Category and Item type dropdowns start with Include all / Exclude all buttons. Planner Enchants and Major Runes have a separate searchable Apply to all selector; Major Runes includes a rarity selector. Individual slots stay editable. Pet and Accessory upgrades use a compact integer slider with labeled 0–4 ticks. Pet hover text shows two lines: Spread: X% to do A–B%; Designated: X% to do A–B%. Keep the effect action underneath, without upgrade/reforging explanation.

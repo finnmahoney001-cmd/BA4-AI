@@ -144,12 +144,19 @@ if(page==='closet') {
     data.slots.forEach(slot=>{const different=(builds[0].equipment[slot.id]||'')!==(builds[1].equipment[slot.id]||''); comparisonRow(slot.label,builds.map(build=>equipmentName(build.equipment,slot.id)),different?'Different equipment':'Same equipment',different);});
     const settings=new Set(builds.flatMap(build=>Object.keys(build.equipment._settings||{})));
     settings.forEach(key=>{const values=builds.map(build=>build.equipment._settings?.[key]||'Not set'); comparisonRow(key.replaceAll('-',' '),values,values[0]===values[1]?'Same setting':'Different setting',values[0]!==values[1]);});
-    const results=builds.map(build=>calculate(build.equipment));
+    const summaries=builds.map(build=>data.bonusSummary(build.equipment));
+    const results=summaries.map(summary=>summary.permanent.values);
     data.stats.forEach(stat=>{
       const a=results[0]?.[stat.id], b=results[1]?.[stat.id]; const known=typeof a==='number'&&typeof b==='number'&&Number.isFinite(a)&&Number.isFinite(b);
-      const row=comparisonRow(stat.label,results.map(result=>statValue(result,stat.id)),known?'Difference: '+(b-a):'Difference unavailable');
+      const row=comparisonRow(stat.label,['',''],known?'Permanent difference: '+Number((b-a).toFixed(3)):'Permanent difference unavailable');
       row.classList.add('stat-comparison');
+      row.querySelectorAll('p').forEach((cell,i)=>renderBonusValue(cell.lastChild,summaries[i],stat));
       if(known&&b!==a) row.querySelector('.difference-label').classList.add(b>a?'positive':'negative');
+      if(summaries.some(summary=>summary.conditional[stat.id])){
+        const delta=Number((summaries[1].conditional[stat.id]-summaries[0].conditional[stat.id]).toFixed(3));
+        const note=element('span','Conditional difference: '+delta,'difference-label conditional-difference');
+        note.title='Difference in potential additional bonuses. Conditions may apply at different times.';row.append(note);
+      }
     });
     $('#comparison').hidden=false; announce('Comparing two builds. Equipment differences are highlighted; unavailable statistics are not estimated.');
   }); renderCards();
@@ -196,6 +203,12 @@ if(page==='library') {
         try {
           const draft=validEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'));
           const compatible=data.slots.filter(slot=>group({slot:slot.id})===group(item)).map(slot=>slot.id);
+          if(group(item)==='enchant'){
+            const saved=validEquipment(BH_UI.applyAll(draft,compatible,item));
+            localStorage.setItem(DRAFT_KEY,JSON.stringify(saved));
+            $('#library-status').textContent='Equipped '+BH_UI.name(item)+' in all six enchant slots.';
+            add.textContent='Added to Planner';return;
+          }
           const slot=BH_UI.nextSlot(compatible,draft,lastAdded.get(group(item)));
           const target=data.items.find(candidate=>candidate.slot===slot&&candidate.kind===item.kind&&BH_UI.name(candidate)===BH_UI.name(item));
           if(!target)throw new Error('No compatible slot found for this item.');

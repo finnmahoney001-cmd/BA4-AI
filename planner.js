@@ -76,7 +76,8 @@ if(page==='planner') {
       grid.append(wrap);
     }
     if(group==='Main Equips') {
-      upgradeSlider(grid,'Accessory upgrades','accessory-upgrades');upgradeSlider(grid,'Pet upgrades','pet-upgrades');
+      const upgrades=element('div','','upgrade-stack');grid.append(upgrades);
+      upgradeSlider(upgrades,'Accessory upgrades','accessory-upgrades');upgradeSlider(upgrades,'Pet upgrades','pet-upgrades');
       const elementField=element('div','','workbook-field');elementField.append(element('span','MH Element','technical'),element('p','Select a mainhand','technical'));elementField.lastChild.id='mainhand-element';grid.append(elementField);
     }
     $('#workbook-controls').append(panel);

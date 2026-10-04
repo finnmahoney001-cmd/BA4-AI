@@ -1,5 +1,13 @@
 # Bit Heroes mechanics audit
 
+## Compare and Library action correction — 4 October 2026
+
+Compare now reads the shared bonusSummary for both builds. Each percentage retains its permanent value with potential conditional additions in teal parentheses. Permanent and conditional differences are reported separately as second build minus first; potential conditions are not assumed to happen together. Existing source hover descriptions are retained.
+
+Library Use in Planner on an enchant now calls the same compatible-slot bulk operation as the planner. It replaces all six enchant slots at once and preserves other equipment, settings and Library filters. Pet upgrades now appear directly below Accessory upgrades inside a single grid cell, with both existing framed controls preserved.
+
+Browser regression checks applied Evade through the Library and confirmed Evade in all six planner slots. Comparing a Mythic Gerou build with an otherwise matching build without Gerou showed (15%) beside permanent 0%, permanent difference 0 and conditional difference -15 for Absorb. Both upgrade controls share the same horizontal position, with Pet below Accessory. Bulk-upgrade and conditional-bonus calculation tests and JavaScript syntax checks passed. Screenshots: verification/compare-conditional-fix.png and verification/upgrade-stack-fix.png.
+
 ## Bulk selection and upgrade ticks — 4 October 2026
 
 Category and item-type menus now provide Include all and Exclude all controls. They preserve the current search. Planner bulk selectors apply an enchant to all six slots or a major rune and rarity to all four slots, resolving each slot's own catalog ID. Individual slot choices remain available.
