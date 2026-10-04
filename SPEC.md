@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner Specification
 
+## Remaining bonuses and effect scope
+
+Give both stacked upgrade cards width 100% with identical sizing. Filter Myth Effects to the six ordinary gear slots. Bonus summary subtracts the actual displayed report from the potential report. Akiho's Redirect conversion potential uses its published 25% ceiling, subtracting conversion already included in the displayed report; retain other independent conditional sources separately. Apply the shared remaining-bonus summary to Planner, Closet and Compare.
+
 ## Compare and Library bulk correction
 
 Compare both saved builds using bonusSummary, displaying conditional potential in contrasting parentheses beside permanent percentages. Report the second build minus the first separately for permanent and conditional bonuses. Preserve source hover descriptions and uncertainty about simultaneous conditions. Put the Pet upgrade slider directly below the Accessory slider in a shared grid wrapper. Library enchant selection fills all six compatible slot IDs in one action, overwriting previous enchant choices, without navigating or resetting filters.

@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner
 
+## Remaining bonuses and effect scope
+
+Pet and Accessory upgrade cards stretch to the same full stack width. Myth Effects includes only mainhand, offhand, head, body, neck and ring. Parentheses show remaining potential above the displayed value, subtracting contributions already included; hover identifies each remaining source.
+
 ## Compare and Library bulk correction
 
 Compare uses the same permanent and conditional bonus display as saved builds. Show separate permanent and conditional differences; do not combine conditional potential into the permanent value. Stack Pet upgrades immediately underneath Accessory upgrades in one grid cell. Library Use in Planner applies an enchant to all six slots while preserving the Library page and filters.

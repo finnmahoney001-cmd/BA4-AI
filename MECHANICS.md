@@ -1,5 +1,11 @@
 # Bit Heroes mechanics audit
 
+## Remaining conditional bonuses and Myth Effects scope — 4 October 2026
+
+Bonus summaries subtract the displayed evaluation's contributions from the potential evaluation, including conditions already active in a supported snapshot. Akiho's potential Redirect conversion uses its published 25% maximum; the current conversion is subtracted source by source. With Mythic Sol's 35% Redirect, 17.5% Evade is already included and the conversion has 7.5% remaining. Separate lowest-health (+5%) and shielded (+15%) conditions contribute their own remaining values; all three inactive sources therefore sum to 27.5%, while an already shielded, lowest-health snapshot has only 7.5% left. Hover text explicitly identifies remaining sources and subtraction. This supersedes previous summary notes assuming an always-permanent baseline.
+
+Myth Effects is restricted to Mainhand, Offhand, Head, Body, Neck and Ring. Pet, accessory and mount calculations and descriptions remain in their appropriate sections. Upgrade cards now share full width and equal grid-row height. Browser checks measured identical dimensions for both cards and confirmed Boreas Fire Eye appeared while equipped Druffo did not appear in Myth Effects. Regression tests cover partial Akiho conversion, active-condition subtraction and independent sources; the 30 mechanics checks and bulk-upgrade tests also passed. Screenshot: verification/equal-upgrades.png.
+
 ## Compare and Library action correction — 4 October 2026
 
 Compare now reads the shared bonusSummary for both builds. Each percentage retains its permanent value with potential conditional additions in teal parentheses. Permanent and conditional differences are reported separately as second build minus first; potential conditions are not assumed to happen together. Existing source hover descriptions are retained.

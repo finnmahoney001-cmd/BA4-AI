@@ -203,7 +203,7 @@
       setCondition('DragonSkull',2,{Damage:potential?10:Math.floor((100-ctx.targetHP)/10)});
       setCondition('BlackArrow',2,{Absorb:potential?5:.5*Math.floor((100-ctx.hp)/10)});
     }
-    if(unlocked('Akiho',4))add('Akiho · Redirect conversion',{Evade:Math.min(25,Math.floor((raw.Redirect||0)/5)*2.5)},sets.find(x=>x.name==='Akiho'&&x.threshold===4).multiplier);
+    if(unlocked('Akiho',4))add('Akiho · Redirect conversion',{Evade:potential?25:Math.min(25,Math.floor((raw.Redirect||0)/5)*2.5)},sets.find(x=>x.name==='Akiho'&&x.threshold===4).multiplier);
     for(const item of selected){
       const conversion=m.items[item.id]?.resistanceConversion;
       if(!conversion)continue;
@@ -229,7 +229,7 @@
   }
   d.evaluate=evaluate;d.calculate=input=>evaluate(input).values;
   d.bonusSummary=input=>{
-    const permanent=evaluate({...input,_settings:{...input?._settings,'combat-mode':'permanent'}}),possible=evaluate(input,true),conditional={},conditionalSources={};
+    const permanent=evaluate(input),possible=evaluate(input,true),conditional={},conditionalSources={};
     for(const stat of d.stats){
       const key=stat.label;conditional[stat.id]=round((possible.raw[key]||0)-(permanent.raw[key]||0));
       const sources=new Map();

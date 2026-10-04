@@ -86,8 +86,8 @@ function renderBonusValue(node,summary,stat) {
   const extra=summary.conditional[stat.id];
   if(extra){
     const conditional=element('span','('+Number(extra.toFixed(3))+'%)','conditional-bonus');
-    conditional.setAttribute('aria-label','Potential conditional bonus '+Number(extra.toFixed(3))+' percent');
-    conditional.dataset.description='Potential additional '+stat.label+'. Conditions may apply at different times.\n'+summary.conditionalSources[stat.id].map(x=>x.source+': '+x.value+'%').join('\n');
+    conditional.setAttribute('aria-label','Remaining conditional bonus '+Number(extra.toFixed(3))+' percent');
+    conditional.dataset.description='Remaining potential additional '+stat.label+'. Bonuses already included in the displayed value have been subtracted. Conditions may apply at different times.\n'+summary.conditionalSources[stat.id].map(x=>x.source+': '+x.value+'%').join('\n');
     conditional.title=conditional.dataset.description;node.append(conditional);
   }
   const fixed=element('span',statValue(summary.permanent.values,stat.id),'static-bonus');
@@ -155,7 +155,7 @@ if(page==='closet') {
       if(summaries.some(summary=>summary.conditional[stat.id])){
         const delta=Number((summaries[1].conditional[stat.id]-summaries[0].conditional[stat.id]).toFixed(3));
         const note=element('span','Conditional difference: '+delta,'difference-label conditional-difference');
-        note.title='Difference in potential additional bonuses. Conditions may apply at different times.';row.append(note);
+        note.title='Difference in potential additional bonuses. Bonuses already included in the displayed value have been subtracted. Conditions may apply at different times.';row.append(note);
       }
     });
     $('#comparison').hidden=false; announce('Comparing two builds. Equipment differences are highlighted; unavailable statistics are not estimated.');
