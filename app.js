@@ -144,7 +144,15 @@ if(page==='library') {
     slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value));$('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');
     items.sort(BH_UI.compare).forEach(item=>{
       const card=document.createElement('article');card.className='panel item-card';card.dataset.kind=item.kind;
-      BH_UI.describe(card,item);card.append(artwork(item,true),element('p',labels[group(item)],'technical detail-kicker'),element('h2',BH_UI.label(item)),element('p',BH_UI.description(item),'quiet'),element('p',item.kind,'technical saved-stat'));
+      let rarity=data.rarities[item.slot]?.[0];
+      const description=element('p',BH_UI.description(item,rarity),'quiet');
+      BH_UI.describe(card,item,rarity);card.append(artwork(item,true),element('p',labels[group(item)],'technical detail-kicker'),element('h2',BH_UI.label(item)),description,element('p',item.kind,'technical saved-stat'));
+      if(data.rarities[item.slot]) {
+        const label=element('label','Rarity','field-label'),select=document.createElement('select');select.id='library-rarity-'+item.id;label.htmlFor=select.id;
+        data.rarities[item.slot].forEach(value=>{const option=element('option',value==='Myth'?'Mythic':'Legendary');option.value=value;select.append(option);});
+        select.value=rarity;select.dataset.kind=rarity;select.setAttribute('aria-label',BH_UI.name(item)+' rarity');
+        select.addEventListener('change',()=>{rarity=select.value;select.dataset.kind=rarity;description.textContent=BH_UI.description(item,rarity);BH_UI.describe(card,item,rarity);add.textContent='Use in Planner';});card.append(label,select);
+      }
       const add=element('button','Use in Planner','button-link');add.type='button';
       add.addEventListener('click',()=>{
         try {
@@ -157,9 +165,10 @@ if(page==='library') {
           draft._settings=draft._settings||{};
           if(draft[slot]!==target.id)delete draft._settings['t12-'+slot];
           draft[slot]=target.id;
+          if(rarity&&data.rarities[slot]?.includes(rarity))draft._settings['rarity-'+slot]=rarity;
           if(data.slots.find(s=>s.id===slot)?.group==='Main Equips')draft._settings['type-'+slot]=target.kind;
           const saved=validEquipment(draft);localStorage.setItem(DRAFT_KEY,JSON.stringify(saved));
-          $('#library-status').textContent='Equipped '+BH_UI.name(target)+' in '+data.slots.find(s=>s.id===slot).label+'.'+(previous&&previous.id!==target.id?' Replaced '+BH_UI.name(previous)+'.':'');
+          $('#library-status').textContent='Equipped '+BH_UI.name(target)+(rarity?' ('+(rarity==='Myth'?'Mythic':'Legendary')+')':'')+' in '+data.slots.find(s=>s.id===slot).label+'.'+(previous&&previous.id!==target.id?' Replaced '+BH_UI.name(previous)+'.':'');
           add.textContent='Added to Planner';
         } catch(error) {$('#library-status').textContent='Could not add this item. '+(error.name==='QuotaExceededError'?'Browser storage is full.':error.name==='SyntaxError'?'The current draft could not be read.':error.message);}
       });card.append(add);$('#library-results').append(card);

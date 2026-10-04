@@ -7,7 +7,13 @@ window.BH_UI=(()=>{
  function description(item,rarity='Leg') {
   if(!item)return 'Choose an item for this slot.';
   const meta=facts.items[item.id];
-  if(item.kind==='Rune'&&meta?.runeStat&&facts.runeValues[meta.rune])return meta.runeStat+' +'+facts.runeValues[meta.rune][rarity==='Myth'?1:0]+'% ('+(rarity==='Myth'?'Mythic':'Legendary')+').';
+  if(item.kind==='Rune') {
+   const stat=meta?.runeStat||({Dar:'Gold Find',Quindi:'Capture Rate',Vryn:'Item Find',Zyrk:'Experience',Sol:'Redirect',Erlun:'Max Shield'}[meta?.rune]);
+   const rarityName=rarity==='Myth'?'Mythic':'Legendary';
+   if(stat&&facts.runeValues[meta.rune])return stat+' +'+facts.runeValues[meta.rune][rarity==='Myth'?1:0]+'% ('+rarityName+').';
+   const effects=window.BH_ENGINE.evaluate({[item.slot]:item.id,_settings:{['rarity-'+item.slot]:rarity}}).effects.filter(effect=>effect.source===item.name).map(effect=>effect.text);
+   if(effects.length)return effects.join('\n')+' ('+rarityName+').';
+  }
   if(item.kind==='Set'&&facts.sets[item.setName])return Object.entries(facts.sets[item.setName].effects).map(([count,effect])=>count+' pieces: '+effect.text).join('\n');
   return item.description||'No effect description in the source data.';
  }
