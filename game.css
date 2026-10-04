@@ -155,3 +155,6 @@ body{background-color:var(--bg)}
 .closet-main-equipment>div:last-child{grid-column:1/-1;width:calc((100% - 6px)/2);justify-self:center}
 .closet-main-equipment dd[data-kind=Set]{color:#00fffc}.closet-main-equipment dd[data-kind=Myth]{color:#ff0048}.closet-main-equipment dd[data-kind=Ancient]{color:#d6a71c}.closet-main-equipment dd[data-kind=Leg]{color:#ffff00}
 .build-details h3{font-size:20px;margin:12px 0 8px}
+.bonus-values{display:inline-flex;align-items:center;justify-content:flex-end;gap:12px;white-space:nowrap}
+.bonus-line .bonus-values .conditional-bonus{color:#a9e4df}
+.bonus-line .bonus-values .static-bonus{color:#e5c397}

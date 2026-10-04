@@ -126,14 +126,12 @@ if(page==='planner') {
     tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);BH_UI.describe(tile,item);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',BH_UI.label(item)),element('span',(item?.kind||'Empty')+(item&&['mainhand','offhand','head','body','neck','ring'].includes(slot)?(settings()['t12-'+slot]==='true'?' · T12+':' · Below T12'):''),'type-badge'));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
     // Equipped!C8 uses an exact lookup and defaults to Physical when unmatched.
-    const report=data.evaluate(equipment),results=report.values;
+    const report=data.evaluate(equipment),summary=data.bonusSummary(equipment),results=report.values;
     $('#mainhand-element').textContent=itemFor('mainhand')?report.mhElement:'Select a mainhand';
     document.querySelectorAll('[data-stat]').forEach(node=>{
-      node.textContent=statValue(results,node.dataset.stat);
-      const label=data.stats.find(x=>x.id===node.dataset.stat).label;
-      node.title=(report.contributions[label]||[]).map(x=>x.source+': '+x.value+'%').join('\n')||'No bonuses in this category.';
+      renderBonusValue(node,summary,data.stats.find(x=>x.id===node.dataset.stat));
     });
-    $('#calculation-status').textContent=report.ctx.enabled?'Snapshot totals include supported selected conditions.':'Permanent totals. Combat conditions and proc effects are listed separately.';
+    $('#calculation-status').textContent='Permanent bonuses · parentheses show potential conditional additions.';
     renderAncientOptions();
     $('#setup-name').textContent=$('#build-name').value.trim()||'Untitled build';
     $('#setup-extras').replaceChildren();

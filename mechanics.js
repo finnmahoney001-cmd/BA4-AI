@@ -36,14 +36,16 @@
   const lucky=p=>round(100*(1-Math.pow(1-Math.min(100,Math.max(0,p))/100,2)));
   function active(c,ctx) {
     if(!ctx.enabled)return false;
+    if(ctx.potential)return true;
     return (!c.weapon||c.weapon===ctx.weapon)&&(!c.shielded||ctx.shielded)&&(!c.lowest||ctx.lowest)&&(!c.highest||ctx.highest)&&(!c.allAlive||ctx.allAlive)&&(!c.lastAlive||ctx.lastAlive)&&(!c.spSkill||ctx.spCost>0)&&(!c.selfAbove||ctx.hp>c.selfAbove)&&(!c.selfBelow||ctx.hp<c.selfBelow)&&(!c.targetBelow||ctx.targetHP<c.targetBelow)&&(!c.targetAbove||ctx.targetHP>c.targetAbove)&&(!c.spAbove||ctx.sp>c.spAbove)&&(!c.bleeding||ctx.bleeding);
   }
-  function evaluate(input={}) {
+  function evaluate(input={},potential=false) {
     const eq=d.normalizeEquipment(input), settings=eq._settings||{};
     const selected=d.slots.map(s=>byId.get(eq[s.id])).filter(x=>x&&eq[x.slot]===x.id);
     const has=name=>selected.some(x=>m.items[x.id]?.ancient===name);
     const ctx={enabled:settings['combat-mode']==='snapshot',hp:bounded(settings['self-hp'],0,100,100),targetHP:bounded(settings['target-hp'],0,100,100),sp:bounded(settings['current-sp'],0,6,0),spCost:bounded(settings['skill-sp'],0,6,0),shielded:settings.shielded==='yes',lowest:settings['health-rank']==='lowest',highest:settings['health-rank']==='highest',allAlive:settings['team-state']==='all',lastAlive:settings['team-state']==='last',weapon:settings['weapon-type']||'Other',enemies:bounded(settings.enemies,1,5,1),allies:bounded(settings.allies,1,5,1)};
     Object.assign(ctx,{firstIncoming:settings['first-incoming']==='yes',firstOutgoing:settings['first-outgoing']==='yes',targetShielded:settings['target-shielded']==='yes',rooted:settings['target-status']==='rooted',bleeding:settings['target-status']==='bleeding',projectile:settings['attack-type']==='projectile'});
+    if(potential)Object.assign(ctx,{potential:true,enabled:true,hp:100,targetHP:100,sp:6,spCost:6,shielded:true,lowest:true,highest:true,allAlive:true,lastAlive:true,enemies:5,allies:5,firstIncoming:true,firstOutgoing:true,targetShielded:true,rooted:true,bleeding:true,projectile:true});
     const raw={},contributions={},effects=[],warnings=[],sets=[];
     const add=(source,bonuses,factor=1)=>Object.entries(bonuses||{}).forEach(([key,value])=>{
       if(!Number.isFinite(value)||!value)return;
@@ -71,7 +73,7 @@
       }
     }
     const unlocked=(name,threshold)=>sets.some(x=>x.name===name&&x.threshold===threshold);
-    const majorMultiplier=has('Elementarium')||unlocked('Apocalypse',5)||(ctx.enabled&&settings['team-position']==='front'&&unlocked('Priyolkian',2))?2:1;
+    const majorMultiplier=has('Elementarium')||unlocked('Apocalypse',5)||(ctx.enabled&&(potential||settings['team-position']==='front')&&unlocked('Priyolkian',2))?2:1;
     const enchantMultiplier=unlocked('Witchum',3)||unlocked('Apocalypse',3)||(ctx.enabled&&ctx.highest&&unlocked('Priyolkian',3))?2:1;
     const mountMultiplier=unlocked('Apocalypse',4)?2:1;
     const mythics=selected.filter(x=>gear.includes(x.slot)&&x.kind==='Myth');
@@ -109,16 +111,17 @@
         if(minor[rune])add(name,{[minor[rune]]:val});
         if(rune==='Sol')add(name,{Redirect:val});
         if(rune==='Erlun')add(name,{'Max Shield':val});
+        if(potential&&rune==='Argiz')add(name+' · maximum five stacks',{DR:val*5});
         const descriptions={Vend:val+'% extra Evade on the first incoming attack from each opponent.',Nox:val+'% extra Damage on the first outgoing attack against each opponent.',Yuh:val+'% extra Empower on the first outgoing attack against each opponent.',Kaun:val+'% extra DR on the first incoming attack from each opponent.',Gael:val+'% SP regeneration at full health.',Chet:val+'% SP drain on defeating an opponent.',Kor:(settings['rarity-'+item.slot]==='Myth'?125:100)+'% increased skill healing received below 25% health.',Mayu:val+'% Damage at full health.',Nonik:val+'% DR at full health.',MullAtkEnemy:(settings['rarity-'+item.slot]==='Myth'?6.25:5)+'% chance on hit to reduce the target’s current HP by 10%.',BonikAtkTeam:(settings['rarity-'+item.slot]==='Myth'?6.25:5)+'% chance on hit to reduce enemy team current HP by 6%.',WullShield:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance when hit to gain shields equal to 10% current HP.',BoliSpOnHit:(settings['rarity-'+item.slot]==='Myth'?30:25)+'% chance when hit to gain 1 SP.',Telgu:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance on hit to ignore defensive bonuses.',Melgu:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance when hit to ignore offensive bonuses.'};
         const relicAlias={Mull:'MullAtkEnemy',Bonik:'BonikAtkTeam',Wull:'WullShield',Boli:'BoliSpOnHit'};
         effect(name,facts.runeTemplate?facts.runeTemplate.replaceAll('{value}',String(val)):descriptions[relicAlias[rune]||rune]||(!minor[rune]&&rune!=='Sol'?'Rune effect: see source.':''));
         const condition=facts.runeCondition;
-        if(condition&&ctx.enabled&&active(condition,ctx)&&(!condition.fullHealth||ctx.hp===100)&&(!condition.firstIncoming||ctx.firstIncoming))
+        if(condition&&ctx.enabled&&active(condition,ctx)&&(potential||!condition.fullHealth||ctx.hp===100)&&(potential||!condition.firstIncoming||ctx.firstIncoming))
           add(name+' · combat condition',{[condition.stat]:val*(condition.perSP?ctx.sp:1)});
         if(ctx.enabled&&ctx.hp===100) {
           if(rune==='Mayu')add(name,{'Damage':val});if(rune==='Nonik')add(name,{DR:val});if(rune==='Gael')add(name,{'SP Regen':val});
         }
-        if(ctx.enabled&&ctx.hp<25&&rune==='Kor')add(name,{'Healing Received':settings['rarity-'+item.slot]==='Myth'?125:100});
+        if(ctx.enabled&&(potential||ctx.hp<25)&&rune==='Kor')add(name,{'Healing Received':settings['rarity-'+item.slot]==='Myth'?125:100});
         if(ctx.enabled&&ctx.firstIncoming){if(rune==='Vend')add(name+' · first incoming',{Evade:val});if(rune==='Kaun')add(name+' · first incoming',{DR:val});}
         if(ctx.enabled&&ctx.firstOutgoing){if(rune==='Nox')add(name+' · first outgoing',{Damage:val});if(rune==='Yuh')add(name+' · first outgoing',{Empower:val});}
       }
@@ -172,7 +175,7 @@
         const rule=rules[name];if(rule&&active(rule[1],ctx))add(name+' · combat condition',rule[0],factor);
         if(name==="Demon's Garments"&&ctx.lastAlive)add(name+' · last alive',{Damage:10,DR:10},factor);
         const scale={'Tau Bless':['Damage',4.5,true],'Hysteria':['Damage',10,false],'Windstalker':['Damage',6,true],'Vortex Band':['DR',4.5,true],'Quetzal Scaled Vest':['DR',10,false],'Uxonium Ring':['Empower',10,true]};
-        if(scale[name]){const [key,max,up]=scale[name];add(name+' · HP scaling',{[key]:max*(up?ctx.hp:100-ctx.hp)/100},factor);}
+        if(scale[name]){const [key,max,up]=scale[name];add(name+' · HP scaling',{[key]:potential?max:max*(up?ctx.hp:100-ctx.hp)/100},factor);}
         if(name==='Kaijin Fang')add(name+' · Patience',{DR:Math.min(8,ctx.sp*2)},factor);
         if(name==='Nephilim Girdle')add(name+' · team alive',{Empower:1.25*ctx.allies},factor);
         if(name==='Leonidas Honor')add(name+' · team alive',{Barrier:3.5*ctx.allies},factor);
@@ -182,22 +185,22 @@
     }
     const setCondition=(name,threshold,bonuses)=>{const entry=sets.find(x=>x.name===name&&x.threshold===threshold);if(entry)add(name+' · combat condition',bonuses,entry.multiplier);};
     if(ctx.enabled){
-      if(ctx.targetHP>75||ctx.targetHP<25)setCondition('Arsenal',3,{Damage:10});
+      if(potential||ctx.targetHP>75||ctx.targetHP<25)setCondition('Arsenal',3,{Damage:10});
       setCondition('Arsenal',4,{Damage:30*ctx.targetHP/100});
       setCondition('Polaris',4,{DR:20*ctx.hp/100});
       setCondition('Pyroc',2,{Empower:2*ctx.enemies});
-      if(!ctx.targetShielded)setCondition('Pyroc',3,{'Fire Dmg':15});
+      if(potential||!ctx.targetShielded)setCondition('Pyroc',3,{'Fire Dmg':15});
       if(ctx.enemies>=3)setCondition('Raiju',2,{'Electric Dmg':10});
-      if(ctx.hp<70)setCondition('Saywite',4,{'Water Res':25});
+      if(potential||ctx.hp<70)setCondition('Saywite',4,{'Water Res':25});
       if(ctx.rooted)setCondition('Elcorvo',3,{'Dual Strike':15});
       if(ctx.bleeding)setCondition('Poshima',3,{Empower:15});
       if(ctx.targetShielded)setCondition('Wrightbros',3,{Empower:15});
       if(ctx.projectile)setCondition('Conduction',2,{Damage:5});
-      if(ctx.enemies===1)setCondition('Conduction',4,{Damage:25});
+      if(potential||ctx.enemies===1)setCondition('Conduction',4,{Damage:25});
       setCondition('Hector',2,{Ricochet:2.5*ctx.enemies});
       setCondition('Protoplague',2,{'Dual Strike':5*ctx.allies});
-      setCondition('DragonSkull',2,{Damage:Math.floor((100-ctx.targetHP)/10)});
-      setCondition('BlackArrow',2,{Absorb:.5*Math.floor((100-ctx.hp)/10)});
+      setCondition('DragonSkull',2,{Damage:potential?10:Math.floor((100-ctx.targetHP)/10)});
+      setCondition('BlackArrow',2,{Absorb:potential?5:.5*Math.floor((100-ctx.hp)/10)});
     }
     if(unlocked('Akiho',4))add('Akiho · Redirect conversion',{Evade:Math.min(25,Math.floor((raw.Redirect||0)/5)*2.5)},sets.find(x=>x.name==='Akiho'&&x.threshold===4).multiplier);
     for(const item of selected){
@@ -224,6 +227,17 @@
     return {values,raw,contributions,effects,sets,ctx,luck,elemental,warnings:[...new Set(warnings)],multipliers:{poly,superPoly,major:majorMultiplier,enchant:enchantMultiplier,mount:mountMultiplier},mhElement};
   }
   d.evaluate=evaluate;d.calculate=input=>evaluate(input).values;
+  d.bonusSummary=input=>{
+    const permanent=evaluate({...input,_settings:{...input?._settings,'combat-mode':'permanent'}}),possible=evaluate(input,true),conditional={},conditionalSources={};
+    for(const stat of d.stats){
+      const key=stat.label;conditional[stat.id]=round((possible.raw[key]||0)-(permanent.raw[key]||0));
+      const sources=new Map();
+      for(const entry of possible.contributions[key]||[])sources.set(entry.source,(sources.get(entry.source)||0)+entry.value);
+      for(const entry of permanent.contributions[key]||[])sources.set(entry.source,(sources.get(entry.source)||0)-entry.value);
+      conditionalSources[stat.id]=[...sources].filter(([,value])=>value).map(([source,value])=>({source,value:round(value)}));
+    }
+    return {permanent,conditional,conditionalSources};
+  };
   function petDescription(item,settings={}) {
     const pet=window.BH_MECHANICS.items[item.id]?.petTrigger;if(!pet)return item.description;
     const upgraded=settings['pet-upgrades']!=='No Upgrades',chance=pet.base+(upgraded?4*pet.increment:0);

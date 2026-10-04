@@ -1,5 +1,11 @@
 # Bit Heroes Build Planner Specification
 
+## Conditional bonus display
+
+Keep permanent bonuses in their current right-hand position. Show a separate parenthesized potential additional conditional value directly to their left in a contrasting shade. Calculate from equipped items, unlocked set thresholds, selected rune rarities and existing researched condition rules, using supported upper bounds for HP/SP/team/enemy scaling. These are potential additions, not assumed active totals; mutually exclusive conditions may occur at different times. Keep proc damage/healing and unsupported effects separate. Share the display between Planner and saved builds without reintroducing combat controls or changing saved settings.
+
+Move the main nine saved-build equipment slots out of the bonus dropdown into the always-visible card area, replacing the three Damage/Health/Speed boxes. Preserve compact inventory orientation, labels, rarity colors and descriptions. Rename the dropdown Bonus % and show only bonus rows there.
+
 ## Approved catalog expansion — 4 October 2026
 
 Full catalog audit: compare every selectable Set slot, Mythic gear row, Ancient form, Legendary/Mythic accessory, pet and mount, rune identity and enchant bonus against fresh wiki tables and official release notes. Add every confirmed omission in those supported categories, including Boomsmasher and Hazmatt. Preserve saved IDs; map workbook abbreviations and spelling variants to searchable canonical aliases rather than duplicating equipment. Record source coverage and unresolved published values. Images remain deferred. Verify catalog completeness from source rows rather than effect-table presence.

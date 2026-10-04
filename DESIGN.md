@@ -1,5 +1,11 @@
 # Bit Heroes Build Planner
 
+## Conditional bonus display
+
+Bonus rows show potential additional conditional percentages in parentheses immediately left of the permanent percentage. Use pale teal #A9E4DF for conditional values and retain the existing cream static value and right alignment. Hide parentheses when no supported conditional bonus exists. Apply to Full Setup and saved-build bonus lists. Hover explains the combat dependency and that conditions need not be active simultaneously.
+
+Saved-build cards show the compact nine main equipment slots directly below their equipped count. Remove the Damage/Health/Speed summary boxes. Keep only the Bonus % list in the expandable section.
+
 ## Approved catalog expansion — 4 October 2026
 
 The full source audit fills missing supported catalog entries in the existing selectors and Library. Keep alphabetical order, compact layout, source descriptions, current rarity colors and saved item identities. Make canonical wiki names searchable for abbreviated workbook entries. No image or layout changes.

@@ -1,5 +1,11 @@
 # Bit Heroes mechanics audit
 
+## Conditional bonus display — 4 October 2026
+
+The Bonus % list now shows permanent values on the right and potential additional conditional values in teal parentheses to their left. bonusSummary evaluates permanent rules and a separate potential preview without modifying saved settings or the ordinary combat evaluator. Existing researched HP/SP/first-hit/health-rank/team/enemy rules use their supported upper bounds. Conditional multipliers and downstream conversions are included; Argiz uses its published maximum of five DR stacks. These are additional source sums, not an active combat snapshot or a capped combined chance. Opposing health/team conditions may apply at different times. Proc healing/damage and unsupported temporary rules stay in effects. Hover lists source contributions.
+
+Saved-build cards replace their Damage/Health/Speed strip with nine always-visible equipment slots. The expandable Bonus % section contains only bonus rows. Conditional, existing mechanics and full-catalog tests passed. Browser verification showed Gerou's (15%) beside static 0%, nine equipment rows outside the saved bonus dropdown, and no summary stat boxes. Verification screenshots: verification/conditional-bonuses.png and verification/closet-conditional-bonuses.png.
+
 Researched 3 October 2026. The workbook remains the item-selection starting point. These are bonus-percentage calculations, not a battle simulator or a calculation of equipment Power, Stamina and Agility.
 
 ## Calculation order

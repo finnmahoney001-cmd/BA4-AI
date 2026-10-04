@@ -81,6 +81,19 @@ function calculate(equipment) {
   try {return data.calculate(equipment);} catch {return null;}
 }
 function statValue(results,id) {const value=results?.[id]; return typeof value==='number'&&Number.isFinite(value)?Number(value.toFixed(3))+'%':'—';}
+function renderBonusValue(node,summary,stat) {
+  node.classList.add('bonus-values');node.replaceChildren();
+  const extra=summary.conditional[stat.id];
+  if(extra){
+    const conditional=element('span','('+Number(extra.toFixed(3))+'%)','conditional-bonus');
+    conditional.setAttribute('aria-label','Potential conditional bonus '+Number(extra.toFixed(3))+' percent');
+    conditional.dataset.description='Potential additional '+stat.label+'. Conditions may apply at different times.\n'+summary.conditionalSources[stat.id].map(x=>x.source+': '+x.value+'%').join('\n');
+    conditional.title=conditional.dataset.description;node.append(conditional);
+  }
+  const fixed=element('span',statValue(summary.permanent.values,stat.id),'static-bonus');
+  fixed.dataset.description='Permanent '+stat.label+'\n'+(summary.permanent.contributions[stat.label]||[]).map(x=>x.source+': '+x.value+'%').join('\n');
+  fixed.title=fixed.dataset.description;node.append(fixed);
+}
 const equipmentName=(equipment,slotId)=>BH_UI.label(data.items.find(item=>item.id===equipment[slotId]));
 function artwork(item,compact=false) {
     if(item.image) {const image=document.createElement('img'); image.src=item.image; image.alt=item.imageAlt||item.name; image.className='item-image'; image.loading='lazy'; image.addEventListener('error',()=>{const fallback=element('div','Artwork unavailable','art-placeholder'+(compact?' compact-art':''));fallback.setAttribute('role','img');fallback.setAttribute('aria-label','Missing image for '+item.name);image.replaceWith(fallback);},{once:true}); return image;}
@@ -95,9 +108,7 @@ if(page==='closet') {
       const card=document.createElement('article'); card.className='panel build-card'; card.append(element('h2',build.name));
       const equipped=data.slots.filter(slot=>build.equipment[slot.id]);
       card.append(element('p',equipped.length+' equipped slots','quiet build-count'));
-      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Equipment & Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
-      const results=calculate(build.equipment),stats=element('div','','build-stat-strip');data.stats.slice(0,3).forEach(stat=>{const statNode=element('p','','saved-stat');statNode.append(element('span',stat.label),element('strong',statValue(results,stat.id),'technical'));stats.append(statNode);});card.append(stats);
-      details.append(element('h3','Equipped items'));
+      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
       const mainEquipment=element('dl','','closet-main-equipment');
       ['mainhand','neck','head','ring','body','accessory','offhand','pet','mount'].forEach(slotId=>{
         const slot=data.slots.find(entry=>entry.id===slotId),item=data.items.find(entry=>entry.id===build.equipment[slotId]);
@@ -105,9 +116,10 @@ if(page==='closet') {
         if(item){name.dataset.kind=item.kind;BH_UI.describe(name,item,build.equipment._settings?.['rarity-'+slotId],build.equipment._settings||{});}
         row.append(element('dt',slot.label||slot.name||slotId),name);mainEquipment.append(row);
       });
-      details.append(mainEquipment,element('h3','Bonus %'));
+      card.append(mainEquipment);
       const bonuses=document.createElement('dl');bonuses.className='closet-bonuses';
-      data.stats.forEach(stat=>{const row=element('div','','bonus-line');row.append(element('dt',stat.label,'technical'),element('dd',statValue(results,stat.id),'technical'));bonuses.append(row);});details.append(bonuses);
+      const bonusSummary=data.bonusSummary(build.equipment);
+      data.stats.forEach(stat=>{const row=element('div','','bonus-line'),value=element('dd','','technical');renderBonusValue(value,bonusSummary,stat);row.append(element('dt',stat.label,'technical'),value);bonuses.append(row);});details.append(bonuses);
       if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)details.append(element('p',report.warnings.join(' '),'quiet'));}
       card.append(details);
       const actions=document.createElement('div'); actions.className='actions';
