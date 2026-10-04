@@ -18,7 +18,7 @@
       facts.upgrades.forEach((text,i)=>out._settings['evo-'+(i+1)]=text);
       out._settings['migration-note']='Moved the old Evolvium variant to its actual ring slot.';
     }
-    for(const slot of gear) {const item=byId.get(out[slot]);if(item&&out._settings['t12-'+slot]===undefined)out._settings['t12-'+slot]=String(typeof item.tier==='number'&&item.tier>=12);}
+    for(const slot of gear) {const item=byId.get(out[slot]);if(item){if(typeof item.tier==='number'&&item.tier>=12)out._settings['t12-'+slot]='true';else if(out._settings['t12-'+slot]===undefined)out._settings['t12-'+slot]='false';}}
     return out;
   };
   const caps={'Crit Chance':100,Evade:75,Block:100,Barrier:75,Ricochet:75};

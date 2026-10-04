@@ -103,7 +103,7 @@ if(page==='planner') {
   }
   function render() {
     equipment=data.normalizeEquipment(equipment);
-    tierChecks.forEach(({tick,tierLabel},slot)=>{tierLabel.hidden=!itemFor(slot);tick.checked=settings()['t12-'+slot]==='true';const bonuses=window.BH_MECHANICS.items[itemFor(slot)?.id]?.tierBonuses||{};tierLabel.dataset.description=Object.entries(bonuses).map(([k,v])=>k+' +'+v+'%').join('\n')||'No additional tier bonus recorded for this item.';});
+    tierChecks.forEach(({tick,tierLabel},slot)=>{const item=itemFor(slot);tierLabel.hidden=!item||(typeof item.tier==='number'&&item.tier>=12);tick.checked=settings()['t12-'+slot]==='true';const bonuses=window.BH_MECHANICS.items[itemFor(slot)?.id]?.tierBonuses||{};tierLabel.dataset.description=Object.entries(bonuses).map(([k,v])=>k+' +'+v+'%').join('\n')||'No additional tier bonus recorded for this item.';});
     selectionArt.forEach((holder,slot)=>{const item=itemFor(slot);holder.replaceChildren();holder.hidden=!item?.image;if(item?.image)holder.append(artwork(item,true));});
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
     document.querySelectorAll('[id^=rarity-]').forEach(select=>select.dataset.kind=select.value);
