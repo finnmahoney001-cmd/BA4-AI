@@ -1,12 +1,13 @@
 // Shared item labels and source-backed descriptions.
 window.BH_UI=(()=>{
- const facts=window.BH_MECHANICS;
+ const facts=window.BH_MECHANICS; let context={}; const setContext=settings=>{context=settings||{};};
  const name=item=>!item?'Empty slot':item.kind==='Rune'?({BonikAtkTeam:'Bonik',MullAtkEnemy:'Mull',WullShield:'Wull',BoliSpOnHit:'Boli'}[facts.items[item.id]?.rune]||facts.items[item.id]?.rune||item.name):item.name;
  const itemLabel=item=>name(item)+(item?.tier?(' · '+(item.tier==='All'?'All tiers':'T'+item.tier)):item&&['mainhand','offhand','head','body','neck','ring'].includes(item.slot)?' · Tier unknown':'');
  const compare=(a,b)=>name(a).localeCompare(name(b),undefined,{sensitivity:'base',numeric:true});
- function description(item,rarity='Leg') {
+ function description(item,rarity='Leg',settings=context) {
   if(!item)return 'Choose an item for this slot.';
   const meta=facts.items[item.id];
+  if(item.slot==='pet')return window.BH_ENGINE.petDescription(item,settings);
   if(item.kind==='Rune') {
    const stat=meta?.runeStat||({Dar:'Gold Find',Quindi:'Capture Rate',Vryn:'Item Find',Zyrk:'Experience',Sol:'Redirect',Erlun:'Max Shield'}[meta?.rune]);
    const rarityName=rarity==='Myth'?'Mythic':'Legendary';
@@ -17,9 +18,9 @@ window.BH_UI=(()=>{
   if(item.kind==='Set'&&facts.sets[item.setName])return Object.entries(facts.sets[item.setName].effects).map(([count,effect])=>count+' pieces: '+effect.text).join('\n');
   return item.description||'No effect description in the source data.';
  }
- function describe(node,item,rarity) {
+ function describe(node,item,rarity,settings=context) {
   if(!item){delete node.dataset.description;node.removeAttribute('aria-describedby');return;}
-  node.dataset.description=itemLabel(item)+'\n'+description(item,rarity);
+  node.dataset.description=itemLabel(item)+'\n'+description(item,rarity,settings);
   if(!node.matches('button,a,input,select'))node.tabIndex=0;
  }
  function dropdown(select,label,getItem,getRarity,searchable=false) {
@@ -76,5 +77,5 @@ window.BH_UI=(()=>{
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});window.addEventListener('scroll',hide,true);
  });
  const nextSlot=(slots,equipment,previous)=>slots.find(slot=>!equipment[slot])||slots[(slots.indexOf(previous)+1)%slots.length];
- return {name,label:itemLabel,compare,description,describe,dropdown,nextSlot};
+ return {name,label:itemLabel,compare,description,describe,dropdown,nextSlot,setContext};
 })();

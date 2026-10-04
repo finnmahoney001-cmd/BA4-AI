@@ -95,8 +95,17 @@ if(page==='closet') {
       const card=document.createElement('article'); card.className='panel build-card'; card.append(element('h2',build.name));
       const equipped=data.slots.filter(slot=>build.equipment[slot.id]);
       card.append(element('p',equipped.length+' equipped slots','quiet build-count'));
-      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
+      const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Equipment & Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
       const results=calculate(build.equipment),stats=element('div','','build-stat-strip');data.stats.slice(0,3).forEach(stat=>{const statNode=element('p','','saved-stat');statNode.append(element('span',stat.label),element('strong',statValue(results,stat.id),'technical'));stats.append(statNode);});card.append(stats);
+      details.append(element('h3','Equipped items'));
+      const mainEquipment=element('dl','','closet-main-equipment');
+      ['mainhand','neck','head','ring','body','accessory','offhand','pet','mount'].forEach(slotId=>{
+        const slot=data.slots.find(entry=>entry.id===slotId),item=data.items.find(entry=>entry.id===build.equipment[slotId]);
+        const row=element('div',''),name=element('dd',item?BH_UI.label(item):'Empty slot');
+        if(item){name.dataset.kind=item.kind;BH_UI.describe(name,item,build.equipment._settings?.['rarity-'+slotId],build.equipment._settings||{});}
+        row.append(element('dt',slot.label||slot.name||slotId),name);mainEquipment.append(row);
+      });
+      details.append(mainEquipment,element('h3','Bonus %'));
       const bonuses=document.createElement('dl');bonuses.className='closet-bonuses';
       data.stats.forEach(stat=>{const row=element('div','','bonus-line');row.append(element('dt',stat.label,'technical'),element('dd',statValue(results,stat.id),'technical'));bonuses.append(row);});details.append(bonuses);
       if(data.evaluate){const report=data.evaluate(build.equipment);card.append(element('p',report.ctx.enabled?'Snapshot totals · saved combat conditions':'Permanent bonus totals','quiet'));if(report.warnings.length)details.append(element('p',report.warnings.join(' '),'quiet'));}

@@ -165,7 +165,7 @@
         if(name==='Leonidas Honor')add(name+' · team alive',{Barrier:3.5*ctx.allies},factor);
         if(name==='Leonidas Strength')add(name+' · enemies alive',{'Quad Strike':.5*ctx.enemies},factor);
       }
-      if(item.kind!=='Set'&&item.kind!=='Rune')for(const text of facts.effects||[])effect(name,text+(factor===2&&item.kind==='Myth'?' · Poly grants a second independent trigger roll.':''));
+      if(item.kind!=='Set'&&item.kind!=='Rune')for(const text of (facts.petTrigger?[petDescription(item,settings)]:facts.effects||[]))effect(name,text+(factor===2&&item.kind==='Myth'?' · Poly grants a second independent trigger roll.':''));
     }
     const setCondition=(name,threshold,bonuses)=>{const entry=sets.find(x=>x.name===name&&x.threshold===threshold);if(entry)add(name+' · combat condition',bonuses,entry.multiplier);};
     if(ctx.enabled){
@@ -199,5 +199,12 @@
     return {values,raw,contributions,effects,sets,ctx,luck,elemental,warnings:[...new Set(warnings)],multipliers:{poly,major:majorMultiplier,enchant:enchantMultiplier,mount:mountMultiplier},mhElement};
   }
   d.evaluate=evaluate;d.calculate=input=>evaluate(input).values;
-  window.BH_ENGINE={evaluate,lucky};
+  function petDescription(item,settings={}) {
+    const pet=window.BH_MECHANICS.items[item.id]?.petTrigger;if(!pet)return item.description;
+    const upgraded=settings['pet-upgrades']!=='No Upgrades',chance=pet.base+(upgraded?4*pet.increment:0);
+    const designated=!pet.reforgable?'Unavailable (cannot reforge)':Number((chance*2).toFixed(3))+'%'+(upgraded?'':' (requires an upgrade before reforging)');
+    return 'Spread: '+Number(chance.toFixed(3))+'%; Designated: '+designated+'. '+(upgraded?'Fully upgraded (+4).':'No upgrades.')+' Effect: '+pet.action+'; power '+pet.power+'. Reforging selects one trigger; effect power stays the same.';
+  }
+  window.BH_ENGINE={evaluate,lucky,petDescription};
 })();
+

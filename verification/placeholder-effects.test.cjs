@@ -6,7 +6,7 @@ const report=equipment=>engine.evaluate(equipment);
 const pets=data.items.filter(item=>item.slot==='pet');assert.equal(pets.length,50);
 for(const pet of pets){
   const result=report({pet:pet.id});
-  assert.ok(ui.description(pet).includes('Base, unreforged:'),pet.name);
+  assert.ok(ui.description(pet).includes('Spread:'),pet.name);
   assert.ok(result.effects.some(effect=>effect.source===pet.name&&effect.text.includes('power')),pet.name);
   assert.equal(result.raw.Damage||0,0,pet.name+' must not add proc damage to permanent Damage');
   assert.equal(result.raw['Team Enrage']||0,0,pet.name+' must not add triggered enrage to permanent totals');
@@ -26,3 +26,8 @@ for(const [stat,range] of Object.entries(ctx.window.BH_MECHANICS.items[mount.id]
 assert.ok(data.items.every(item=>!/awaiting formula validation|listed in the supplied workbook/i.test(ui.description(item))), 'No generic placeholders remain');
 assert.ok(data.items.every(item=>item.name!=='MythDef'));
 console.log('50 pet effect records, accessory upgrades, all random mount ranges, and zero visible placeholders verified.');
+
+const druffo=pets.find(p=>p.name==='Druffo');
+assert.ok(ui.description(druffo,undefined,{'pet-upgrades':'No Upgrades'}).includes('Spread: 23%; Designated: 46%'));
+assert.ok(ui.description(druffo).includes('Spread: 25%; Designated: 50%'));
+assert.ok(report({pet:druffo.id,_settings:{'pet-upgrades':'No Upgrades'}}).effects.some(e=>e.text.includes('Spread: 23%')));

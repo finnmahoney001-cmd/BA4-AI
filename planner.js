@@ -50,6 +50,7 @@ if(page==='planner') {
     }
     if(group==='Main Equips') {
       const upgrade=field('Accessory upgrades','accessory-upgrades',[{value:'Fully Upgraded',label:'Fully Upgraded'},{value:'No Upgrades',label:'No Upgrades'}],settings()['accessory-upgrades']||'Fully Upgraded',value=>{settings()['accessory-upgrades']=value;render();});settings()['accessory-upgrades']=upgrade.select.value;grid.append(upgrade.wrap);
+      const petUpgrade=field('Pet upgrades','pet-upgrades',[{value:'Fully Upgraded',label:'Fully Upgraded'},{value:'No Upgrades',label:'No Upgrades'}],settings()['pet-upgrades']||'Fully Upgraded',value=>{settings()['pet-upgrades']=value;render();});settings()['pet-upgrades']=petUpgrade.select.value;grid.append(petUpgrade.wrap);
       const elementField=element('div','','workbook-field');elementField.append(element('span','MH Element','technical'),element('p','Select a mainhand','technical'));elementField.lastChild.id='mainhand-element';grid.append(elementField);
     }
     $('#workbook-controls').append(panel);
@@ -85,7 +86,7 @@ if(page==='planner') {
       }
     }
     for(const slot of ['mainhand','offhand','head','body','neck','ring']) {const item=itemFor(slot);if(item&&window.BH_MECHANICS.items[item.id]?.gearRoll)setting(item.name+' rolled bonus %','gear-roll-'+slot,['1','2','3','4','5','6','7','8'],'1',ancientControls);}
-    if(!ancientControls.childElementCount)ancientControls.append(element('p','Equip Evolvium, an amplifier Ancient, Sacramentum or a rolled mount to choose its bonuses.','quiet'));
+    if(!ancientControls.childElementCount)ancientControls.append(element('p','Some equipment has additional options. Select an item to customize its bonuses.','quiet'));
   }
   function updateOptions(slotId) {
     const select=selectors.get(slotId), type=typeSelectors.get(slotId)?.value;
@@ -116,6 +117,8 @@ if(page==='planner') {
   }
   function render() {
     equipment=data.normalizeEquipment(equipment);
+    BH_UI.setContext(settings());
+    $('#pet-upgrades').value=settings()['pet-upgrades']||'Fully Upgraded';
     tierChecks.forEach(({tick,tierLabel},slot)=>{const item=itemFor(slot);tierLabel.hidden=!item||(typeof item.tier==='number'&&item.tier>=12);tick.checked=settings()['t12-'+slot]==='true';const bonuses=window.BH_MECHANICS.items[itemFor(slot)?.id]?.tierBonuses||{};tierLabel.dataset.description=Object.entries(bonuses).map(([k,v])=>k+' +'+v+'%').join('\n')||'No additional tier bonus recorded for this item.';});
     selectionArt.forEach((holder,slot)=>{const item=itemFor(slot);holder.replaceChildren();holder.hidden=!item?.image;if(item?.image)holder.append(artwork(item,true));});
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
@@ -139,7 +142,7 @@ if(page==='planner') {
       data.slots.filter(slot=>slot.group===group).forEach(slot=>{const row=document.createElement('div');row.dataset.slot=slot.id;const item=itemFor(slot.id),rarity=item&&settings()['rarity-'+slot.id];row.append(element('dt',slot.label,'technical'));if(item?.image)row.append(artwork(item,true));row.append(element('dd',BH_UI.name(item)+(rarity?' · '+rarity:'')));BH_UI.describe(row,item,rarity);list.append(row);});section.append(list);$('#setup-extras').append(section);
     }
     const info=element('section','','setup-group');info.append(element('h3','Build settings'));const list=document.createElement('dl');
-    for(const [label,value] of [['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);
+    for(const [label,value] of [['Pet upgrades',settings()['pet-upgrades']||'Fully Upgraded'],['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);
     renderEffects(report);renderMechanics(report);try{localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));}catch{}
   }
   function renderMechanics(report) {
@@ -164,7 +167,7 @@ if(page==='planner') {
     if(settings()['migration-note'])notes.append(element('p',settings()['migration-note'],'quiet'));
     if(report.warnings.length){notes.open=true;$('#calculation-status').textContent+=' '+report.warnings.length+' source/roll notice(s) — see Calculation coverage.';}
   }
-  $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});$('#accessory-upgrades').value='Fully Upgraded';settings()['accessory-upgrades']='Fully Upgraded';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
+  $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});$('#accessory-upgrades').value='Fully Upgraded';settings()['accessory-upgrades']='Fully Upgraded';settings()['pet-upgrades']='Fully Upgraded';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
   $('#save').addEventListener('click',()=>{const builds=readBuilds();const build={id:'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds,build]))announce('Build saved with equipment, runes, enchants, and upgrade settings.');});
   typeSelectors.forEach((select,slot)=>select.value=settings()['type-'+slot]||itemFor(slot)?.kind||'');render();
   const tabs=[$('#edit-tab'),$('#setup-tab')];

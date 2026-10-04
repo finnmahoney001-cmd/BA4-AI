@@ -1,0 +1,625 @@
+[
+  {
+    "id": "wb-573",
+    "name": "Savage",
+    "spread": [
+      23.0,
+      25.0
+    ],
+    "designated": [
+      47.0,
+      50.0
+    ],
+    "power": "20% - 30%"
+  },
+  {
+    "id": "wb-574",
+    "name": "Asti",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "22 - 32%"
+  },
+  {
+    "id": "wb-575",
+    "name": "Borgi",
+    "spread": [
+      23.0,
+      25.0
+    ],
+    "designated": [
+      47.0,
+      50.0
+    ],
+    "power": "45 - 55%"
+  },
+  {
+    "id": "wb-576",
+    "name": "Kolg",
+    "spread": [
+      17.0,
+      19.0
+    ],
+    "designated": [
+      35.0,
+      38.0
+    ],
+    "power": "105 - 195%"
+  },
+  {
+    "id": "wb-577",
+    "name": "Druffo",
+    "spread": [
+      23.0,
+      25.0
+    ],
+    "designated": [
+      47.0,
+      50.0
+    ],
+    "power": "32 - 76%"
+  },
+  {
+    "id": "wb-578",
+    "name": "Zordig",
+    "spread": [
+      23.0,
+      25.0
+    ],
+    "designated": [
+      47.0,
+      50.0
+    ],
+    "power": "79 - 185%"
+  },
+  {
+    "id": "wb-579",
+    "name": "Toetrio",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "12 - 14%"
+  },
+  {
+    "id": "wb-580",
+    "name": "B-7.5",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "20 - 24%"
+  },
+  {
+    "id": "wb-581",
+    "name": "Dwadin",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "20 - 30%"
+  },
+  {
+    "id": "wb-582",
+    "name": "Sqweeb",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "20 - 30%"
+  },
+  {
+    "id": "wb-583",
+    "name": "Crucru",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "34 - 62%"
+  },
+  {
+    "id": "wb-584",
+    "name": "Zarli",
+    "spread": [
+      35.0,
+      37.0
+    ],
+    "designated": [
+      71.0,
+      74.0
+    ],
+    "power": "47 - 57%"
+  },
+  {
+    "id": "wb-585",
+    "name": "Beto Ben",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "76.8 - 115.2%"
+  },
+  {
+    "id": "wb-586",
+    "name": "Buvboi",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "23 - 207%"
+  },
+  {
+    "id": "wb-587",
+    "name": "Halleygator",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "32.9 - 61.1%"
+  },
+  {
+    "id": "wb-588",
+    "name": "Hurricane Cow",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "72 - 168%"
+  },
+  {
+    "id": "wb-589",
+    "name": "Jellbi",
+    "spread": [
+      10.0,
+      11.0
+    ],
+    "designated": [
+      20.5,
+      22.0
+    ],
+    "power": "33.6 - 62.4%"
+  },
+  {
+    "id": "wb-590",
+    "name": "Kiwi",
+    "spread": [
+      10.0,
+      11.0
+    ],
+    "designated": [
+      20.5,
+      22.0
+    ],
+    "power": "0 - 340%"
+  },
+  {
+    "id": "wb-591",
+    "name": "Kota",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "31.5 - 58.5%"
+  },
+  {
+    "id": "wb-592",
+    "name": "Meal of the Beetle",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "76.8 - 115.2%"
+  },
+  {
+    "id": "wb-593",
+    "name": "Nelson",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "66.5 - 123.5%"
+  },
+  {
+    "id": "wb-594",
+    "name": "Nuro",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "33.6 - 62.4% / 14 - 26%"
+  },
+  {
+    "id": "wb-595",
+    "name": "Piefive",
+    "spread": [
+      30.0,
+      32.0
+    ],
+    "designated": [
+      61.0,
+      64.0
+    ],
+    "power": "28.8 - 43.2%"
+  },
+  {
+    "id": "wb-596",
+    "name": "Prisby",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "72 - 168%"
+  },
+  {
+    "id": "wb-597",
+    "name": "Pyr",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "42 - 78%"
+  },
+  {
+    "id": "wb-598",
+    "name": "Quimby",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "48 - 112%"
+  },
+  {
+    "id": "wb-599",
+    "name": "Raptor Fosil Egg",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "28.8 - 43.2%"
+  },
+  {
+    "id": "wb-600",
+    "name": "Rhoe",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "14.4 - 17.6%"
+  },
+  {
+    "id": "wb-601",
+    "name": "Ringo",
+    "spread": [
+      10.0,
+      11.0
+    ],
+    "designated": [
+      20.5,
+      22.0
+    ],
+    "power": "43.2 - 52.8%"
+  },
+  {
+    "id": "wb-602",
+    "name": "Karlorr",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": null,
+    "power": "47.7 - 58.3%"
+  },
+  {
+    "id": "wb-603",
+    "name": "Bia",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "9 - 11% / 18 - 22%"
+  },
+  {
+    "id": "wb-604",
+    "name": "Boiguh",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "27 - 33%"
+  },
+  {
+    "id": "wb-605",
+    "name": "Cenzy",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "33.6 - 62.4% / 11.2 - 20.8%"
+  },
+  {
+    "id": "wb-606",
+    "name": "Crintie",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "20 - 30%"
+  },
+  {
+    "id": "wb-607",
+    "name": "Dumglim",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "18 - 22%"
+  },
+  {
+    "id": "wb-608",
+    "name": "Fuvboi",
+    "spread": [
+      10.0,
+      11.0
+    ],
+    "designated": null,
+    "power": "27.2 - 40.8%"
+  },
+  {
+    "id": "wb-609",
+    "name": "Ge",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "38.4 - 57.6%"
+  },
+  {
+    "id": "wb-610",
+    "name": "Gemmi",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "32.4 - 39.6%"
+  },
+  {
+    "id": "wb-611",
+    "name": "Litsune",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "22.4 - 41.6%"
+  },
+  {
+    "id": "wb-612",
+    "name": "Manila",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "38.4 - 57.6%"
+  },
+  {
+    "id": "wb-613",
+    "name": "Roogamenz",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "30.8 - 57.2%"
+  },
+  {
+    "id": "wb-614",
+    "name": "Sardines",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "18.4 - 27.6%"
+  },
+  {
+    "id": "wb-615",
+    "name": "Shelly",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "18.4 - 27.6%"
+  },
+  {
+    "id": "wb-616",
+    "name": "Skulldemort",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "57.6 - 86.4%"
+  },
+  {
+    "id": "wb-617",
+    "name": "Tako",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": [
+      41.0,
+      44.0
+    ],
+    "power": "38.5 - 71.5 / 17.5 - 32.5%"
+  },
+  {
+    "id": "wb-618",
+    "name": "Thymos",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "20.7 - 25.3%"
+  },
+  {
+    "id": "wb-619",
+    "name": "Toebert",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "10.2 - 12.5%"
+  },
+  {
+    "id": "wb-620",
+    "name": "Tsunami Crab",
+    "spread": [
+      20.0,
+      21.0
+    ],
+    "designated": [
+      40.5,
+      42.0
+    ],
+    "power": "27 - 33%"
+  },
+  {
+    "id": "wb-621",
+    "name": "Urgoff",
+    "spread": [
+      30.0,
+      33.0
+    ],
+    "designated": [
+      61.5,
+      66.0
+    ],
+    "power": "38.4 - 57.6%"
+  },
+  {
+    "id": "wb-622",
+    "name": "Wuvboi",
+    "spread": [
+      20.0,
+      22.0
+    ],
+    "designated": null,
+    "power": "15.3 - 18.7%"
+  }
+]
