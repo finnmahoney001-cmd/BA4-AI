@@ -281,4 +281,8 @@ Full Setup places Mainhand, Head, Body and Offhand down the left; Neck, Ring, Ac
 
 
 ## Library include and exclude filters
-Category and Item type each open a dropdown with an Any, Include or Exclude choice for every supported value. Allow multiple included and excluded values; includes match any selected value within each group, exclusions remove matching values, and both groups combine with search. Include Rune and Enchant item types. Show active counts on the dropdown summaries. Keep choices and the open dropdown intact while adding items. Clear filters resets both groups and search.
+Category and Item type each open a dropdown with an Include or Exclude choice for every supported value. Allow multiple included and excluded values; every value starts included, exclusions remove matching values, and both groups combine with search. Include Rune and Enchant item types. Show active counts on the dropdown summaries. Keep choices and the open dropdown intact while adding items. Clear filters includes every category/type again and clears search.
+
+
+## Source description audit
+Replace generic formula-validation placeholders with researched accessory, pet and mount descriptions across cards, selection lists, hover popups and Full Setup. Preserve item IDs and saved builds. Goldwings Chivalry uses 16% DR, 8% Absorb and -4% Damage at base, +1% DR for each of four upgrades. Pet descriptions show base unreforged trigger chance, effect power range and each upgrade increment; triggered damage, shields, healing and enrage remain effects, never permanent character stats. The grouped Peach/Deano/Spomder mount lists each distinct skill and offers a choice of its actual rolled bonus type/value within the verified Legendary ranges. No random bonus is assumed until selected. Keep the non-equipment MythDef workbook heading excluded. Record source URLs and audit results.

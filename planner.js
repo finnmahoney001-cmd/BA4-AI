@@ -72,6 +72,18 @@ if(page==='planner') {
       }
     }
     const mount=itemFor('mount');if(mount&&window.BH_MECHANICS.items[mount.id]?.mountRoll)setting('Mount rolled bonus %','mount-roll',['1','2','3','4','5','6','7','8'],'1',ancientControls);
+    const randomRoll=mount&&window.BH_MECHANICS.items[mount.id]?.randomMountRoll;
+    if(randomRoll) {
+      const choices=[{value:'',label:'Choose bonus'},...Object.keys(randomRoll).sort().map(stat=>({value:stat,label:stat}))];
+      const type=field('Mount rolled bonus','random-mount-stat',choices,settings()['random-mount-stat']||'',value=>{settings()['random-mount-stat']=value;delete settings()['random-mount-value'];render();});ancientControls.append(type.wrap);
+      const range=randomRoll[settings()['random-mount-stat']];
+      if(range) {
+        const wrap=element('div','','workbook-field'),label=element('label','Mount bonus % ('+range[0]+'–'+range[1]+')','technical'),input=document.createElement('input');
+        input.type='number';input.id='random-mount-value';input.min=String(range[0]);input.max=String(range[1]);input.step='any';input.value=settings()['random-mount-value']||'';label.htmlFor=input.id;
+        input.addEventListener('input',()=>{settings()['random-mount-value']=input.value;});
+        input.addEventListener('change',()=>{settings()['random-mount-value']=input.value;render();});wrap.append(label,input);ancientControls.append(wrap);
+      }
+    }
     for(const slot of ['mainhand','offhand','head','body','neck','ring']) {const item=itemFor(slot);if(item&&window.BH_MECHANICS.items[item.id]?.gearRoll)setting(item.name+' rolled bonus %','gear-roll-'+slot,['1','2','3','4','5','6','7','8'],'1',ancientControls);}
     if(!ancientControls.childElementCount)ancientControls.append(element('p','Equip Evolvium, an amplifier Ancient, Sacramentum or a rolled mount to choose its bonuses.','quiet'));
   }

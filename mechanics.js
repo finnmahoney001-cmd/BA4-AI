@@ -79,6 +79,11 @@
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
       if(settings['t12-'+item.slot]==='true'||settings['t12-'+item.slot]===true)add(name+' · T12+',facts.tierBonuses,factor);
       if(facts.unresolved)warnings.push(facts.unresolved);
+      if(facts.randomMountRoll) {
+        const stat=settings['random-mount-stat'],range=facts.randomMountRoll[stat],value=settings['random-mount-value'];
+        if(range&&value!==undefined&&value!==''&&Number.isFinite(Number(value))&&Number(value)>=range[0]&&Number(value)<=range[1])add(name+' · selected roll',{[stat]:Number(value)},factor);
+        else warnings.push(name+': choose the actual rolled bonus type and a value within its Legendary range. No rolled bonus has been added.');
+      }
       if(facts.mountRoll) {
         const rollKey=facts.gearRoll?'gear-roll-'+item.slot:'mount-roll';
         const roll=bounded(settings[rollKey],1,8,1);add(name+' · selected roll',{[facts.mountRoll]:roll},factor);

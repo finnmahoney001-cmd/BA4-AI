@@ -1,0 +1,718 @@
+[
+  {
+    "id": "wb-561",
+    "name": "Goldwings Chivalry",
+    "source": "https://bit-heroes.fandom.com/wiki/Accessories",
+    "base": {
+      "DR": 16.0,
+      "Absorb": 8.0,
+      "Damage": -4
+    },
+    "fullyUpgraded": {
+      "DR": 20.0,
+      "Absorb": 8.0,
+      "Damage": -4
+    }
+  },
+  {
+    "id": "wb-573",
+    "name": "Savage",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Savage",
+      "23% chance to give enrage team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "20% - 30%",
+      "25%"
+    ]
+  },
+  {
+    "id": "wb-574",
+    "name": "Asti",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Asti",
+      "35% chance to heal weakest teammate and attack weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "22 - 32%",
+      "27%"
+    ]
+  },
+  {
+    "id": "wb-575",
+    "name": "Borgi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Borgi",
+      "23% chance to attack weakest enemy 2 times per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "45 - 55%",
+      "50%"
+    ]
+  },
+  {
+    "id": "wb-576",
+    "name": "Kolg",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Kolg",
+      "17% chance to attack closest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "105 - 195%",
+      "150%"
+    ]
+  },
+  {
+    "id": "wb-577",
+    "name": "Druffo",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Druffo",
+      "23% chance to attack enemy team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "32 - 76%",
+      "54%"
+    ]
+  },
+  {
+    "id": "wb-578",
+    "name": "Zordig",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Zordig",
+      "23% chance to attack the strongest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "79 - 185%",
+      "132%"
+    ]
+  },
+  {
+    "id": "wb-579",
+    "name": "Toetrio",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Toetrio",
+      "35% chance to heal and shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "12 - 14%",
+      "13%"
+    ]
+  },
+  {
+    "id": "wb-580",
+    "name": "B-7.5",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "B-7.5",
+      "35% chance to shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "20 - 24%",
+      "22%"
+    ]
+  },
+  {
+    "id": "wb-581",
+    "name": "Dwadin",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Dwadin",
+      "35% chance to spread heal and spread shield per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "20 - 30%",
+      "25%"
+    ]
+  },
+  {
+    "id": "wb-582",
+    "name": "Sqweeb",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Sqweeb",
+      "35% chance to heal lowest teammate and shield self per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "20 - 30%",
+      "25%"
+    ]
+  },
+  {
+    "id": "wb-583",
+    "name": "Crucru",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Crucru",
+      "35% chance to spread shield per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "34 - 62%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-584",
+    "name": "Zarli",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Zarli",
+      "35% chance to spread heal per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "47 - 57%",
+      "52%"
+    ]
+  },
+  {
+    "id": "wb-585",
+    "name": "Beto Ben",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Beto Ben",
+      "20% chance to attack furthest enemy team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "76.8 - 115.2%",
+      "96%"
+    ]
+  },
+  {
+    "id": "wb-586",
+    "name": "Buvboi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Buvboi",
+      "20% chance to attack random enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "23 - 207%",
+      "115%"
+    ]
+  },
+  {
+    "id": "wb-587",
+    "name": "Halleygator",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Halleygator",
+      "20% chance to deal earth damage 3 times to a random enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "32.9 - 61.1%",
+      "47%"
+    ]
+  },
+  {
+    "id": "wb-588",
+    "name": "Hurricane Cow",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Hurricane Cow",
+      "20% chance to attack strongest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "72 - 168%",
+      "120%"
+    ]
+  },
+  {
+    "id": "wb-589",
+    "name": "Jellbi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Jellbi",
+      "10% chance to deal electric damage 2 times to furthest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.25%",
+      "33.6 - 62.4%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-590",
+    "name": "Kiwi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Kiwi",
+      "10% chance to attack weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.25%",
+      "0 - 340%",
+      "170%"
+    ]
+  },
+  {
+    "id": "wb-591",
+    "name": "Kota",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Kota",
+      "20% chance to deal water damage to 2 closest enemies per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "31.5 - 58.5%",
+      "45%"
+    ]
+  },
+  {
+    "id": "wb-592",
+    "name": "Meal of the Beetle",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Meal of the Beetle",
+      "20% chance to attack furthest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "76.8 - 115.2%",
+      "96%"
+    ]
+  },
+  {
+    "id": "wb-593",
+    "name": "Nelson",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Nelson",
+      "20% chance to attack closest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "66.5 - 123.5%",
+      "95%"
+    ]
+  },
+  {
+    "id": "wb-594",
+    "name": "Nuro",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Nuro",
+      "20% chance to deal earth damage to furthest enemy and enrage strongest per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "33.6 - 62.4% / 14 - 26%",
+      "48% / 20%"
+    ]
+  },
+  {
+    "id": "wb-595",
+    "name": "Piefive",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Piefive",
+      "30% chance to attack enemy team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "28.8 - 43.2%",
+      "36%"
+    ]
+  },
+  {
+    "id": "wb-596",
+    "name": "Prisby",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Prisby",
+      "20% chance to attack strongest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "72 - 168%",
+      "120%"
+    ]
+  },
+  {
+    "id": "wb-597",
+    "name": "Pyr",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Pyr",
+      "20% chance to deal fire damage to the closest 3 enemies per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "42 - 78%",
+      "60%"
+    ]
+  },
+  {
+    "id": "wb-598",
+    "name": "Quimby",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Quimby",
+      "20% chance to attack weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "48 - 112%",
+      "80%"
+    ]
+  },
+  {
+    "id": "wb-599",
+    "name": "Raptor Fosil Egg",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Raptor Fosil Egg",
+      "20% chance to attack enemy team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "28.8 - 43.2%",
+      "36%"
+    ]
+  },
+  {
+    "id": "wb-600",
+    "name": "Rhoe",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Rhoe",
+      "30% chance to deal water damage 3 times to weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "14.4 - 17.6%",
+      "16%"
+    ]
+  },
+  {
+    "id": "wb-601",
+    "name": "Ringo",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Ringo",
+      "10% chance to attack weakest enemy 2 times per turn, when you get hit, and when you hit an enemy",
+      "+0.25%",
+      "43.2 - 52.8%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-602",
+    "name": "Karlorr",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Karlorr",
+      "30% chance to attack weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "47.7 - 58.3%",
+      "53%"
+    ]
+  },
+  {
+    "id": "wb-603",
+    "name": "Bia",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Bia",
+      "30% chance to shield team and spread heal per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "9 - 11% / 18 - 22%",
+      "10% / 20%"
+    ]
+  },
+  {
+    "id": "wb-604",
+    "name": "Boiguh",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Boiguh",
+      "20% chance to shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "27 - 33%",
+      "30%"
+    ]
+  },
+  {
+    "id": "wb-605",
+    "name": "Cenzy",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Cenzy",
+      "20% chance to spread heal and enrage per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "33.6 - 62.4% / 11.2 - 20.8%",
+      "48% / 16%"
+    ]
+  },
+  {
+    "id": "wb-606",
+    "name": "Crintie",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Crintie",
+      "30% chance to heal weakest teammate and attack weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "20 - 30%",
+      "25%"
+    ]
+  },
+  {
+    "id": "wb-607",
+    "name": "Dumglim",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Dumglim",
+      "30% chance to shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "18 - 22%",
+      "20%"
+    ]
+  },
+  {
+    "id": "wb-608",
+    "name": "Fuvboi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Fuvboi",
+      "10% chance to heal and shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.25%",
+      "27.2 - 40.8%",
+      "34%"
+    ]
+  },
+  {
+    "id": "wb-609",
+    "name": "Ge",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Ge",
+      "30% chance to heal weakest teammate per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "38.4 - 57.6%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-610",
+    "name": "Gemmi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Gemmi",
+      "20% chance to heal team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "32.4 - 39.6%",
+      "36%"
+    ]
+  },
+  {
+    "id": "wb-611",
+    "name": "Litsune",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Litsune",
+      "20% chance to shield self and fire damage weakest enemy per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "22.4 - 41.6%",
+      "32%"
+    ]
+  },
+  {
+    "id": "wb-612",
+    "name": "Manila",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Manila",
+      "20% chance to shield strongest per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "38.4 - 57.6%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-613",
+    "name": "Roogamenz",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Roogamenz",
+      "30% chance to spread shield per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "30.8 - 57.2%",
+      "44%"
+    ]
+  },
+  {
+    "id": "wb-614",
+    "name": "Sardines",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Sardines",
+      "30% chance to spread heal and spread shield per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "18.4 - 27.6%",
+      "23%"
+    ]
+  },
+  {
+    "id": "wb-615",
+    "name": "Shelly",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Shelly",
+      "30% chance to heal lowest health teammate and shield self per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "18.4 - 27.6%",
+      "23%"
+    ]
+  },
+  {
+    "id": "wb-616",
+    "name": "Skulldemort",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Skulldemort",
+      "20% chance to heal the lowest health teammate per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "57.6 - 86.4%",
+      "72%"
+    ]
+  },
+  {
+    "id": "wb-617",
+    "name": "Tako",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Tako",
+      "20% chance shield self and enrage per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "38.5 - 71.5 / 17.5 - 32.5%",
+      "55% / 25%"
+    ]
+  },
+  {
+    "id": "wb-618",
+    "name": "Thymos",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Thymos",
+      "30% chance to heal team per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "20.7 - 25.3%",
+      "23%"
+    ]
+  },
+  {
+    "id": "wb-619",
+    "name": "Toebert",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Toebert",
+      "30% chance to heal and shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "10.2 - 12.5%",
+      "11.35%"
+    ]
+  },
+  {
+    "id": "wb-620",
+    "name": "Tsunami Crab",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Tsunami Crab",
+      "20% chance to shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.25%",
+      "27 - 33%",
+      "30%"
+    ]
+  },
+  {
+    "id": "wb-621",
+    "name": "Urgoff",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Urgoff",
+      "30% chance to spread heal per turn, when you get hit, and when you hit an enemy",
+      "+0.75%",
+      "38.4 - 57.6%",
+      "48%"
+    ]
+  },
+  {
+    "id": "wb-622",
+    "name": "Wuvboi",
+    "source": "https://bit-heroes.fandom.com/wiki/Pets",
+    "row": [
+      "",
+      "Wuvboi",
+      "20% chance to heal and shield team per turn, when you get hit, and when you hit an enemy",
+      "+0.5%",
+      "15.3 - 18.7%",
+      "17%"
+    ]
+  },
+  {
+    "id": "wb-629",
+    "name": "Peach / Deano / Spomder",
+    "source": "https://bit-heroes.fandom.com/wiki/Mounts",
+    "ranges": {
+      "Block": [
+        7,
+        8
+      ],
+      "Damage": [
+        3.5,
+        4
+      ],
+      "Dmg Enrage": [
+        3.5,
+        4
+      ],
+      "DR": [
+        3.5,
+        4
+      ],
+      "Deflect": [
+        1.8,
+        2
+      ],
+      "Dual Strike": [
+        3.5,
+        4
+      ],
+      "Empower": [
+        3.5,
+        4
+      ],
+      "Evade": [
+        3.5,
+        4
+      ],
+      "Health": [
+        3.5,
+        4
+      ],
+      "Life Steal": [
+        3.5,
+        4
+      ],
+      "Speed": [
+        3.5,
+        4
+      ]
+    }
+  }
+]

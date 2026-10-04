@@ -141,12 +141,12 @@ if(page==='library') {
 
   const seen=new Set(),catalog=data.items.filter(item=>{const key=group(item)+'|'+BH_UI.name(item)+'|'+item.kind;if(seen.has(key))return false;seen.add(key);return true;});
   const categoryRules=new Map(),typeRules=new Map();
-  function matchesRule(rules,value){const included=[...rules].filter(([,mode])=>mode==='include').map(([key])=>key);return rules.get(value)!=='exclude'&&(!included.length||included.includes(value));}
+  function matchesRule(rules,value){return rules.get(value)!=='exclude';}
   function setupFilter(container,entries,rules,allLabel){
     const options=container.querySelector('.filter-options');
-    entries.forEach(([value,text])=>{const row=element('label','','filter-rule');row.append(element('span',text));const select=document.createElement('select');select.setAttribute('aria-label',(container===slotFilter?'Category: ':'Item type: ')+text+' filter');[['','Any'],['include','Include'],['exclude','Exclude']].forEach(([mode,label])=>{const option=element('option',label);option.value=mode;select.append(option);});select.addEventListener('change',()=>{if(select.value)rules.set(value,select.value);else rules.delete(value);updateFilterLabel(container,rules,allLabel);renderLibrary();});row.append(select);options.append(row);});
+    entries.forEach(([value,text])=>{const row=element('label','','filter-rule');row.append(element('span',text));const select=document.createElement('select');select.setAttribute('aria-label',(container===slotFilter?'Category: ':'Item type: ')+text+' filter');[['include','Include'],['exclude','Exclude']].forEach(([mode,label])=>{const option=element('option',label);option.value=mode;select.append(option);});select.addEventListener('change',()=>{rules.set(value,select.value);updateFilterLabel(container,rules,allLabel);renderLibrary();});rules.set(value,'include');row.append(select);options.append(row);});
   }
-  function updateFilterLabel(container,rules,allLabel){const included=[...rules.values()].filter(mode=>mode==='include').length,excluded=[...rules.values()].filter(mode=>mode==='exclude').length;container.querySelector('summary').textContent=rules.size?included+' included / '+excluded+' excluded':allLabel;container.classList.toggle('filter-active',rules.size>0);}
+  function updateFilterLabel(container,rules,allLabel){const included=[...rules.values()].filter(mode=>mode==='include').length,excluded=[...rules.values()].filter(mode=>mode==='exclude').length;container.querySelector('summary').textContent=excluded?included+' included / '+excluded+' excluded':allLabel;container.classList.toggle('filter-active',excluded>0);}
   setupFilter(slotFilter,categories,categoryRules,'All categories');
   setupFilter(kindFilter,[...new Set(catalog.map(item=>item.kind))].sort().map(kind=>[kind,kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind]),typeRules,'All types');
   function renderLibrary() {
@@ -186,7 +186,7 @@ if(page==='library') {
     });
   }
   $('#library-search').addEventListener('input',renderLibrary);
-  $('#library-clear').addEventListener('click',()=>{$('#library-search').value='';categoryRules.clear();typeRules.clear();[slotFilter,kindFilter].forEach(container=>container.querySelectorAll('select').forEach(select=>select.value=''));updateFilterLabel(slotFilter,categoryRules,'All categories');updateFilterLabel(kindFilter,typeRules,'All types');renderLibrary();$('#library-search').focus();});
+  $('#library-clear').addEventListener('click',()=>{$('#library-search').value='';for(const key of categoryRules.keys())categoryRules.set(key,'include');for(const key of typeRules.keys())typeRules.set(key,'include');[slotFilter,kindFilter].forEach(container=>container.querySelectorAll('select').forEach(select=>select.value='include'));updateFilterLabel(slotFilter,categoryRules,'All categories');updateFilterLabel(kindFilter,typeRules,'All types');renderLibrary();$('#library-search').focus();});
   document.addEventListener('click',event=>{[slotFilter,kindFilter].forEach(container=>{if(!container.contains(event.target))container.open=false;});});
   [slotFilter,kindFilter].forEach(container=>container.addEventListener('keydown',event=>{if(event.key==='Escape'){container.open=false;container.querySelector('summary').focus();}}));
   renderLibrary();

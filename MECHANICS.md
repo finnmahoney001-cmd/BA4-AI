@@ -78,3 +78,11 @@ The optional combat snapshot is deferred. The site uses permanent totals and ign
 
 ## Item tier controls
 Original tier labels come from the captured Set/Mythic/Ancient wiki tables; All tiers is not a guessed numeric tier. T12+ is stored per ordinary gear slot and used in drafts, saved builds and comparisons. Missing old settings initialize to the source tier. Ancient +5% Damage/DR and Expedition/Invasion Mythic +3% Damage/DR have moved out of unconditional item bonuses. Explicit Mythic Element Bonus clauses are separately gated by T12+. Unique effects and set thresholds remain intact. Source: https://bit-heroes.fandom.com/wiki/Equipment/Mythic and https://bit-heroes.fandom.com/wiki/Equipment/Ancient .
+
+
+## Placeholder audit — 4 October 2026
+Audited all 53 placeholder records: 50 pets, Goldwings Chivalry, the grouped Peach/Deano/Spomder mount and the hidden MythDef workbook heading. Every visible placeholder now has source-backed wording. Sources: [Pets](https://bit-heroes.fandom.com/wiki/Pets), [Accessories](https://bit-heroes.fandom.com/wiki/Accessories), [Mounts](https://bit-heroes.fandom.com/wiki/Mounts). Table captures and matched records are under verification/.
+
+Goldwings calculations were already correct; its missing description and duplicated negative-damage name suffix were repaired. Base: DR 16%, Absorb 8%, Damage -4%; fully upgraded: DR 20%, Absorb 8%, Damage -4%. Pet effects show base unreforged trigger chance, power and upgrade increments. They remain triggered effects rather than permanent Damage/Healing/Enrage totals. Eligibility is required for pet reforging. No upgrade level or reforge is assumed.
+
+The grouped Legendary mount now accepts an actual bonus type/value, validated against the wiki ranges (Block 7–8%, Deflect 1.8–2%, and other listed stats 3.5–4%). Unknown or out-of-range rolls add nothing and display a specific notice. Apocalypse mount doubling uses the same contribution factor. Saved choices feed Planner and Closet through the shared engine. Each named mount skill is described separately and is not added to permanent damage/healing.
