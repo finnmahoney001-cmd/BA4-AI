@@ -259,3 +259,8 @@ Invented game data.
 - [ ] Typing a page address ending in .html while signed out sends me to login.html.
 - [ ] Every image has alt text.
 - [ ] The live link opens in a new tab or window.
+
+## Selection and tier revision — 4 October 2026
+Set dropdown choices show only names and original tiers; no expanded set descriptions or hover popups inside the set list. Individual effects remain visible for Mythics, Ancients, runes and other items. Type/rarity comes before the item selector throughout. Keep alphabetical sorting.
+Use the existing Library; consolidate Minor Rune, Major Rune and Enchant filters and duplicate records across equivalent slots. Retain the nine gear slot filters and add a relevant type filter. Original source tiers appear as TXX next to equipment names; all-tier items are marked All tiers, and missing source tiers remain explicitly unknown.
+Add a T12+ checkbox to each selected ordinary gear slot. Initialize from the original tier when known (all-tier and unknown items start unchecked); save choices, show them in Full Setup and use them in Closet comparisons. Separate researched tier bonuses from unique effects: Ancient +5% Damage/+5% DR, Expedition/Invasion Mythic +3% Damage/+3% DR, and explicit Mythic elemental clauses. Checking does not invent extra set bonuses. Legacy builds without a checkbox use their original tier.

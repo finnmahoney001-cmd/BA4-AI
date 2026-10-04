@@ -5,9 +5,9 @@ if(page==='planner') {
   const loaded=readBuilds().find(build=>build.id===query.get('build'));
   if(loaded) {equipment=validEquipment(loaded.equipment); $('#build-name').value=loaded.name;}
   const linked=data.items.find(item=>item.id===query.get('item'));
-  if(linked) equipment[linked.slot]=linked.id;
+  if(linked) {equipment[linked.slot]=linked.id;delete equipment._settings?.['t12-'+linked.slot];}
   let selected=linked?.slot || 'mainhand';
-  const dropdowns=new Map(), selectors=new Map(), typeSelectors=new Map(), tileButtons=new Map(), selectionArt=new Map();
+  const tierChecks=new Map(), dropdowns=new Map(), selectors=new Map(), typeSelectors=new Map(), tileButtons=new Map(), selectionArt=new Map();
   const itemFor=slot=>data.items.find(item=>item.id===equipment[slot]);
   const settings=()=>equipment._settings || (equipment._settings={});
   const mechanicsPanel=element('section','','panel mechanics-controls');
@@ -36,12 +36,15 @@ if(page==='planner') {
         });type.select.setAttribute('aria-label',slot.label+' type');typeSelectors.set(slot.id,type.select);wrap.append(type.select);
       }
       const select=document.createElement('select');select.id='select-'+slot.id;
-      select.addEventListener('change',()=>{if(select.value)equipment[slot.id]=select.value;else delete equipment[slot.id];selected=slot.id;render();});
+      select.addEventListener('change',()=>{delete settings()['t12-'+slot.id];if(select.value)equipment[slot.id]=select.value;else delete equipment[slot.id];selected=slot.id;render();});
       selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg'));
       if(group!=='Runes') {const art=element('div','','selection-art');selectionArt.set(slot.id,art);wrap.prepend(art);}
       if(data.rarities[slot.id]) {
         const rarity=field(slot.label+' rarity','rarity-'+slot.id,data.rarities[slot.id].map(x=>({value:x,label:x})),settings()['rarity-'+slot.id]||data.rarities[slot.id][0],value=>{settings()['rarity-'+slot.id]=value;render();});
-        settings()['rarity-'+slot.id]=rarity.select.value;wrap.append(rarity.wrap);
+        settings()['rarity-'+slot.id]=rarity.select.value;wrap.insertBefore(rarity.wrap,select);
+      }
+      if(['mainhand','offhand','head','body','neck','ring'].includes(slot.id)) {
+        const tierLabel=element('label','','tier-check'),tick=document.createElement('input');tick.type='checkbox';tick.id='t12-'+slot.id;tick.setAttribute('aria-label',slot.label+' T12+');tierLabel.append(tick,element('span','T12+','technical'));tick.addEventListener('change',()=>{settings()['t12-'+slot.id]=String(tick.checked);render();});wrap.append(tierLabel);tierChecks.set(slot.id,{tick,tierLabel});
       }
       grid.append(wrap);
     }
@@ -94,15 +97,17 @@ if(page==='planner') {
     }
     for(const [kind,id] of [['Myth','#myth-effects'],['Ancient','#ancient-effects']]) {
       const items=Object.keys(equipment).map(itemFor).filter(item=>item?.kind===kind&&item.source.startsWith(kind+'-Gear!'));
-      $(id).replaceChildren();items.forEach(item=>{const entry=element('div','','effect-entry');entry.append(element('h3',item.name),element('p',item.description));$(id).append(entry);});
+      $(id).replaceChildren();items.forEach(item=>{const entry=element('div','','effect-entry');entry.append(element('h3',BH_UI.label(item)),element('p',item.description));$(id).append(entry);});
       if(!items.length)$(id).append(element('p','Equip '+kind.toLowerCase()+' gear to see its unique effects.','quiet'));
     }
   }
   function render() {
+    equipment=data.normalizeEquipment(equipment);
+    tierChecks.forEach(({tick,tierLabel},slot)=>{tierLabel.hidden=!itemFor(slot);tick.checked=settings()['t12-'+slot]==='true';const bonuses=window.BH_MECHANICS.items[itemFor(slot)?.id]?.tierBonuses||{};tierLabel.dataset.description=Object.entries(bonuses).map(([k,v])=>k+' +'+v+'%').join('\n')||'No additional tier bonus recorded for this item.';});
     selectionArt.forEach((holder,slot)=>{const item=itemFor(slot);holder.replaceChildren();holder.hidden=!item?.image;if(item?.image)holder.append(artwork(item,true));});
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
     document.querySelectorAll('[id^=rarity-]').forEach(select=>select.dataset.kind=select.value);
-    tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);BH_UI.describe(tile,item);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',BH_UI.name(item)),element('span',item?.kind||'Empty','type-badge'));});
+    tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);BH_UI.describe(tile,item);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',BH_UI.label(item)),element('span',(item?.kind||'Empty')+(item&&['mainhand','offhand','head','body','neck','ring'].includes(slot)?(settings()['t12-'+slot]==='true'?' · T12+':' · Below T12'):''),'type-badge'));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
     // Equipped!C8 uses an exact lookup and defaults to Physical when unmatched.
     const report=data.evaluate(equipment),results=report.values;

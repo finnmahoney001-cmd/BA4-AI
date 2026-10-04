@@ -92,3 +92,5 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 .item-choice[data-kind=Set],.item-choice-list [data-kind=Set] strong{color:#00fffc}.item-choice[data-kind=Myth],.item-choice-list [data-kind=Myth] strong{color:#ff0048}.item-choice[data-kind=Ancient],.item-choice-list [data-kind=Ancient] strong{color:#d6a71c}.item-choice[data-kind=Leg],.item-choice-list [data-kind=Leg] strong{color:#ffff00}
 .description-popup{position:fixed;z-index:1000;max-width:min(370px,calc(100vw - 24px));padding:14px;background:#142631;border:3px solid #a4dfef;color:#fff;box-shadow:5px 5px #08131b;font-size:18px;line-height:1.5;white-space:pre-line;pointer-events:none}
 [hidden]{display:none!important}
+
+.tier-check{display:flex;align-items:center;gap:10px;margin-top:6px;cursor:pointer;color:#dbe8ef}.tier-check input{width:22px;height:22px;min-height:0;padding:0;accent-color:#72d5e8}.tier-check .technical{font-size:10px}.library-controls{flex-wrap:wrap}.item-choice-list strong{line-height:1.5}

@@ -81,7 +81,7 @@ function calculate(equipment) {
   try {return data.calculate(equipment);} catch {return null;}
 }
 function statValue(results,id) {const value=results?.[id]; return typeof value==='number'&&Number.isFinite(value)?Number(value.toFixed(3))+'%':'—';}
-const equipmentName=(equipment,slotId)=>BH_UI.name(data.items.find(item=>item.id===equipment[slotId]));
+const equipmentName=(equipment,slotId)=>BH_UI.label(data.items.find(item=>item.id===equipment[slotId]));
 function artwork(item,compact=false) {
     if(item.image) {const image=document.createElement('img'); image.src=item.image; image.alt=item.imageAlt||item.name; image.className='item-image'; image.loading='lazy'; image.addEventListener('error',()=>{const fallback=element('div','Artwork unavailable','art-placeholder'+(compact?' compact-art':''));fallback.setAttribute('role','img');fallback.setAttribute('aria-label','Missing image for '+item.name);image.replaceWith(fallback);},{once:true}); return image;}
   const art=element('div','[ADD: image of equipment item]','art-placeholder'+(compact?' compact-art':''));
@@ -131,18 +131,25 @@ if(page==='closet') {
   }); renderCards();
 }
 if(page==='library') {
-  const slotFilter=$('#slot-filter'); data.slots.forEach(slot=>{const option=element('option',slot.label); option.value=slot.id; slotFilter.append(option);});
+  const slotFilter=$('#slot-filter'),kindFilter=$('#kind-filter');
+  const group=item=>item.slot.startsWith('major-')?'major':item.slot.startsWith('minor-')?'minor':item.slot.startsWith('enchant-')?'enchant':item.slot;
+  const categories=[...data.slots.filter(s=>s.group==='Main Equips').map(s=>[s.id,s.label]),['relic','Relic'],['artifact','Artifact'],['minor','Minor Rune'],['major','Major Rune'],['meta','Meta Rune'],['enchant','Enchant']];
+  const labels=Object.fromEntries(categories);
+  categories.forEach(([value,label])=>{const option=element('option',label);option.value=value;slotFilter.append(option);});
+  const seen=new Set(),catalog=data.items.filter(item=>{const key=group(item)+'|'+BH_UI.name(item)+'|'+item.kind;if(seen.has(key))return false;seen.add(key);return true;});
+  function updateKinds(){const selected=kindFilter.value;kindFilter.replaceChildren(element('option','All types'));kindFilter.firstChild.value='';const kinds=[...new Set(catalog.filter(item=>!slotFilter.value||group(item)===slotFilter.value).map(item=>item.kind))].filter(k=>!['Rune','Enchant'].includes(k)).sort();kinds.forEach(kind=>{const option=element('option',kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind);option.value=kind;kindFilter.append(option);});kindFilter.value=kinds.includes(selected)?selected:'';kindFilter.disabled=!kinds.length;}
   function renderLibrary() {
     const needle=$('#library-search').value.trim().toLowerCase();
-    const items=data.items.filter(item=>(!slotFilter.value||item.slot===slotFilter.value)&&(item.name+' '+item.description).toLowerCase().includes(needle));
-    slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value)); $('#library-results').replaceChildren(); $('#library-empty').hidden=items.length>0; $('#result-count').textContent=items.length+' workbook records';
+    const items=catalog.filter(item=>(!slotFilter.value||group(item)===slotFilter.value)&&(!kindFilter.value||item.kind===kindFilter.value)&&(BH_UI.label(item)+' '+item.name+' '+item.description).toLowerCase().includes(needle));
+    slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value));$('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');
     items.sort(BH_UI.compare).forEach(item=>{
-      const card=document.createElement('article'); card.className='panel item-card'; card.dataset.kind=item.kind;
-      BH_UI.describe(card,item);card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',BH_UI.name(item)),element('p',item.description,'quiet'),element('p',item.kind,'technical saved-stat'));
-      const link=element('a','Use in planner','button-link'); link.href=route('index.html?item='+encodeURIComponent(item.id)); card.append(link); $('#library-results').append(card);
+      const card=document.createElement('article');card.className='panel item-card';card.dataset.kind=item.kind;
+      BH_UI.describe(card,item);card.append(artwork(item,true),element('p',labels[group(item)],'technical detail-kicker'),element('h2',BH_UI.label(item)),element('p',BH_UI.description(item),'quiet'),element('p',item.kind,'technical saved-stat'));
+      const link=element('a','Use in planner','button-link');link.href=route('index.html?item='+encodeURIComponent(item.id));card.append(link);$('#library-results').append(card);
     });
   }
-  $('#library-search').addEventListener('input',renderLibrary); slotFilter.addEventListener('change',renderLibrary);
-  $('#library-clear').addEventListener('click',()=>{$('#library-search').value=''; slotFilter.value=''; renderLibrary(); $('#library-search').focus();}); renderLibrary();
+  $('#library-search').addEventListener('input',renderLibrary);slotFilter.addEventListener('change',()=>{updateKinds();renderLibrary();});kindFilter.addEventListener('change',renderLibrary);
+  $('#library-clear').addEventListener('click',()=>{$('#library-search').value='';slotFilter.value='';kindFilter.value='';updateKinds();renderLibrary();$('#library-search').focus();});updateKinds();renderLibrary();
 }
+
 authenticate();

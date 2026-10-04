@@ -2,6 +2,7 @@
 window.BH_UI=(()=>{
  const facts=window.BH_MECHANICS;
  const name=item=>!item?'Empty slot':item.kind==='Rune'?({BonikAtkTeam:'Bonik',MullAtkEnemy:'Mull',WullShield:'Wull',BoliSpOnHit:'Boli'}[facts.items[item.id]?.rune]||facts.items[item.id]?.rune||item.name):item.name;
+ const itemLabel=item=>name(item)+(item?.tier?(' · '+(item.tier==='All'?'All tiers':'T'+item.tier)):item&&['mainhand','offhand','head','body','neck','ring'].includes(item.slot)?' · Tier unknown':'');
  const compare=(a,b)=>name(a).localeCompare(name(b),undefined,{sensitivity:'base',numeric:true});
  function description(item,rarity='Leg') {
   if(!item)return 'Choose an item for this slot.';
@@ -12,7 +13,7 @@ window.BH_UI=(()=>{
  }
  function describe(node,item,rarity) {
   if(!item){delete node.dataset.description;node.removeAttribute('aria-describedby');return;}
-  node.dataset.description=name(item)+'\n'+description(item,rarity);
+  node.dataset.description=itemLabel(item)+'\n'+description(item,rarity);
   if(!node.matches('button,a,input,select'))node.tabIndex=0;
  }
  function dropdown(select,label,getItem,getRarity) {
@@ -21,16 +22,16 @@ window.BH_UI=(()=>{
   list.className='item-choice-list';list.id=trigger.id+'-list';list.role='listbox';list.setAttribute('aria-label',label+' items');list.hidden=true;trigger.setAttribute('aria-controls',list.id);
   select.hidden=true;select.after(trigger,list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
   function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');}
-  function refresh(){trigger.textContent=name(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());close();}
+  function refresh(){trigger.textContent=itemLabel(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());close();}
   function open(last=false){
    list.replaceChildren();
    for(const option of select.options){
     const item=getItem(option.value),button=document.createElement('button'),title=document.createElement('strong'),detail=document.createElement('small');
     button.type='button';button.role='option';button.tabIndex=-1;button.setAttribute('aria-selected',String(option.selected));button.dataset.kind=item?.kind||'';
-    title.textContent=name(item);detail.textContent=description(item,getRarity());button.append(title,detail);describe(button,item,getRarity());
+    title.textContent=itemLabel(item);button.append(title);if(item&&item.kind!=='Set'){detail.textContent=description(item,getRarity());button.append(detail);describe(button,item,getRarity());}
     button.onclick=()=>{select.value=option.value;close();select.dispatchEvent(new Event('change'));trigger.focus();};list.append(button);
    }
-   list.hidden=false;trigger.setAttribute('aria-expanded','true');list.children[last?list.children.length-1:Math.max(0,select.selectedIndex)]?.focus();
+   list.hidden=false;list.style.left='0px';const bounds=list.getBoundingClientRect(),parent=select.parentElement.getBoundingClientRect();if(bounds.right>innerWidth-12)list.style.left=(Math.max(12,innerWidth-bounds.width-12)-parent.left)+'px';trigger.setAttribute('aria-expanded','true');list.children[last?list.children.length-1:Math.max(0,select.selectedIndex)]?.focus();
   }
   trigger.onclick=()=>list.hidden?open():close();
   trigger.onkeydown=e=>{if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open(e.key==='ArrowUp');}};
@@ -48,5 +49,5 @@ window.BH_UI=(()=>{
   document.addEventListener('focusin',e=>show(e.target.closest('[data-description]')));document.addEventListener('focusout',hide);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});window.addEventListener('scroll',hide,true);
  });
- return {name,compare,description,describe,dropdown};
+ return {name,label:itemLabel,compare,description,describe,dropdown};
 })();

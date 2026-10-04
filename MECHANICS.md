@@ -75,3 +75,6 @@ Run `verification/mechanics.test.cjs` with Node. The checks cover bases, Ancient
 
 ## Deferred interface
 The optional combat snapshot is deferred. The site uses permanent totals and ignores old saved combat assumptions; the engine retains conditional calculations for a future return. Existing Evolvium upgrade choices remain available. Item choices are alphabetical and display source-backed descriptions.
+
+## Item tier controls
+Original tier labels come from the captured Set/Mythic/Ancient wiki tables; All tiers is not a guessed numeric tier. T12+ is stored per ordinary gear slot and used in drafts, saved builds and comparisons. Missing old settings initialize to the source tier. Ancient +5% Damage/DR and Expedition/Invasion Mythic +3% Damage/DR have moved out of unconditional item bonuses. Explicit Mythic Element Bonus clauses are separately gated by T12+. Unique effects and set thresholds remain intact. Source: https://bit-heroes.fandom.com/wiki/Equipment/Mythic and https://bit-heroes.fandom.com/wiki/Equipment/Ancient .

@@ -18,6 +18,7 @@
       facts.upgrades.forEach((text,i)=>out._settings['evo-'+(i+1)]=text);
       out._settings['migration-note']='Moved the old Evolvium variant to its actual ring slot.';
     }
+    for(const slot of gear) {const item=byId.get(out[slot]);if(item&&out._settings['t12-'+slot]===undefined)out._settings['t12-'+slot]=String(typeof item.tier==='number'&&item.tier>=12);}
     return out;
   };
   const caps={'Crit Chance':100,Evade:75,Block:100,Barrier:75,Ricochet:75};
@@ -76,6 +77,7 @@
       let bonuses=facts.bonuses;
       if(item.slot==='accessory'&&settings['accessory-upgrades']==='No Upgrades')bonuses=facts.unupgraded||bonuses;
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
+      if(settings['t12-'+item.slot]==='true'||settings['t12-'+item.slot]===true)add(name+' · T12+',facts.tierBonuses,factor);
       if(facts.unresolved)warnings.push(facts.unresolved);
       if(facts.mountRoll) {
         const rollKey=facts.gearRoll?'gear-roll-'+item.slot:'mount-roll';

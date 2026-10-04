@@ -3,7 +3,7 @@ const context={window:{}};vm.createContext(context);
 for(const file of ['data.js','mechanics-data.js','mechanics.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
 const data=context.window.BH_DATA,engine=context.window.BH_ENGINE;
 const id=(name,slot)=>{const x=data.items.find(x=>x.name===name&&x.slot===slot);assert.ok(x,`${name} in ${slot}`);return x.id;};
-const equip=(entries,settings={})=>Object.assign(Object.fromEntries(entries.map(([slot,name])=>[slot,id(name,slot)])),{_settings:settings});
+const equip=(entries,settings={})=>Object.assign(Object.fromEntries(entries.map(([slot,name])=>[slot,id(name,slot)])),{_settings:{...Object.fromEntries(entries.map(([slot])=>['t12-'+slot,'true'])),...settings}});
 const get=(report,label)=>report.values[data.stats.find(x=>x.label===label).id];
 let count=0;
 function test(name,fn){fn();count++;console.log('PASS '+name);}
@@ -30,5 +30,11 @@ test('Weighted resistance uses weak element zero',()=>{const r=engine.evaluate(e
 test('No free slot accepts an item from another equipment slot',()=>{assert.equal(get(engine.evaluate({head:id('Harvester','mainhand')}),'Damage'),0);});
 test('Sacramentum team effects do not become personal proc bonuses',()=>{const r=engine.evaluate(equip([['ring','Sacramentum']],{sacramentum:'Support'}));assert.equal(r.raw['Team Life Steal'],15);assert.equal(get(r,'Life Steal'),0);});
 test('First-attack meta bonuses apply only to selected snapshot',()=>{const r=engine.evaluate(equip([['meta','Vend']],{'combat-mode':'snapshot','first-incoming':'yes','rarity-meta':'Myth'}));assert.equal(get(r,'Evade'),32.5);assert.equal(get(engine.evaluate(equip([['meta','Vend']])),'Evade'),2.5);});
+test('Below-T12 Ancient retains effect without tier bonuses',()=>{const r=engine.evaluate(equip([['mainhand','Harvester']],{'t12-mainhand':'false'}));assert.equal(get(r,'Damage'),0);assert.equal(get(r,'DR'),0);assert.ok(r.effects.some(e=>e.text.includes('random skill')));});
+test('Original T8 defaults below T12; T14 defaults checked',()=>{assert.equal(get(engine.evaluate({mainhand:id('Harvester','mainhand')}),'Damage'),0);assert.equal(get(engine.evaluate({ring:id('Evolvium (Defense)','ring')}),'Damage'),5);});
+test('Mythic elemental checkbox changes only elemental bonus',()=>{const r=engine.evaluate(equip([['neck','Quetzal Sorrow']],{'t12-neck':'false'}));assert.equal(r.raw['Fire Dmg']||0,0);assert.equal(get(r,'Life Steal'),5);});
+test('All-tier Expedition checkbox preserves its unique effect',()=>{const entries=[['offhand','Radiance']];const a=engine.evaluate(equip(entries,{'t12-offhand':'false'})),b=engine.evaluate(equip(entries,{'t12-offhand':'true'}));assert.equal(get(b,'Damage')-get(a,'Damage'),3);assert.equal(get(b,'DR')-get(a,'DR'),3);});
+test('Known tier labels',()=>{assert.equal(data.items.find(i=>i.id===id('Consumption','body')).tier,7);assert.equal(data.items.find(i=>i.id===id('Harvester','mainhand')).tier,8);});
+test('Tier choice survives serialization independently per slot',()=>{const eq=equip([['mainhand','Harvester'],['ring','Evolvium (Defense)']],{'t12-mainhand':'false','t12-ring':'true'});const r=engine.evaluate(JSON.parse(JSON.stringify(eq)));assert.equal(get(r,'Damage'),5);assert.equal(get(r,'DR'),5);});
 console.log(`${count} mechanics checks passed.`);
 
