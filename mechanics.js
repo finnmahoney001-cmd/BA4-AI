@@ -63,17 +63,18 @@
       }
     }
     const unlocked=(name,threshold)=>sets.some(x=>x.name===name&&x.threshold===threshold);
-    const majorMultiplier=has('Elementarium')||unlocked('Apocalypse',5)?2:1;
-    const enchantMultiplier=unlocked('Witchum',3)||unlocked('Apocalypse',3)?2:1;
+    const majorMultiplier=has('Elementarium')||unlocked('Apocalypse',5)||(ctx.enabled&&settings['team-position']==='front'&&unlocked('Priyolkian',2))?2:1;
+    const enchantMultiplier=unlocked('Witchum',3)||unlocked('Apocalypse',3)||(ctx.enabled&&ctx.highest&&unlocked('Priyolkian',3))?2:1;
     const mountMultiplier=unlocked('Apocalypse',4)?2:1;
     const mythics=selected.filter(x=>gear.includes(x.slot)&&x.kind==='Myth');
     const poly=has('Polychromatic Blaster')&&mythics.length===1;
+    const superPoly=has('Supercharged Polychromatic Blaster');
     const MH=byId.get(eq.mainhand),mhElement=d.mainhandElements?.[MH?.name]||'Physical';
     for(const item of selected) {
       const facts=m.items[item.id]||{},name=item.name;
-      let factor=poly&&mythics[0]?.id===item.id?2:1;
+      let factor=(superPoly&&item.kind==='Myth')||(poly&&mythics[0]?.id===item.id)?2:1;
       if(item.kind==='Enchant')factor=enchantMultiplier;
-      if(item.slot==='mount')factor=mountMultiplier;
+      if(item.slot==='mount')factor*=mountMultiplier;
       let bonuses=facts.bonuses;
       if(item.slot==='accessory'&&settings['accessory-upgrades']==='No Upgrades')bonuses=facts.unupgraded||bonuses;
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
@@ -101,7 +102,10 @@
         if(rune==='Erlun')add(name,{'Max Shield':val});
         const descriptions={Vend:val+'% extra Evade on the first incoming attack from each opponent.',Nox:val+'% extra Damage on the first outgoing attack against each opponent.',Yuh:val+'% extra Empower on the first outgoing attack against each opponent.',Kaun:val+'% extra DR on the first incoming attack from each opponent.',Gael:val+'% SP regeneration at full health.',Chet:val+'% SP drain on defeating an opponent.',Kor:(settings['rarity-'+item.slot]==='Myth'?125:100)+'% increased skill healing received below 25% health.',Mayu:val+'% Damage at full health.',Nonik:val+'% DR at full health.',MullAtkEnemy:(settings['rarity-'+item.slot]==='Myth'?6.25:5)+'% chance on hit to reduce the target’s current HP by 10%.',BonikAtkTeam:(settings['rarity-'+item.slot]==='Myth'?6.25:5)+'% chance on hit to reduce enemy team current HP by 6%.',WullShield:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance when hit to gain shields equal to 10% current HP.',BoliSpOnHit:(settings['rarity-'+item.slot]==='Myth'?30:25)+'% chance when hit to gain 1 SP.',Telgu:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance on hit to ignore defensive bonuses.',Melgu:(settings['rarity-'+item.slot]==='Myth'?5:4)+'% chance when hit to ignore offensive bonuses.'};
         const relicAlias={Mull:'MullAtkEnemy',Bonik:'BonikAtkTeam',Wull:'WullShield',Boli:'BoliSpOnHit'};
-        effect(name,descriptions[relicAlias[rune]||rune]||(!minor[rune]&&rune!=='Sol'?'Rune effect: see source.':''));
+        effect(name,facts.runeTemplate?facts.runeTemplate.replaceAll('{value}',String(val)):descriptions[relicAlias[rune]||rune]||(!minor[rune]&&rune!=='Sol'?'Rune effect: see source.':''));
+        const condition=facts.runeCondition;
+        if(condition&&ctx.enabled&&active(condition,ctx)&&(!condition.fullHealth||ctx.hp===100)&&(!condition.firstIncoming||ctx.firstIncoming))
+          add(name+' · combat condition',{[condition.stat]:val*(condition.perSP?ctx.sp:1)});
         if(ctx.enabled&&ctx.hp===100) {
           if(rune==='Mayu')add(name,{'Damage':val});if(rune==='Nonik')add(name,{DR:val});if(rune==='Gael')add(name,{'SP Regen':val});
         }
@@ -165,7 +169,7 @@
         if(name==='Leonidas Honor')add(name+' · team alive',{Barrier:3.5*ctx.allies},factor);
         if(name==='Leonidas Strength')add(name+' · enemies alive',{'Quad Strike':.5*ctx.enemies},factor);
       }
-      if(item.kind!=='Set'&&item.kind!=='Rune')for(const text of (facts.petTrigger?[petDescription(item,settings)]:facts.effects||[]))effect(name,text+(factor===2&&item.kind==='Myth'?' · Poly grants a second independent trigger roll.':''));
+      if(item.kind!=='Set'&&item.kind!=='Rune')for(const text of (facts.petTrigger?[petDescription(item,settings)]:facts.effects||[]))effect(name,text+(factor===2&&item.kind==='Myth'?' · Polychromatic bonus doubling is active; triggered effects remain separate from permanent totals.':''));
     }
     const setCondition=(name,threshold,bonuses)=>{const entry=sets.find(x=>x.name===name&&x.threshold===threshold);if(entry)add(name+' · combat condition',bonuses,entry.multiplier);};
     if(ctx.enabled){
@@ -196,7 +200,7 @@
       let damage=0,dr=0;for(const source of elements){damage+=(raw[source==='Physical'?'Damage':source+' Dmg']||0)*weight(source,target);dr+=(raw[source==='Physical'?'DR':source+' Res']||0)*weight(source,target);}
       elemental[target]={damage:round(damage),dr:round(Math.min(75,dr))};
     }
-    return {values,raw,contributions,effects,sets,ctx,luck,elemental,warnings:[...new Set(warnings)],multipliers:{poly,major:majorMultiplier,enchant:enchantMultiplier,mount:mountMultiplier},mhElement};
+    return {values,raw,contributions,effects,sets,ctx,luck,elemental,warnings:[...new Set(warnings)],multipliers:{poly,superPoly,major:majorMultiplier,enchant:enchantMultiplier,mount:mountMultiplier},mhElement};
   }
   d.evaluate=evaluate;d.calculate=input=>evaluate(input).values;
   function petDescription(item,settings={}) {

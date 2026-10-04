@@ -160,7 +160,7 @@ if(page==='library') {
   setupFilter(kindFilter,[...new Set(catalog.map(item=>item.kind))].sort().map(kind=>[kind,kind==='Leg'?'Legendary':kind==='Myth'?'Mythic':kind]),typeRules,'All types');
   function renderLibrary() {
     const needle=$('#library-search').value.trim().toLowerCase();
-    const items=catalog.filter(item=>matchesRule(categoryRules,group(item))&&matchesRule(typeRules,item.kind)&&(BH_UI.label(item)+' '+item.name+' '+item.description).toLowerCase().includes(needle));
+    const items=catalog.filter(item=>matchesRule(categoryRules,group(item))&&matchesRule(typeRules,item.kind)&&(BH_UI.label(item)+' '+item.name+' '+(item.aliases||[]).join(' ')+' '+item.description).toLowerCase().includes(needle));
     $('#library-results').replaceChildren();$('#library-empty').hidden=items.length>0;$('#result-count').textContent=items.length+(items.length===1?' item':' items');
     items.sort(BH_UI.compare).forEach(item=>{
       const card=document.createElement('article');card.className='panel item-card';card.dataset.kind=item.kind;

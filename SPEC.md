@@ -1,5 +1,11 @@
 # Bit Heroes Build Planner Specification
 
+## Approved catalog expansion — 4 October 2026
+
+Add the 31 missing wiki-listed rune types (Major, Meta, Relic and Artifact) in every compatible slot, with Legendary/Mythic values and source-backed hover descriptions. Support their permanent modifiers and retain triggered/conditional effects separately; combat snapshot controls remain deferred. Store canonical Gerou with Georu as a searchable alias, noting the official patch-note spelling.
+
+Add the reviewed 2026 Mythic and seasonal pets/accessories/mounts, Gallus Apotheosis sets and associated Mythics, and both forms of Supercharged Polychromatic Blaster. Do not download images in this update. Confirmed releases with unpublished or conflicting values remain selectable with a specific verification notice; never assign guessed bonuses, upgrade increments, elemental modifiers or proc rates. Keep the existing save/load IDs and alphabetic selectors. The October 2025 announcement confirms twelve runes, but does not establish a separate twelve-name list; avoid duplicate speculative entries.
+
 ## What the Site Is
 Bit Heroes Build Planner is a web-based tool for experimenting with Bit Heroes equipment and seeing the resulting build without requiring the user to own every item in the game.
 

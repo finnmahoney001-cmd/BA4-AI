@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner
 
+## Approved catalog expansion — 4 October 2026
+
+Extend the existing selectors and Library with the reviewed missing runes and 2026 equipment. Preserve the Enchanted Tavern palette, compact layouts, alphabetical order, rarity controls and descriptions. Images are deferred. Show specific missing-value notices for newly announced equipment where official releases supply names without complete bonus/upgrade tables. Do not use old workbook-validation placeholder wording or hide missing coverage behind a zero bonus.
+
 ## Selected direction
 Scheme 3 (Command deck) is the single website design. Promote its homepage to root index.html and use the same visual system for closet.html, library.html, and login.html. Remove the scheme-a, scheme-b, and scheme-c folders after promotion. Keep synced sources/ read-only.
 

@@ -110,7 +110,7 @@ if(page==='planner') {
       if(!matches)block.append(element('p','No active bonus at this threshold.','quiet'));$('#set-effects').append(block);
     }
     for(const [kind,id] of [['Myth','#myth-effects'],['Ancient','#ancient-effects']]) {
-      const items=Object.keys(equipment).map(itemFor).filter(item=>item?.kind===kind&&item.source.startsWith(kind+'-Gear!'));
+      const items=Object.keys(equipment).map(itemFor).filter(item=>item?.kind===kind);
       $(id).replaceChildren();items.forEach(item=>{const entry=element('div','','effect-entry');entry.append(element('h3',BH_UI.label(item)),element('p',item.description));$(id).append(entry);});
       if(!items.length)$(id).append(element('p','Equip '+kind.toLowerCase()+' gear to see its unique effects.','quiet'));
     }
