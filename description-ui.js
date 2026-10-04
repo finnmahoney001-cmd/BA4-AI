@@ -16,28 +16,39 @@ window.BH_UI=(()=>{
   node.dataset.description=itemLabel(item)+'\n'+description(item,rarity);
   if(!node.matches('button,a,input,select'))node.tabIndex=0;
  }
- function dropdown(select,label,getItem,getRarity) {
-  const trigger=document.createElement('button'),list=document.createElement('div');
+ function dropdown(select,label,getItem,getRarity,searchable=false) {
+  const trigger=document.createElement('button'),list=document.createElement('div'),search=searchable?document.createElement('input'):null;
   trigger.type='button';trigger.className='item-choice';trigger.id='choice-'+select.id;trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label',label);
   list.className='item-choice-list';list.id=trigger.id+'-list';list.role='listbox';list.setAttribute('aria-label',label+' items');list.hidden=true;trigger.setAttribute('aria-controls',list.id);
   select.hidden=true;select.after(trigger,list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
-  function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');}
-  function refresh(){trigger.textContent=itemLabel(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());close();}
-  function open(last=false){
-   list.replaceChildren();
-   for(const option of select.options){
+  if(search){search.type='search';search.className='enchant-search';search.id='search-'+select.id;search.placeholder='Search enchants…';search.autocomplete='off';search.setAttribute('aria-label','Search enchants for '+label);search.role='combobox';search.setAttribute('aria-autocomplete','list');search.setAttribute('aria-controls',list.id);search.setAttribute('aria-expanded','false');trigger.before(search);}
+  function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');search?.setAttribute('aria-expanded','false');}
+  function refresh(){trigger.textContent=itemLabel(getItem(select.value));trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());if(search)search.value='';close();}
+  const buttons=()=>[...list.querySelectorAll('button[role="option"]')];
+  function position(){list.style.top=(trigger.offsetTop+trigger.offsetHeight+4)+'px';list.style.left='0px';const bounds=list.getBoundingClientRect(),parent=select.parentElement.getBoundingClientRect();if(bounds.right>innerWidth-12)list.style.left=(Math.max(12,innerWidth-bounds.width-12)-parent.left)+'px';}
+  function open(last=false,keepFocus=false){
+   list.replaceChildren();const query=search?.value.trim().toLowerCase()||'';
+   let options=[...select.options].filter(option=>!query||(option.value&&name(getItem(option.value)).toLowerCase().includes(query)));
+   if(query)options.sort((a,b)=>Number(!name(getItem(a.value)).toLowerCase().startsWith(query))-Number(!name(getItem(b.value)).toLowerCase().startsWith(query)));
+   for(const option of options){
     const item=getItem(option.value),button=document.createElement('button'),title=document.createElement('strong'),detail=document.createElement('small');
     button.type='button';button.role='option';button.tabIndex=-1;button.setAttribute('aria-selected',String(option.selected));button.dataset.kind=item?.kind||'';
     title.textContent=itemLabel(item);button.append(title);if(item&&item.kind!=='Set'){detail.textContent=description(item,getRarity());button.append(detail);describe(button,item,getRarity());}
     button.onclick=()=>{select.value=option.value;close();select.dispatchEvent(new Event('change'));trigger.focus();};list.append(button);
    }
-   list.hidden=false;list.style.left='0px';const bounds=list.getBoundingClientRect(),parent=select.parentElement.getBoundingClientRect();if(bounds.right>innerWidth-12)list.style.left=(Math.max(12,innerWidth-bounds.width-12)-parent.left)+'px';trigger.setAttribute('aria-expanded','true');list.children[last?list.children.length-1:Math.max(0,select.selectedIndex)]?.focus();
+   if(!options.length){const empty=document.createElement('p');empty.className='choice-empty';empty.role='status';empty.textContent='No matching enchants. Try another name.';list.append(empty);}
+   list.hidden=false;position();trigger.setAttribute('aria-expanded','true');search?.setAttribute('aria-expanded','true');
+   if(!keepFocus){const nodes=buttons();(last?nodes.at(-1):nodes.find(n=>n.getAttribute('aria-selected')==='true')||nodes[0])?.focus();}
   }
   trigger.onclick=()=>list.hidden?open():close();
-  trigger.onkeydown=e=>{if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open(e.key==='ArrowUp');}};
-  list.onkeydown=e=>{const nodes=[...list.children],i=nodes.indexOf(document.activeElement);if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}else if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();nodes[e.key==='Home'?0:e.key==='End'?nodes.length-1:(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length].focus();}else if(e.key==='Tab')close();};
-  document.addEventListener('click',e=>{if(!list.contains(e.target)&&!trigger.contains(e.target))close();});
-  document.addEventListener('focusin',e=>{if(!list.contains(e.target)&&e.target!==trigger)close();});
+  trigger.onkeydown=e=>{if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open(e.key==='ArrowUp');}else if(search&&e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();search.value=e.key;search.focus();open(false,true);}};
+  if(search){
+   search.onfocus=()=>open(false,true);search.oninput=()=>open(false,true);
+   search.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}else if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open(e.key==='ArrowUp');}else if(e.key==='Enter'){e.preventDefault();if(list.hidden)open(false,true);buttons()[0]?.click();}else if(e.key==='Tab')close();};
+  }
+  list.onkeydown=e=>{const nodes=buttons(),i=nodes.indexOf(document.activeElement);if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}else if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)&&nodes.length){e.preventDefault();nodes[e.key==='Home'?0:e.key==='End'?nodes.length-1:(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length].focus();}else if(e.key==='Tab')close();else if(search&&e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();search.value+=e.key;search.focus();open(false,true);}};
+  document.addEventListener('click',e=>{if(!list.contains(e.target)&&!trigger.contains(e.target)&&e.target!==search)close();});
+  document.addEventListener('focusin',e=>{if(!list.contains(e.target)&&e.target!==trigger&&e.target!==search)close();});
   return {refresh};
  }
  document.addEventListener('DOMContentLoaded',()=>{

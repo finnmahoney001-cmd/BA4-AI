@@ -94,3 +94,5 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 [hidden]{display:none!important}
 
 .tier-check{display:flex;align-items:center;gap:10px;margin-top:6px;cursor:pointer;color:#dbe8ef}.tier-check input{width:22px;height:22px;min-height:0;padding:0;accent-color:#72d5e8}.tier-check .technical{font-size:10px}.library-controls{flex-wrap:wrap}.item-choice-list strong{line-height:1.5}
+
+.enchant-search{width:100%;min-width:0;min-height:42px;padding:8px;font-size:17px;border:3px solid #0e1a24;background:#172935;color:#fff}.enchant-search::placeholder{color:#bdcdd8}.library-status{padding:12px 16px;border-left:4px solid #72d5e8;background:#20313f;color:#e3f2f7;line-height:1.6}.choice-empty{padding:12px;color:#d8e5ed;font-size:17px}.item-card .button-link{cursor:pointer}

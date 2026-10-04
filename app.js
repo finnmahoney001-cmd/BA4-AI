@@ -145,7 +145,24 @@ if(page==='library') {
     items.sort(BH_UI.compare).forEach(item=>{
       const card=document.createElement('article');card.className='panel item-card';card.dataset.kind=item.kind;
       BH_UI.describe(card,item);card.append(artwork(item,true),element('p',labels[group(item)],'technical detail-kicker'),element('h2',BH_UI.label(item)),element('p',BH_UI.description(item),'quiet'),element('p',item.kind,'technical saved-stat'));
-      const link=element('a','Use in planner','button-link');link.href=route('index.html?item='+encodeURIComponent(item.id));card.append(link);$('#library-results').append(card);
+      const add=element('button','Use in Planner','button-link');add.type='button';
+      add.addEventListener('click',()=>{
+        try {
+          const draft=validEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'));
+          const compatible=data.slots.filter(slot=>group({slot:slot.id})===group(item)).map(slot=>slot.id);
+          const slot=compatible.find(slot=>!draft[slot])||item.slot;
+          const target=data.items.find(candidate=>candidate.slot===slot&&candidate.kind===item.kind&&BH_UI.name(candidate)===BH_UI.name(item));
+          if(!target)throw new Error('No compatible slot found for this item.');
+          const previous=data.items.find(candidate=>candidate.id===draft[slot]);
+          draft._settings=draft._settings||{};
+          if(draft[slot]!==target.id)delete draft._settings['t12-'+slot];
+          draft[slot]=target.id;
+          if(data.slots.find(s=>s.id===slot)?.group==='Main Equips')draft._settings['type-'+slot]=target.kind;
+          const saved=validEquipment(draft);localStorage.setItem(DRAFT_KEY,JSON.stringify(saved));
+          $('#library-status').textContent='Equipped '+BH_UI.name(target)+' in '+data.slots.find(s=>s.id===slot).label+'.'+(previous&&previous.id!==target.id?' Replaced '+BH_UI.name(previous)+'.':'');
+          add.textContent='Added to Planner';
+        } catch(error) {$('#library-status').textContent='Could not add this item. '+(error.name==='QuotaExceededError'?'Browser storage is full.':error.name==='SyntaxError'?'The current draft could not be read.':error.message);}
+      });card.append(add);$('#library-results').append(card);
     });
   }
   $('#library-search').addEventListener('input',renderLibrary);slotFilter.addEventListener('change',()=>{updateKinds();renderLibrary();});kindFilter.addEventListener('change',renderLibrary);

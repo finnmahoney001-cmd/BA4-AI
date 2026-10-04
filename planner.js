@@ -37,7 +37,7 @@ if(page==='planner') {
       }
       const select=document.createElement('select');select.id='select-'+slot.id;
       select.addEventListener('change',()=>{delete settings()['t12-'+slot.id];if(select.value)equipment[slot.id]=select.value;else delete equipment[slot.id];selected=slot.id;render();});
-      selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg'));
+      selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg',group==='Enchants'));
       if(group!=='Runes') {const art=element('div','','selection-art');selectionArt.set(slot.id,art);wrap.prepend(art);}
       if(data.rarities[slot.id]) {
         const rarity=field(slot.label+' rarity','rarity-'+slot.id,data.rarities[slot.id].map(x=>({value:x,label:x})),settings()['rarity-'+slot.id]||data.rarities[slot.id][0],value=>{settings()['rarity-'+slot.id]=value;render();});
