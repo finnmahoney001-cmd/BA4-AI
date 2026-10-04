@@ -2,6 +2,10 @@
 
 ## Approved catalog expansion — 4 October 2026
 
+The full source audit fills missing supported catalog entries in the existing selectors and Library. Keep alphabetical order, compact layout, source descriptions, current rarity colors and saved item identities. Make canonical wiki names searchable for abbreviated workbook entries. No image or layout changes.
+
+Expose the missing Protoplague T21 set entries in all four supported slots, sorted alphabetically between Priyolkian and Pyroc, with matching Library cards and set effects. Add its two associated Mythics with the existing rarity treatment. No layout or image changes.
+
 Extend the existing selectors and Library with the reviewed missing runes and 2026 equipment. Preserve the Enchanted Tavern palette, compact layouts, alphabetical order, rarity controls and descriptions. Images are deferred. Show specific missing-value notices for newly announced equipment where official releases supply names without complete bonus/upgrade tables. Do not use old workbook-validation placeholder wording or hide missing coverage behind a zero bonus.
 
 ## Selected direction

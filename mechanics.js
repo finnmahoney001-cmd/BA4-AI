@@ -11,6 +11,14 @@
   d.items=d.items.filter(x=>!m.items[x.id]?.legacyVariant&&x.name!=='MythDef');
   d.normalizeEquipment=input=>{
     const out={...input,_settings:{...input?._settings}};
+    for(const item of d.items){
+      const migration=m.items[item.id]?.slotMigration;
+      if(migration&&out[migration.from]===item.id){
+        delete out[migration.from];
+        if(!out[migration.to])out[migration.to]=item.id;
+        out._settings['migration-note']=item.name+' belongs in '+migration.to+'. '+(out[migration.to]===item.id?'Moved the saved piece to its correct slot.':'Kept your existing '+migration.to+' item; select this piece again if needed.');
+      }
+    }
     for(const old of legacy) if(out[old.slot]===old.id || Object.values(out).includes(old.id)) {
       for(const slot of gear) if(out[slot]===old.id) delete out[slot];
       out.ring=d.items.find(x=>m.items[x.id]?.evoMode==='Offense')?.id;
@@ -28,7 +36,7 @@
   const lucky=p=>round(100*(1-Math.pow(1-Math.min(100,Math.max(0,p))/100,2)));
   function active(c,ctx) {
     if(!ctx.enabled)return false;
-    return (!c.weapon||c.weapon===ctx.weapon)&&(!c.shielded||ctx.shielded)&&(!c.lowest||ctx.lowest)&&(!c.highest||ctx.highest)&&(!c.allAlive||ctx.allAlive)&&(!c.lastAlive||ctx.lastAlive)&&(!c.spSkill||ctx.spCost>0)&&(!c.selfAbove||ctx.hp>c.selfAbove)&&(!c.selfBelow||ctx.hp<c.selfBelow)&&(!c.targetBelow||ctx.targetHP<c.targetBelow)&&(!c.targetAbove||ctx.targetHP>c.targetAbove)&&(!c.spAbove||ctx.sp>c.spAbove);
+    return (!c.weapon||c.weapon===ctx.weapon)&&(!c.shielded||ctx.shielded)&&(!c.lowest||ctx.lowest)&&(!c.highest||ctx.highest)&&(!c.allAlive||ctx.allAlive)&&(!c.lastAlive||ctx.lastAlive)&&(!c.spSkill||ctx.spCost>0)&&(!c.selfAbove||ctx.hp>c.selfAbove)&&(!c.selfBelow||ctx.hp<c.selfBelow)&&(!c.targetBelow||ctx.targetHP<c.targetBelow)&&(!c.targetAbove||ctx.targetHP>c.targetAbove)&&(!c.spAbove||ctx.sp>c.spAbove)&&(!c.bleeding||ctx.bleeding);
   }
   function evaluate(input={}) {
     const eq=d.normalizeEquipment(input), settings=eq._settings||{};
@@ -79,6 +87,7 @@
       if(item.slot==='accessory'&&settings['accessory-upgrades']==='No Upgrades')bonuses=facts.unupgraded||bonuses;
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
       if(settings['t12-'+item.slot]==='true'||settings['t12-'+item.slot]===true)add(name+' · T12+',facts.tierBonuses,factor);
+      for(const condition of facts.conditional||[])if(active(condition.when,ctx))add(name+' · combat condition',condition.bonuses,factor);
       if(facts.unresolved)warnings.push(facts.unresolved);
       if(facts.randomMountRoll) {
         const stat=settings['random-mount-stat'],range=facts.randomMountRoll[stat],value=settings['random-mount-value'];
@@ -191,6 +200,18 @@
       setCondition('BlackArrow',2,{Absorb:.5*Math.floor((100-ctx.hp)/10)});
     }
     if(unlocked('Akiho',4))add('Akiho · Redirect conversion',{Evade:Math.min(25,Math.floor((raw.Redirect||0)/5)*2.5)},sets.find(x=>x.name==='Akiho'&&x.threshold===4).multiplier);
+    for(const item of selected){
+      const conversion=m.items[item.id]?.resistanceConversion;
+      if(!conversion)continue;
+      const factor=(superPoly&&item.kind==='Myth')||(poly&&mythics[0]?.id===item.id)?2:1;
+      add(item.name+' · Resistance conversion',{[conversion.to]:(raw[conversion.from]||0)*conversion.rate},factor);
+    }
+    for(const item of selected){
+      const conversion=m.items[item.id]?.bonusConversion;
+      if(!conversion)continue;
+      const factor=(superPoly&&item.kind==='Myth')||(poly&&mythics[0]?.id===item.id)?2:1;
+      add(item.name+' · Bonus conversion',{[conversion.to]:Math.min(conversion.cap??Infinity,(raw[conversion.from]||0)*conversion.rate)},factor);
+    }
     const values={};d.stats.forEach(x=>{const key=x.label;values[x.id]=round(Math.min(key==='DR'?75:caps[key]??Infinity,Math.max(key==='DR'||key==='Damage'||key==='Speed'?-Infinity:0,raw[key]||0)));});
     const luck={};if(has('64-bit Clover'))for(const key of ['Crit Chance','Evade','Block','Absorb','Deflect','Dual Strike','Empower','Quad Strike','Redirect','Barrier','Ricochet'])luck[key]=lucky(Math.min(caps[key]??100,raw[key]||0));
     const elements=['Physical','Fire','Earth','Air','Electric','Water'];

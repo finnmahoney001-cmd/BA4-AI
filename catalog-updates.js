@@ -88,6 +88,7 @@
   ])add(name,'accessory','Leg',text+' Published seasonal values; upgrade scaling is not specified.',
     {source:season,bonuses,unresolved:name+': published bonus is shown; base versus upgraded values require verification.'});
   const definitions={
+    Protoplague:{tier:21,slots:['mainhand','head','body','ring'],effects:m.sets.Protoplague.effects},
     Cyberprawn:{tier:7,slots:['mainhand','offhand','ring','neck'],effects:{
       2:{text:'Your team gains 3% Damage.',bonuses:{Damage:3}},
       3:{text:'Your team gains 10% SP regeneration.',bonuses:{'SP Regen':10}},
@@ -107,7 +108,7 @@
   for(const [name,def] of Object.entries(definitions)) {
     m.sets[name]={verified:true,maxPieces:4,effects:Object.fromEntries(Object.entries(def.effects).map(([n,e])=>[n,{source:boss,conditional:[],...e}]))};
     d.setEffects[name]=Object.fromEntries(Object.entries(def.effects).map(([n,e])=>[n,e.text]));
-    for(const slot of def.slots)add(name,slot,'Set','Gallus Apotheosis '+name+' set.',{source:preview},{setName:name,tier:def.tier});
+    for(const slot of def.slots)add(name,slot,'Set',name+' set.',{source:name==='Protoplague'?'https://bit-heroes.fandom.com/wiki/Equipment/Set':preview},{setName:name,tier:def.tier});
   }
   for(const [name,slot,tier,text,bonuses] of [
     ['Cyberprawn Suit','body',7,'2% Empower and 2% Speed.',{Empower:2,Speed:2}],
@@ -121,4 +122,9 @@
     'Double bonuses of all equipped Mythic equipment. Available as mainhand or offhand at T21.',
     {source:preview,ancient:'Supercharged Polychromatic Blaster',tierBonuses:{Damage:5,DR:5},
       unresolved:'Supercharged Polychromatic Blaster: published equipment bonuses are doubled; rune/enchant rarity interactions and unverified item values are not assumed.'},{tier:21});
+  const mythSource='https://bit-heroes.fandom.com/wiki/Equipment/Mythic';
+  add('Protoplague Cutter','offhand','Myth','Give one Heartwood stack to all teammates whenever an enemy dies. +4% Earth Damage and +4% Air Resistance.',
+    {source:mythSource,tierBonuses:{'Earth Dmg':4,'Air Res':4}},{tier:21});
+  add('Protoplague Trinket','neck','Myth','Gain 0.5% Earth Damage for each 1% Air Resistance. +4% Earth Damage and +4% Air Resistance.',
+    {source:mythSource,tierBonuses:{'Earth Dmg':4,'Air Res':4},resistanceConversion:{from:'Air Res',to:'Earth Dmg',rate:0.5}},{tier:21});
 })();

@@ -2,6 +2,10 @@
 
 ## Approved catalog expansion — 4 October 2026
 
+Full catalog audit: compare every selectable Set slot, Mythic gear row, Ancient form, Legendary/Mythic accessory, pet and mount, rune identity and enchant bonus against fresh wiki tables and official release notes. Add every confirmed omission in those supported categories, including Boomsmasher and Hazmatt. Preserve saved IDs; map workbook abbreviations and spelling variants to searchable canonical aliases rather than duplicating equipment. Record source coverage and unresolved published values. Images remain deferred. Verify catalog completeness from source rows rather than effect-table presence.
+
+Protoplague correction: its set effects existed without selectable gear. Add the four T21 set slots (Mainhand, Head, Body, Ring), plus Protoplague Cutter (Mythic Offhand) and Protoplague Trinket (Mythic Neck). Keep Heartwood and living-teammate bonuses conditional; calculate the Trinket's sourced Air Resistance to Earth Damage conversion from equipped permanent bonuses. Images remain deferred.
+
 Add the 31 missing wiki-listed rune types (Major, Meta, Relic and Artifact) in every compatible slot, with Legendary/Mythic values and source-backed hover descriptions. Support their permanent modifiers and retain triggered/conditional effects separately; combat snapshot controls remain deferred. Store canonical Gerou with Georu as a searchable alias, noting the official patch-note spelling.
 
 Add the reviewed 2026 Mythic and seasonal pets/accessories/mounts, Gallus Apotheosis sets and associated Mythics, and both forms of Supercharged Polychromatic Blaster. Do not download images in this update. Confirmed releases with unpublished or conflicting values remain selectable with a specific verification notice; never assign guessed bonuses, upgrade increments, elemental modifiers or proc rates. Keep the existing save/load IDs and alphabetic selectors. The October 2025 announcement confirms twelve runes, but does not establish a separate twelve-name list; avoid duplicate speculative entries.
