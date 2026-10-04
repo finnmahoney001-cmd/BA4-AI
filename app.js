@@ -58,6 +58,7 @@ function validEquipment(equipment) {
   const result={};
   for(const slot of data.slots) if(data.items.some(item=>item.id===equipment?.[slot.id]&&item.slot===slot.id)) result[slot.id]=equipment[slot.id];
   if(equipment?._settings && typeof equipment._settings==='object') result._settings={...equipment._settings};
+  if(result._settings) {const deferred=['combat-mode','self-hp','target-hp','current-sp','skill-sp','shielded','health-rank','team-state','weapon-type','enemies','allies','first-incoming','first-outgoing','target-shielded','target-status','attack-type'];deferred.forEach(key=>delete result._settings[key]);}
   return result;
 }
 function readBuilds() {
@@ -80,7 +81,7 @@ function calculate(equipment) {
   try {return data.calculate(equipment);} catch {return null;}
 }
 function statValue(results,id) {const value=results?.[id]; return typeof value==='number'&&Number.isFinite(value)?Number(value.toFixed(3))+'%':'—';}
-const equipmentName=(equipment,slotId)=>data.items.find(item=>item.id===equipment[slotId])?.name || 'Empty slot';
+const equipmentName=(equipment,slotId)=>BH_UI.name(data.items.find(item=>item.id===equipment[slotId]));
 function artwork(item,compact=false) {
     if(item.image) {const image=document.createElement('img'); image.src=item.image; image.alt=item.imageAlt||item.name; image.className='item-image'; image.loading='lazy'; image.addEventListener('error',()=>{const fallback=element('div','Artwork unavailable','art-placeholder'+(compact?' compact-art':''));fallback.setAttribute('role','img');fallback.setAttribute('aria-label','Missing image for '+item.name);image.replaceWith(fallback);},{once:true}); return image;}
   const art=element('div','[ADD: image of equipment item]','art-placeholder'+(compact?' compact-art':''));
@@ -135,9 +136,9 @@ if(page==='library') {
     const needle=$('#library-search').value.trim().toLowerCase();
     const items=data.items.filter(item=>(!slotFilter.value||item.slot===slotFilter.value)&&(item.name+' '+item.description).toLowerCase().includes(needle));
     slotFilter.classList.toggle('filter-active',Boolean(slotFilter.value)); $('#library-results').replaceChildren(); $('#library-empty').hidden=items.length>0; $('#result-count').textContent=items.length+' workbook records';
-    items.forEach(item=>{
+    items.sort(BH_UI.compare).forEach(item=>{
       const card=document.createElement('article'); card.className='panel item-card'; card.dataset.kind=item.kind;
-      card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',item.name),element('p',item.description,'quiet'),element('p',item.kind,'technical saved-stat'));
+      BH_UI.describe(card,item);card.append(artwork(item,true),element('p',data.slots.find(slot=>slot.id===item.slot)?.label||'','technical detail-kicker'),element('h2',BH_UI.name(item)),element('p',item.description,'quiet'),element('p',item.kind,'technical saved-stat'));
       const link=element('a','Use in planner','button-link'); link.href=route('index.html?item='+encodeURIComponent(item.id)); card.append(link); $('#library-results').append(card);
     });
   }

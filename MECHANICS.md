@@ -72,3 +72,6 @@ Sources: [Official elemental FAQ](https://bitheroes.zendesk.com/hc/en-us/article
 ## Validation
 
 Run `verification/mechanics.test.cjs` with Node. The checks cover bases, Ancient passives, set thresholds, Starweave, Poly gear counts, Elementarium non-stacking, W3-4TY exceptions, enchant combinations, upgrade changes, caps, Clover probabilities, Evolvium migration, conditional snapshots and elemental weighting. Browser verification checks live totals and the read-only setup layout. Authentication was not changed.
+
+## Deferred interface
+The optional combat snapshot is deferred. The site uses permanent totals and ignores old saved combat assumptions; the engine retains conditional calculations for a future return. Existing Evolvium upgrade choices remain available. Item choices are alphabetical and display source-backed descriptions.

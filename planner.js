@@ -7,15 +7,13 @@ if(page==='planner') {
   const linked=data.items.find(item=>item.id===query.get('item'));
   if(linked) equipment[linked.slot]=linked.id;
   let selected=linked?.slot || 'mainhand';
-  const selectors=new Map(), typeSelectors=new Map(), tileButtons=new Map(), selectionArt=new Map();
+  const dropdowns=new Map(), selectors=new Map(), typeSelectors=new Map(), tileButtons=new Map(), selectionArt=new Map();
   const itemFor=slot=>data.items.find(item=>item.id===equipment[slot]);
   const settings=()=>equipment._settings || (equipment._settings={});
   const mechanicsPanel=element('section','','panel mechanics-controls');
-  mechanicsPanel.append(element('h2','Ancient options & combat conditions'));
+  mechanicsPanel.append(element('h2','Equipment options'));
   const ancientControls=element('div','','control-grid');mechanicsPanel.append(ancientControls);
-  const combatBox=element('details','','combat-options');combatBox.append(element('summary','Optional combat snapshot'));
-  const combatControls=element('div','','control-grid');combatBox.append(combatControls);mechanicsPanel.append(combatBox);
-  function setting(label,key,options,defaultValue,parent=combatControls) {
+  function setting(label,key,options,defaultValue,parent=ancientControls) {
     const control=field(label,key,options.map(value=>({value,label:value})),settings()[key]||defaultValue,value=>{settings()[key]=value;render();});
     parent.append(control.wrap);return control;
   }
@@ -39,7 +37,7 @@ if(page==='planner') {
       }
       const select=document.createElement('select');select.id='select-'+slot.id;
       select.addEventListener('change',()=>{if(select.value)equipment[slot.id]=select.value;else delete equipment[slot.id];selected=slot.id;render();});
-      selectors.set(slot.id,select);wrap.append(select);
+      selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg'));
       if(group!=='Runes') {const art=element('div','','selection-art');selectionArt.set(slot.id,art);wrap.prepend(art);}
       if(data.rarities[slot.id]) {
         const rarity=field(slot.label+' rarity','rarity-'+slot.id,data.rarities[slot.id].map(x=>({value:x,label:x})),settings()['rarity-'+slot.id]||data.rarities[slot.id][0],value=>{settings()['rarity-'+slot.id]=value;render();});
@@ -54,23 +52,6 @@ if(page==='planner') {
     $('#workbook-controls').append(panel);
   }
   $('#workbook-controls').after(mechanicsPanel);
-  setting('Totals','combat-mode',['permanent','snapshot'],'permanent');
-  setting('Your HP %','self-hp',['100','90','75','70','60','50','40','30','25','20','10'],'100');
-  setting('Target HP %','target-hp',['100','90','75','70','60','50','40','30','25','20','10'],'100');
-  setting('Current SP','current-sp',['0','1','2','3','4','5','6'],'0');
-  setting('Skill SP cost','skill-sp',['0','1','2','3','4','5','6'],'0');
-  setting('Shielded','shielded',['no','yes'],'no');
-  setting('Health in team','health-rank',['unspecified','lowest','highest'],'unspecified');
-  setting('Team state','team-state',['unspecified','all','last'],'unspecified');
-  setting('Mainhand weapon type','weapon-type',['Other','Sword','Spear','Bow','Staff','Laser'],'Other');
-  setting('Enemies alive','enemies',['1','2','3','4','5'],'1');
-  setting('Allies alive including you','allies',['1','2','3','4','5'],'1');
-  setting('First attack received from opponent','first-incoming',['no','yes'],'no');
-  setting('First attack against opponent','first-outgoing',['no','yes'],'no');
-  setting('Target shielded','target-shielded',['no','yes'],'no');
-  setting('Target status','target-status',['none','rooted','bleeding'],'none');
-  setting('Attack type','attack-type',['ordinary','projectile'],'ordinary');
-  mechanicsPanel.append(element('p','Permanent totals are the default. Snapshot adds supported bonuses for the conditions you choose. Triggered skills and temporary stacks remain listed as effects.','quiet'));
   function renderAncientOptions() {
     ancientControls.replaceChildren();
     const ring=itemFor('ring'),meta=ring&&window.BH_MECHANICS.items[ring.id];
@@ -90,13 +71,12 @@ if(page==='planner') {
     const mount=itemFor('mount');if(mount&&window.BH_MECHANICS.items[mount.id]?.mountRoll)setting('Mount rolled bonus %','mount-roll',['1','2','3','4','5','6','7','8'],'1',ancientControls);
     for(const slot of ['mainhand','offhand','head','body','neck','ring']) {const item=itemFor(slot);if(item&&window.BH_MECHANICS.items[item.id]?.gearRoll)setting(item.name+' rolled bonus %','gear-roll-'+slot,['1','2','3','4','5','6','7','8'],'1',ancientControls);}
     if(!ancientControls.childElementCount)ancientControls.append(element('p','Equip Evolvium, an amplifier Ancient, Sacramentum or a rolled mount to choose its bonuses.','quiet'));
-    for(const select of combatControls.querySelectorAll('select'))select.value=settings()[select.id]||select.options[0].value;
   }
   function updateOptions(slotId) {
     const select=selectors.get(slotId), type=typeSelectors.get(slotId)?.value;
     select.replaceChildren();const empty=element('option','Empty slot');empty.value='';select.append(empty);
-    data.items.filter(item=>item.slot===slotId&&(!type||item.kind===type)).forEach(item=>{const option=element('option',item.name);option.value=item.id;option.dataset.kind=item.kind;select.append(option);});
-    select.value=equipment[slotId]||'';select.dataset.kind=itemFor(slotId)?.kind||'';
+    data.items.filter(item=>item.slot===slotId&&(!type||item.kind===type)).sort(BH_UI.compare).forEach(item=>{const option=element('option',BH_UI.name(item));option.value=item.id;option.dataset.kind=item.kind;select.append(option);});
+    select.value=equipment[slotId]||'';select.dataset.kind=itemFor(slotId)?.kind||'';dropdowns.get(slotId).refresh();
   }
   for(const slot of data.slots.filter(slot=>slot.group==='Main Equips')) {
     const tile=element('article','','loadout-tile');tile.dataset.equipmentTile=slot.id;
@@ -122,7 +102,7 @@ if(page==='planner') {
     selectionArt.forEach((holder,slot)=>{const item=itemFor(slot);holder.replaceChildren();holder.hidden=!item?.image;if(item?.image)holder.append(artwork(item,true));});
     selectors.forEach((select,slot)=>{const item=itemFor(slot),type=typeSelectors.get(slot);if(type&&item&&type.value&&type.value!==item.kind)type.value=item.kind;if(type)type.dataset.kind=type.value;updateOptions(slot);});
     document.querySelectorAll('[id^=rarity-]').forEach(select=>select.dataset.kind=select.value);
-    tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',item?.name||'Empty slot'),element('span',item?.kind||'Empty','type-badge'));});
+    tileButtons.forEach((tile,slot)=>{const item=itemFor(slot);BH_UI.describe(tile,item);tile.dataset.kind=item?.kind||'Empty';tile.replaceChildren(element('span',data.slots.find(x=>x.id===slot).label,'technical'),artwork(item||{name:data.slots.find(x=>x.id===slot).label,image:''},true),element('strong',BH_UI.name(item)),element('span',item?.kind||'Empty','type-badge'));});
     $('#equipped-count').textContent=[...tileButtons.keys()].filter(slot=>equipment[slot]).length+' / 9';
     // Equipped!C8 uses an exact lookup and defaults to Physical when unmatched.
     const report=data.evaluate(equipment),results=report.values;
@@ -138,7 +118,7 @@ if(page==='planner') {
     $('#setup-extras').replaceChildren();
     for(const group of ['Runes','Enchants']) {
       const section=element('section','','setup-group');section.append(element('h3',group));const list=document.createElement('dl');list.dataset.group=group;
-      data.slots.filter(slot=>slot.group===group).forEach(slot=>{const row=document.createElement('div');row.dataset.slot=slot.id;const item=itemFor(slot.id),rarity=item&&settings()['rarity-'+slot.id];row.append(element('dt',slot.label,'technical'));if(item?.image)row.append(artwork(item,true));row.append(element('dd',(item?.name||'Empty slot')+(rarity?' · '+rarity:'')));list.append(row);});section.append(list);$('#setup-extras').append(section);
+      data.slots.filter(slot=>slot.group===group).forEach(slot=>{const row=document.createElement('div');row.dataset.slot=slot.id;const item=itemFor(slot.id),rarity=item&&settings()['rarity-'+slot.id];row.append(element('dt',slot.label,'technical'));if(item?.image)row.append(artwork(item,true));row.append(element('dd',BH_UI.name(item)+(rarity?' · '+rarity:'')));BH_UI.describe(row,item,rarity);list.append(row);});section.append(list);$('#setup-extras').append(section);
     }
     const info=element('section','','setup-group');info.append(element('h3','Build settings'));const list=document.createElement('dl');
     for(const [label,value] of [['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);

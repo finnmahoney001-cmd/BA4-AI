@@ -80,3 +80,15 @@ dialog{padding:22px;background:#a5b5c1;color:#182936;width:min(600px,calc(100% -
 .setup-group .item-image { height: 64px; margin: 8px auto; }
 .loadout-tile .item-image { background: #192630; border: 3px solid #617583; padding: 12px; }
 @media(max-width:600px) { .mechanics-controls > .control-grid,.combat-options .control-grid { grid-template-columns: minmax(0,1fr); } }
+
+/* Item choices expose effects before and after equipping. */
+.selection-field{position:relative}
+.item-choice{width:100%;min-height:48px;text-align:left;padding:8px 42px 8px 8px;background:#20313f;border:3px solid #0e1a24;box-shadow:inset 0 2px #526774;color:#fff;position:relative;font-size:17px;overflow-wrap:anywhere}
+.item-choice::after{content:'▾';position:absolute;right:0;top:0;bottom:0;width:32px;display:grid;place-items:center;background:linear-gradient(#78c9ee,#4592c5);color:#172934}
+.item-choice-list{position:absolute;left:0;top:100%;width:max(100%,280px);max-width:calc(100vw - 36px);max-height:340px;overflow:auto;background:#20313f;border:3px solid #88acbf;z-index:100;box-shadow:5px 5px #0e1a24}
+.item-choice-list button{display:block;width:100%;text-align:left;background:#20313f;color:#fff;padding:10px;border:0;border-bottom:2px solid #101c25;box-shadow:none}
+.item-choice-list strong,.item-choice-list small{display:block}.item-choice-list small{color:#cbd8e1;font-size:16px;line-height:1.4;white-space:pre-line;margin-top:5px}
+.item-choice-list button:hover,.item-choice-list button:focus-visible{background:#3d566a;outline:3px solid #a4dfef;outline-offset:-3px}
+.item-choice[data-kind=Set],.item-choice-list [data-kind=Set] strong{color:#00fffc}.item-choice[data-kind=Myth],.item-choice-list [data-kind=Myth] strong{color:#ff0048}.item-choice[data-kind=Ancient],.item-choice-list [data-kind=Ancient] strong{color:#d6a71c}.item-choice[data-kind=Leg],.item-choice-list [data-kind=Leg] strong{color:#ffff00}
+.description-popup{position:fixed;z-index:1000;max-width:min(370px,calc(100vw - 24px));padding:14px;background:#142631;border:3px solid #a4dfef;color:#fff;box-shadow:5px 5px #08131b;font-size:18px;line-height:1.5;white-space:pre-line;pointer-events:none}
+[hidden]{display:none!important}
