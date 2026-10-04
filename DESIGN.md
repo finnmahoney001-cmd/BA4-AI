@@ -1,8 +1,12 @@
 # Bit Heroes Build Planner
 
+## Guest entry and saving — 4 October 2026
+
+Open the planner immediately for signed-out visitors. Library and draft editing remain available. Show Log In for guests and Log Out for signed-in visitors. Save build requires a verified Supabase session, even in local preview. Preserve the draft and name while prompting login, then finish the requested save once after successful authentication. Continue building returns to the preserved draft. Saved builds still use browser storage; no cloud database is added. This replaces earlier whole-site authentication gating.
+
 ## Remaining bonuses and effect scope
 
-Pet and Accessory upgrade cards stretch to the same full stack width. Myth Effects includes only mainhand, offhand, head, body, neck and ring. Parentheses show remaining potential above the displayed value, subtracting contributions already included; hover identifies each remaining source.
+Pet and Accessory upgrade cards stretch to the same full stack width. Myth Effects includes only mainhand, offhand, head, body, neck and ring. Parentheses show remaining potential above the displayed value, subtracting contributions already included; hover identifies each remaining source. Akiho uses normal set values and converts only Redirect supplied by the build, without an assumed maximum or doubling.
 
 ## Compare and Library bulk correction
 
@@ -68,12 +72,12 @@ Display saved build cards with build name, equipment, calculated bonus percentag
 Search and slot filters use imported workbook records. Show source type and effect descriptions where present, images as missing, and a use-in-planner link. Search and filters combine, clear together, and have an empty state. Categories come from the workbook; never invent game records or numerical bonuses.
 
 ## Log In — login.html
-A dark page with one centered panel: site name, one-line description, email/password fields, Log In, Sign Up, and a status/error area. No artwork or marketing. Load Supabase from its CDN, use public browser settings only, check signed-in sessions on normal application URLs, and redirect signed-out visitors here. Redirect to index.html after a successful authenticated session; show confirmation instructions if email confirmation is required. Log Out returns here. Never create database tables or visitor profiles.
+A dark page with one centered panel: site name, one-line description, email/password fields, Log In, Sign Up, and a status/error area. No artwork or marketing. Load Supabase from its CDN, use public browser settings only, check signed-in sessions on normal application URLs, and allow signed-out visitors to build; prompt login only when saving. Redirect to index.html after a successful authenticated session; show confirmation instructions if email confirmation is required. Log Out returns to the planner in guest mode. Never create database tables or visitor profiles.
 
 ## Data and review boundary
 The supplied Bit Heroes Builder (2).xlsx and its PDF export now provide layout, equipment names, effects, controls, and formulas. Forty-three ordinary formula cells contain broken #REF! references, and additional logic requires validation before porting numerical totals. Use the audited mechanics tables and evaluator, retain uncertainty notices, and preserve the original workbook. The user supplied public Supabase settings; live authentication still requires verification with a user account and deployment URL settings.
 
-Keep ?preview=1 as an explicit local design-review mode only on localhost, loopback, or file URLs. A hosted page cannot bypass authentication using the preview query. Normal root application URLs are gated. No account information is saved by application code; only build selections are stored locally. Preserve previously saved scheme 3 placeholder builds when migrating storage.
+Keep ?preview=1 as an explicit local design-review mode only on localhost, loopback, or file URLs. A hosted page cannot bypass authentication using the preview query. Normal root application URLs open in guest mode. Saving requires a verified Supabase session; local preview does not bypass this requirement. No account information is saved by application code; only build selections are stored locally. Preserve previously saved scheme 3 placeholder builds when migrating storage.
 
 ## Assets and delivery
 Plain HTML, CSS, and JavaScript only; no framework, package manager, or build step. All website links and local assets are relative. Put user item images under images/. Every page has a title, a one-line description, and shared locally authored share artwork. Never generate fake game assets. No decorative transitions or animated counters. Document remaining data/auth requirements in README.md and verify desktop and phone layouts before delivery.

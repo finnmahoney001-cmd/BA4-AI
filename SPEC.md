@@ -1,8 +1,12 @@
 # Bit Heroes Build Planner Specification
 
+## Guest entry and saving — 4 October 2026
+
+Open the planner immediately for signed-out visitors. Library and draft editing remain available. Show Log In for guests and Log Out for signed-in visitors. Save build requires a verified Supabase session, even in local preview. Preserve the draft and name while prompting login, then finish the requested save once after successful authentication. Continue building returns to the preserved draft. Saved builds still use browser storage; no cloud database is added. This replaces earlier whole-site authentication gating.
+
 ## Remaining bonuses and effect scope
 
-Give both stacked upgrade cards width 100% with identical sizing. Filter Myth Effects to the six ordinary gear slots. Bonus summary subtracts the actual displayed report from the potential report. Akiho's Redirect conversion potential uses its published 25% ceiling, subtracting conversion already included in the displayed report; retain other independent conditional sources separately. Apply the shared remaining-bonus summary to Planner, Closet and Compare.
+Give both stacked upgrade cards width 100% with identical sizing. Filter Myth Effects to the six ordinary gear slots. Bonus summary subtracts the actual displayed report from the potential report. Akiho converts the evaluated build's actual Redirect: 2.5% Evade per complete 5% Redirect, capped at 25%, without doubling or assuming the cap is reached. With no Redirect it grants no conversion bonus. Its normal separate conditions grant 5% Evade for lowest health and 15% while shielded. Apply the shared remaining-bonus summary to Planner, Closet and Compare.
 
 ## Compare and Library bulk correction
 
@@ -39,7 +43,7 @@ The goal is to make complicated build information efficient, understandable, and
 
 ### login.html
 Purpose:
-Provide the temporary authentication gate for the entire site.
+Allow guest building; require login only when saving a named build.
 
 Content:
 Site name.
@@ -52,7 +56,7 @@ Authentication errors and confirmation messages.
 
 This page is never gated.
 
-The login page is expected to be removed in a later version, but it is required for the current assignment.
+Keep the login page for saving builds and account access.
 
 ### index.html
 Page name:
@@ -144,15 +148,15 @@ login.html is never gated.
 
 index.html is the home page.
 
-Every page except login.html must check whether the visitor is signed in.
+Application pages open immediately for guests. Check the Supabase session for account controls and before saving.
 
-If a visitor is signed out, immediately send them to login.html.
+When a signed-out visitor presses Save build, preserve their draft and name, then prompt login. After successful login, return to the planner and finish that requested save once.
 
 After successful log-in or sign-up, send the visitor to index.html.
 
 Every signed-in page must have a Log Out control.
 
-After logging out, send the visitor to login.html.
+After logging out, return to index.html in guest mode.
 
 Do not create any application database tables.
 
@@ -284,7 +288,7 @@ Invented game data.
 - [ ] Works on a phone.
 - [ ] The menu reaches every page.
 - [ ] Sign up, log in and log out work.
-- [ ] Typing a page address ending in .html while signed out sends me to login.html.
+- [ ] Signed-out visitors can open the planner and Library; saving prompts login and preserves the draft.
 - [ ] Every image has alt text.
 - [ ] The live link opens in a new tab or window.
 

@@ -15,12 +15,21 @@ for(const link of document.querySelectorAll('[data-route]')) {
   if(link.dataset.page===page) link.setAttribute('aria-current','page');
 }
 let client = null;
+let signedIn = false;
+const PENDING_SAVE_KEY='bh-pending-save-v1';
+const loginReturn=()=>query.get('save')==='1'?'index.html?save=1':'index.html';
+function updateAccountControl() {
+  const button=$('#logout');
+  if(button) button.textContent=signedIn?'Log Out':'Log In';
+}
 async function authenticate() {
-  if(preview) { document.body.hidden=false; return; }
+  // Building is public and never waits for an authentication service.
+  document.body.hidden=false;
+  updateAccountControl();
   const config=window.PUBLIC_SUPABASE || {};
   if(!config.url || !config.key) {
-    if(page!=='login') {location.replace('login.html'); return;}
-    document.body.hidden=false; announce('Sign-in needs the public Supabase URL and key. Local design preview is available below.'); return;
+    if(page==='login') announce('Sign-in is not configured yet. You can still build without logging in.');
+    return;
   }
   try {
     await new Promise((resolve,reject)=>{
@@ -30,25 +39,44 @@ async function authenticate() {
     });
     client=window.supabase.createClient(config.url,config.key);
     const {data:sessionData,error}=await client.auth.getSession(); if(error) throw error;
-    if(page!=='login'&&!sessionData.session) {location.replace('login.html'); return;}
-    if(page==='login'&&sessionData.session) {location.replace('index.html'); return;}
-    document.body.hidden=false;
+    signedIn=!!sessionData.session;
+    updateAccountControl();
+    if(page==='login'&&signedIn) location.replace(loginReturn());
   } catch(error) {
-    if(page!=='login') {location.replace('login.html'); return;}
-    document.body.hidden=false; announce(error.message);
+    if(page==='login') announce(error.message);
   }
 }
+async function requireSaveSession(name,equipment) {
+  await authReady;
+  if(client) {
+    try {
+      const {data:sessionData,error}=await client.auth.getSession();
+      if(error) throw error;
+      signedIn=!!sessionData.session;
+      updateAccountControl();
+      if(signedIn) return true;
+    } catch(error) {announce('Could not verify login. Please log in to save your build.');}
+  }
+  try {
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));
+    sessionStorage.setItem(PENDING_SAVE_KEY,JSON.stringify({name}));
+  } catch {announce('Browser storage is unavailable. Your draft could not be preserved for login.');return false;}
+  location.href='login.html?save=1';
+  return false;
+}
 $('#logout')?.addEventListener('click',async()=>{
+  await authReady;
+  if(!signedIn) {location.href='login.html';return;}
   if(client) {const {error}=await client.auth.signOut(); if(error) {announce(error.message); return;}}
-  location.href='login.html';
+  location.href='index.html';
 });
 $('#auth-form')?.addEventListener('submit',async event=>{
-  event.preventDefault(); if(!client) {announce('Sign-in is not configured yet. Use the local design preview.'); return;}
+  event.preventDefault(); if(!client) {announce('Sign-in is not available yet. You can continue building without logging in.'); return;}
   const submitter=event.submitter || $('#auth-form button[type=submit]');
   const buttons=[...$('#auth-form').querySelectorAll('button')]; buttons.forEach(b=>b.disabled=true);
   try {
     const {data:result,error}=await client.auth[submitter.value]({email:$('#email').value,password:$('#password').value});
-    if(error) throw error; if(result.session) location.href='index.html'; else announce('Check your email to confirm your account, then log in.');
+    if(error) throw error; if(result.session) location.href=loginReturn(); else announce('Check your email to confirm your account, then log in.');
   } catch(error) {announce(error.message);} finally {buttons.forEach(b=>b.disabled=false);}
 });
 if($('#preview-link')) $('#preview-link').hidden=!localReview;
@@ -232,4 +260,4 @@ if(page==='library') {
   renderLibrary();
 }
 
-authenticate();
+const authReady=authenticate();
