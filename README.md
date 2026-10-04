@@ -41,3 +41,7 @@ The planner has Edit Build and Full Setup tabs. Full Setup shows the current equ
 ## Equipment artwork
 
 The upload bundle now includes 532 local equipment sprites from the Bit Heroes Wiki. Full Setup, item selectors, enchant tiles and Library use the files under images/equipment/. Source URLs and unavailable artwork are recorded in IMAGE-SOURCES.md and images/image-manifest.json. Upload the entire images folder alongside the HTML and JavaScript files.
+
+## Upload batches
+
+Keep images/equipment/1/ through images/equipment/6/ as arranged. Upload each numbered folder in a separate batch, preserving its path. The updated data.js and image manifest use these exact locations. No image files were renamed or moved.

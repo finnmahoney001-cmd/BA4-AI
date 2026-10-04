@@ -101,3 +101,7 @@ The wiki uses unknown-image placeholders for many newer set pieces. Those remain
 | Peach / Deano / Spomder | mount |
 | Teddy | mount |
 | Supercharged Harvester | mainhand |
+
+## Upload batches
+
+Keep images/equipment/1/ through images/equipment/6/ as arranged. Upload each numbered folder in a separate batch, preserving its path. The updated data.js and image manifest use these exact locations. No image files were renamed or moved.
