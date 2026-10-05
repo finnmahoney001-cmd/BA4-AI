@@ -138,7 +138,7 @@ if(page==='closet') {
       card.append(element('p',equipped.length+' equipped slots','quiet build-count'));
       const details=document.createElement('details');details.className='build-details';details.open=expanded.has(build.id);details.append(element('summary','Bonus %'));details.addEventListener('toggle',()=>{if(details.open)expanded.add(build.id);else expanded.delete(build.id);});
       const mainEquipment=element('dl','','closet-main-equipment');
-      ['mainhand','neck','head','ring','body','accessory','offhand','pet','mount'].forEach(slotId=>{
+      ['mainhand','neck','offhand','ring','head','accessory','body','pet','mount'].forEach(slotId=>{
         const slot=data.slots.find(entry=>entry.id===slotId),item=data.items.find(entry=>entry.id===build.equipment[slotId]);
         const row=element('div',''),name=element('dd',item?BH_UI.label(item):'Empty slot');
         if(item){name.dataset.kind=item.kind;BH_UI.describe(name,item,build.equipment._settings?.['rarity-'+slotId],build.equipment._settings||{});}

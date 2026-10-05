@@ -113,7 +113,7 @@ Repeated Library additions fill empty compatible slots first, then cycle replace
 
 
 ## Equipped inventory orientation
-Full Setup places Mainhand, Head, Body and Offhand down the left; Neck, Ring, Accessory and Pet down the right; Mount centered underneath. Keep this display order separate from calculation and selection slot identities.
+Full Setup places Mainhand, Offhand, Head and Body down the left; Neck, Ring, Accessory and Pet down the right; Mount centered underneath. Keep this display order separate from calculation and selection slot identities.
 
 
 ## Library include and exclude filters
