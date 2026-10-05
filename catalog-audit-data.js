@@ -1,30 +1,6 @@
 window.BH_CATALOG_REPAIRS = {
   "setAdditions": [
     {
-      "name": "Supay",
-      "slot": "mainhand",
-      "tier": 14,
-      "piece": "Supay Laceration"
-    },
-    {
-      "name": "Supay",
-      "slot": "offhand",
-      "tier": 14,
-      "piece": "Supay Spikeshield"
-    },
-    {
-      "name": "Supay",
-      "slot": "body",
-      "tier": 14,
-      "piece": "Supay Drape"
-    },
-    {
-      "name": "Supay",
-      "slot": "ring",
-      "tier": 14,
-      "piece": "Supay Tribute Pin"
-    },
-    {
       "name": "Boomsmasher",
       "slot": "mainhand",
       "tier": 7,

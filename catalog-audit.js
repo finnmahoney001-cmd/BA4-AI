@@ -14,17 +14,12 @@
  }
  const fyssas=d.items.find(i=>i.id===r.fyssasId);
  fyssas.slot='neck';m.items[fyssas.id].slotMigration={from:'ring',to:'neck'};
- m.sets.Supay={verified:true,maxPieces:4,effects:{
-  2:{text:'Teammates in front of you gain +5% Earth Resistance.',bonuses:{},conditional:[],source:wiki+'Equipment/Set'},
-  3:{text:'When you get hit, gain 3% Earth Resistance, up to 15%.',bonuses:{},conditional:[],source:wiki+'Equipment/Set'},
-  4:{text:'+20% Block. Gain 25% Barrier if you have the lowest health of your team.',bonuses:{Block:20},conditional:[{when:{lowest:true},bonuses:{Barrier:25}}],source:wiki+'Equipment/Set'}
- }};
  m.sets.Thonderstriker={verified:true,maxPieces:4,effects:{
   2:{text:'Gain 10% Barrier while above 50% health. Gain 5% Absorb while below 50% health.',bonuses:{},conditional:[{when:{selfAbove:50},bonuses:{Barrier:10}},{when:{selfBelow:50},bonuses:{Absorb:5}}],source:wiki+'Equipment/Set'},
   3:{text:'Gain 12% Absorb while below 50% health. Gain 40% Block while above 50% health.',bonuses:{},conditional:[{when:{selfBelow:50},bonuses:{Absorb:12}},{when:{selfAbove:50},bonuses:{Block:40}}],source:wiki+'Equipment/Set'},
   4:{text:'50% chance to deal 10% Electric Damage to yourself when receiving skill healing. 50% chance to spread shield and heal for 30% when hit. Gain 30% Barrier while above 50% health.',bonuses:{},conditional:[{when:{selfAbove:50},bonuses:{Barrier:30}}],source:wiki+'Equipment/Set'}
  }};
- for(const name of ['Supay','Boomsmasher','Hazmatt','Thonderstriker'])d.setEffects[name]=Object.fromEntries(Object.entries(m.sets[name].effects).map(([n,e])=>[n,e.text]));
+ for(const name of ['Boomsmasher','Hazmatt','Thonderstriker'])d.setEffects[name]=Object.fromEntries(Object.entries(m.sets[name].effects).map(([n,e])=>[n,e.text]));
  for(const item of r.setAdditions)add(item.name,item.slot,'Set',item.name+' set.',{source:wiki+'Equipment/Set'},
   {setName:item.name,tier:item.tier,aliases:[item.piece]});
  const mythFacts={

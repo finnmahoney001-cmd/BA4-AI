@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner Specification
 
+## Catalog exclusion — 5 October 2026
+
+Remove the set identified in the user's latest screenshot from every equipment selector, Library result, effect panel and saved-build display. It is explicitly disallowed. Old draft and saved item IDs resolve to empty slots; other equipment stays intact. Keep imported reference evidence unchanged.
+
 ## Guest entry and saving — 4 October 2026
 
 Open the planner immediately for signed-out visitors. Library and draft editing remain available. Show Log In for guests and Log Out for signed-in visitors. Save build requires a verified Supabase session, even in local preview. Preserve the draft and name while prompting login, then finish the requested save once after successful authentication. Continue building returns to the preserved draft. Saved builds still use browser storage; no cloud database is added. This replaces earlier whole-site authentication gating.
