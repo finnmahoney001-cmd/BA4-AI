@@ -30,6 +30,64 @@
     for(const slot of gear) {const item=byId.get(out[slot]);if(item){if(typeof item.tier==='number'&&item.tier>=12)out._settings['t12-'+slot]='true';else if(out._settings['t12-'+slot]===undefined)out._settings['t12-'+slot]='false';}}
     return out;
   };
+
+  // Explicit source-reviewed corrections; history-based gains are potential only.
+  // These are maxima, not proc chance multiplied by damage or an expected value.
+  const extraSets={
+    Ondina:{2:{'Water Res':10}},
+    Icarus:{3:{'Healing Bonus':35}}, 'Earthern Might':{4:{DR:25}},
+    Lucernas:{2:{'Team Enrage':6},4:{'Healing Bonus':15}}, Aeneas:{2:{'Dmg Enrage':25}},
+    'Firent Soul':{3:{'Dual Strike':30}}, Merciless:{4:{Damage:20}},
+    Venom:{4:{DR:17.5}}, Voltio:{4:{'Electric Dmg':20},6:{'Electric Dmg':50}},
+    Evenor:{2:{Damage:12}}, Makridi:{4:{'Healing Bonus':80,Empower:20}},
+    Seaidon:{3:{Absorb:5,Block:25}}, Ceraunos:{2:{Evade:10},3:{'Air Res':12}},
+    Requiem:{2:{Damage:25},3:{Damage:24}}, "Spark's":{2:{'Healing Bonus':25}},
+    Nepulus:{3:{Deflect:8},4:{'Water Res':10}}, Orvar:{2:{'Healing Bonus':20},3:{'Electric Dmg':20}},
+    Fyssas:{4:{Barrier:20}}, Silverwind:{3:{'Electric Res':25}},
+    Pompadour:{4:{Accuracy:10,Empower:40}}, '3x-kvator':{2:{Block:20}},
+    Priyolkian:{4:{Damage:-25,DR:25}}
+  };
+  const extraItems={
+    Decay:{'Healing Received':100}, 'Kaijin Furnace':{Damage:12}, 'Gomoloid Nature Reaper':{'Fire Dmg':20},
+    'Empyrean Vindicator':{DR:5}, 'Boreas Battleaxe':{'Air Dmg':10}, 'Thorstein Wall':{'Fire Dmg':10}, 'Leonidas Fangs':{Vampirism:20},
+    'Ironbark Longbow':{Damage:4}, 'Meteor Blaster':{'Healing Bonus':5},
+    'Blind Souls':{Absorb:25}, 'Moon Collage':{Damage:50},
+    'Kaijin Augury':{DR:10}, 'Boreas Spacecap':{'Air Dmg':20},
+    'Uxonium Armor':{Block:100,'Electric Dmg':10},
+    'Gomoloid Feather Neck':{Damage:100}, 'Gomoloid Link':{Armor:10},
+    'Nephilim Scaled Vest':{'Healing Received':100}, 'Thorstein Endurer':{'Healing Received':100},
+    'Priyolkian Battery':{Barrier:25}, 'Kolunus Diver Mask':{Barrier:15}
+  };
+  const setFlat={
+    Luminary:{3:{'Healing Bonus':15}}, 'Lunar Guardian':{2:{'Healing Bonus':15}},
+    Tapior:{2:{'Healing Bonus':8}}, Skraamblegg:{2:{'Max Shield':25}},
+    "Trugdor's Call":{2:{'Dual Strike':4},3:{Ricochet:7}},
+    "VanPel's":{3:{Damage:8}}, Saywite:{3:{Damage:-10}},
+    Eleuia:{3:{'Team Healing Bonus':10,Bolster:5},4:{Revitalize:50}},
+    Torch:{2:{'Team Enrage':2.5},3:{'Team SP Regen':15}}, Courage:{3:{'Team SP Regen':25}},
+    Evenor:{4:{'Team SP Regen':20}}, "Spark's":{4:{Bolster:10}},
+    Montezuma:{3:{Adrenaline:5}}, 'Water Demon':{4:{Adrenaline:10}}, Wrightbros:{2:{Adrenaline:3}}
+  };
+  for(const [name,thresholds] of Object.entries(setFlat))for(const [n,b] of Object.entries(thresholds))
+    if(m.sets[name]?.effects[n])Object.assign(m.sets[name].effects[n].bonuses,b);
+  for(const label of ['Ricochet','Healing Bonus','Healing Received','Max Shield','SP Regen','Armor','Team Damage','Team DR','Team Health','Team Healing Bonus','Team Armor','Team Accuracy','Team SP Regen'])
+    if(!d.stats.some(s=>s.label===label))d.stats.push({id:label.toLowerCase().replace(/ /g,'-'),label});
+  // Tyrnog scales with the skill's SP cost, not currently held SP.
+  for(const e of Object.values(m.sets.Tyrnog.effects))for(const c of e.conditional||[])
+    if(c.when.spAbove){c.when.spCostAbove=c.when.spAbove;delete c.when.spAbove;}
+  for(const i of d.items){const f=m.items[i.id];if(!f)continue;
+    if(i.name==='Sparking Soulcatcher')f.bonusConversion={from:'Healing Bonus',to:'Damage',rate:.5,cap:15};
+    if(['Kaijin Tear','Thorstein Shield'].includes(i.name))f.bonuses.Revitalize=10;
+    if(i.name==='Kaijin Existence')f.bonuses.Bolster=10;
+    if(['Kaijin Hopeguard','Exothermic Holder','Leonidas Claw'].includes(i.name)&&/Purification/.test(i.description))f.bonuses.Purification=25;
+    if(i.name==="Vanpel's Wip")f.bonuses.Redirect=10;
+    if(i.name==='Nephilim Circle')f.bonuses['Team DR']=3;
+    if(i.name==='Exothermic Jacket')f.bonuses['Healing Received']=-50;
+    if(f.ancient==='Evermore')f.unresolved='Time Warp increases offensive modifiers by 15%; additive versus multiplicative application and duration are not specified. Kept as an effect rather than an invented stat total.';
+    if(i.name==='Sardinex Alterator')f.unresolved='The 10% damage increase affects familiars, not your personal Damage bonus.';
+    for(const key of ['bonuses','tierBonuses'])if(f[key]?.['Water Resistance']!==undefined){f[key]['Water Res']=f[key]['Water Resistance'];delete f[key]['Water Resistance'];}
+  }
+
   const caps={'Crit Chance':100,Evade:75,Block:100,Barrier:75,Ricochet:75};
   const round=n=>Math.round((n+Number.EPSILON)*10000)/10000;
   const numeric=(x,fallback=0)=>Number.isFinite(Number(x))?Number(x):fallback;
@@ -38,6 +96,8 @@
   function active(c,ctx) {
     if(!ctx.enabled)return false;
     if(ctx.potential)return true;
+    if(c.history)return false;
+    if(c.spCostAbove&&ctx.spCost<=c.spCostAbove)return false;
     return (!c.weapon||c.weapon===ctx.weapon)&&(!c.shielded||ctx.shielded)&&(!c.lowest||ctx.lowest)&&(!c.highest||ctx.highest)&&(!c.allAlive||ctx.allAlive)&&(!c.lastAlive||ctx.lastAlive)&&(!c.spSkill||ctx.spCost>0)&&(!c.selfAbove||ctx.hp>c.selfAbove)&&(!c.selfBelow||ctx.hp<c.selfBelow)&&(!c.targetBelow||ctx.targetHP<c.targetBelow)&&(!c.targetAbove||ctx.targetHP>c.targetAbove)&&(!c.spAbove||ctx.sp>c.spAbove)&&(!c.bleeding||ctx.bleeding);
   }
   function evaluate(input={},potential=false) {
@@ -69,6 +129,7 @@
         sets.push({name,count,effective,threshold:Number(threshold),text:facts.text,copied,multiplier});
         add(name+' · '+threshold+' pieces'+(multiplier===2?' · W3-4TY ×2':''),facts.bonuses,multiplier);
         for(const condition of facts.conditional||[]) if(active(condition.when,ctx)) add(name+' · combat condition',condition.bonuses,multiplier*(condition.when.perSP?ctx.sp:1));
+        if(potential)add(name+' · '+threshold+' pieces · maximum combat gain',extraSets[name]?.[threshold],multiplier);
         effect(name+' · '+threshold+' pieces',facts.text+(copied?(binary?' · W3-4TY does not stack this effect.':' · Copied by W3-4TY.') :''));
         if(!set.verified)warnings.push('Set wording remains workbook-sourced: '+name);
       }
@@ -91,6 +152,7 @@
       add(name+(factor>1?' ×'+factor:''),bonuses,factor);
       if(settings['t12-'+item.slot]==='true'||settings['t12-'+item.slot]===true)add(name+' · T12+',facts.tierBonuses,factor);
       for(const condition of facts.conditional||[])if(active(condition.when,ctx))add(name+' · combat condition',condition.bonuses,factor);
+      if(potential)add(name+' · maximum combat gain',extraItems[name],factor);
       if(facts.unresolved)warnings.push(facts.unresolved);
       if(facts.randomMountRoll) {
         const stat=settings['random-mount-stat'],range=facts.randomMountRoll[stat],value=settings['random-mount-value'];
@@ -162,6 +224,7 @@
       // Curated snapshot bonuses; stacks and random proc damage remain in effects.
       if(ctx.enabled) {
         const rules={
+          'Sparking Husk':[{Empower:5},{selfAbove:75}], 'Blorg Implant':[{Damage:10},{history:true}],
           'Quetzal Gift':[{'Evade':5},{lowest:true}], 'Thorstein Crown':[{Absorb:5},{lowest:true}],
           'Kaijin Reminder':[{Damage:25},{targetBelow:30}], 'Hood of Menace':[{Evade:5},{selfAbove:75}],
           'Frozen Beads':[{Deflect:5},{shielded:true}], 'Dewey Decal':[{Damage:5},{allAlive:true}],
@@ -177,6 +240,9 @@
         if(name==="Demon's Garments"&&ctx.lastAlive)add(name+' · last alive',{Damage:10,DR:10},factor);
         const scale={'Tau Bless':['Damage',4.5,true],'Hysteria':['Damage',10,false],'Windstalker':['Damage',6,true],'Vortex Band':['DR',4.5,true],'Quetzal Scaled Vest':['DR',10,false],'Uxonium Ring':['Empower',10,true]};
         if(scale[name]){const [key,max,up]=scale[name];add(name+' · HP scaling',{[key]:potential?max:max*(up?ctx.hp:100-ctx.hp)/100},factor);}
+        if(name==='Thorstein Divider'&&(potential||ctx.rooted))add(name+' · rooted enemies',{Barrier:2.5*ctx.enemies},factor);
+        if(name==='Thorstein Locket')add(name+' · skill SP cost',{'Air Dmg':5*ctx.spCost},factor);
+        if(name==='Gomoloid Wave Shield')add(name+' · Patience',{DR:5*ctx.sp},factor);
         if(name==='Kaijin Fang')add(name+' · Patience',{DR:Math.min(8,ctx.sp*2)},factor);
         if(name==='Nephilim Girdle')add(name+' · team alive',{Empower:1.25*ctx.allies},factor);
         if(name==='Leonidas Honor')add(name+' · team alive',{Barrier:3.5*ctx.allies},factor);
@@ -186,6 +252,17 @@
     }
     const setCondition=(name,threshold,bonuses)=>{const entry=sets.find(x=>x.name===name&&x.threshold===threshold);if(entry)add(name+' · combat condition',bonuses,entry.multiplier);};
     if(ctx.enabled){
+      if(potential){
+        setCondition("VanPel's",2,{Empower:5});setCondition('Tapior',3,{'Healing Bonus':16});
+        setCondition('Saywite',2,{'Team Enrage':3});
+        setCondition('Thundercracker',2,{Accuracy:5*ctx.spCost});
+        setCondition('Cyberprawn',4,{'Healing Bonus':5*ctx.allies});
+        // Reset-on-proc chance stacks have no stated stack count; 100% is the roll ceiling.
+        const chanceGain=(name,n,key)=>{if(unlocked(name,n))setCondition(name,n,{[key]:Math.max(0,100-(raw[key]||0))});};
+        chanceGain('Raiju',3,'Empower');chanceGain('Hazmatt',3,'Dual Strike');
+        chanceGain('Eruption',2,'Absorb');chanceGain('Water Demon',2,'Deflect');chanceGain('Neuralizer',2,'Deflect');
+        for(const item of selected)if(item.name==='Uxonium Loop')add(item.name+' · maximum normal-hit stacks',{'Dual Strike':Math.max(0,100-(raw['Dual Strike']||0))});
+      }
       if(potential||ctx.targetHP>75||ctx.targetHP<25)setCondition('Arsenal',3,{Damage:10});
       setCondition('Arsenal',4,{Damage:30*ctx.targetHP/100});
       setCondition('Polaris',4,{DR:20*ctx.hp/100});
@@ -204,6 +281,8 @@
       setCondition('BlackArrow',2,{Absorb:potential?5:.5*Math.floor((100-ctx.hp)/10)});
     }
     if(unlocked('Akiho',4))add('Akiho · Redirect conversion',{Evade:Math.min(25,Math.floor((raw.Redirect||0)/5)*2.5)});
+    if(unlocked('Raiju',4))warnings.push('Raiju loses 3% Damage per normal hit until Empower resets it. No finite loss bound is published; this penalty stays in the effect description.');
+    if(unlocked('3x-kvator',3))setCondition('3x-kvator',3,{'Earth Res':6*Math.floor(Math.min(100,Math.max(0,raw.Block||0))/10)});
     for(const item of selected){
       const conversion=m.items[item.id]?.resistanceConversion;
       if(!conversion)continue;

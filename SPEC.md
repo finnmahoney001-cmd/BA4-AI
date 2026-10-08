@@ -1,5 +1,9 @@
 # Bit Heroes Build Planner Specification
 
+## Complete conditional bonus audit — 8 October 2026
+
+Review every selectable set threshold, Mythic gear item and Ancient variant against the captured source tables. Show bounded combat stacks, random bonus outcomes, SP scaling and missing combat conditions as potential additions, never permanent bonuses. Pompadour four-piece adds up to 10% Accuracy and 40% Empower after spending SP. Preserve actual build-dependent conversions; do not assume a cap is already reached. Keep triggered damage/healing, enemy debuffs and effects without a defensible numeric bound in effect descriptions with explicit limitations. Apply the shared engine to Planner, saved builds and comparison. Login changes are deferred while this audit is completed.
+
 ## Classic layout restored — 8 October 2026
 
 Use the classic Edit Build and Full Setup layout again. Do not load or offer the experimental character menu; retain its source files for a possible return later. Preserve current equipment, saved builds and calculations. Login has a Show password checkbox below the password field, unchecked by default. Checking reveals the current entry; unchecking masks it without changing the value, focus behavior, autocomplete or sign-in flow.

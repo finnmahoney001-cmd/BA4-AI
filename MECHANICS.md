@@ -147,3 +147,14 @@ Full catalog audit (4 October 2026): catalog-audit-data.js and catalog-audit.js 
 Thonderstriker has source-reviewed effects. Gomoloid Bolt Helmet and Feather Ring use explicit combat conditions. Hazmatt Blob converts Earth Damage to Healing Bonus with a 25% cap before Polychromatic doubling. Proc damage/healing, teammate-only effects and timed stacks remain descriptions. Sardinex Alterator's familiar damage effect stays descriptive rather than changing player Damage. Chocodrifter and Feral remain selectable with explicit verification warnings because official notes confirm existence without publishing their stat tables. Three new accessories use verified base bonuses pending unknown upgrade increments. Four previously announced Mythic mounts now use verified wiki bonuses. No new images were added.
 
 Validation: verification/catalog-audit.test.cjs passed; existing mechanics, expansion, rune-description and placeholder-effect suites passed. Browser verified six Boomsmasher search results and successful background mainhand equip with search retained. Detailed scope and sources: verification/CATALOG-AUDIT-RESULTS.md.
+
+
+## Conditional audit — 8 October 2026
+
+Reviewed all 91 selectable set families and 207 ordinary Mythic/Ancient gear entries, including variants, against the captured wiki rows and freshly checked source wording. The detailed evaluated ledger is verification/full-conditional-audit.json. Source descriptions of procs, SP grants, shield/heal amounts, enemy debuffs and turn manipulation are retained separately from stat bonuses.
+
+Pompadour 4-piece: up to +10% Accuracy and +40% Empower after four SP-spend increments. Additional bounded stacks and combat conditions now contribute to the same shared bonusSummary used in Planner, Closet and Compare. Ironbark and Meteor Blaster add only their remaining increment, not their already-counted baseline. Chance stacks with no stated stack count use the 100% roll ceiling; Raiju's accompanying damage loss has no published finite bound and remains an explicit effect warning. Evermore's ambiguous offensive-modifier scaling remains an explicit warning rather than invented additive values.
+
+Numeric modifiers that previously existed only in raw totals now have bonus rows: Healing Bonus, Healing Received, Ricochet, Armor, Max Shield, SP Regen and team modifiers. Combat damage/healing procs are not percentage stat increases. Simultaneous conditions are not assumed.
+
+Sources: https://bit-heroes.fandom.com/wiki/Equipment/Set ; https://bit-heroes.fandom.com/wiki/Equipment/Mythic ; https://bit-heroes.fandom.com/wiki/Equipment/Ancient ; https://bit-heroes.fandom.com/wiki/Mechanics/Catalogue
