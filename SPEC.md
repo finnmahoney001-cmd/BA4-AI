@@ -1,4 +1,8 @@
 # Bit Heroes Build Planner Specification
+## Local builds without login — 8 October 2026
+
+Remove login and sign-up controls and all authentication dependencies from the active website. Save builds directly to the existing bh-builds-v1 browser storage key, preserving existing saved builds and drafts. Loading, comparing, replacing and deleting saved builds remain local. Old login.html links redirect to the planner. Storage errors must show a failure instead of a success message. This supersedes earlier login requirements.
+
 
 ## Complete conditional bonus audit — 8 October 2026
 

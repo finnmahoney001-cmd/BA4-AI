@@ -2,7 +2,6 @@
 if(page==='planner') {
   let equipment={};
   try {equipment=validEquipment(JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}'));} catch {}
-  try{const pending=JSON.parse(sessionStorage.getItem(PENDING_SAVE_KEY)||'null');if(pending)$('#build-name').value=String(pending.name||'');}catch{}
   const loaded=readBuilds().find(build=>build.id===query.get('build'));
   if(loaded) {equipment=validEquipment(loaded.equipment); $('#build-name').value=loaded.name;}
   const linked=data.items.find(item=>item.id===query.get('item'));
@@ -199,8 +198,7 @@ if(page==='planner') {
     if(report.warnings.length){notes.open=true;$('#calculation-status').textContent+=' '+report.warnings.length+' source/roll notice(s) — see Calculation coverage.';}
   }
   $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});settings()['accessory-upgrades']='4';settings()['pet-upgrades']='4';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
-  $('#save').addEventListener('click',async()=>{const button=$('#save');button.disabled=true;try{if(!await requireSaveSession($('#build-name').value,equipment))return;const builds=readBuilds();const target=$('#armory-save-slot')?.value||'';const existing=builds.find(b=>b.id===target);const build={id:existing?.id||'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds.filter(b=>b.id!==build.id),build])){sessionStorage.removeItem(PENDING_SAVE_KEY);announce('Build saved with equipment, runes, enchants, and upgrade settings.');}}finally{button.disabled=false;}});
-  if(query.get('save')==='1')authReady.then(()=>{if(!signedIn)return;let pending;try{pending=JSON.parse(sessionStorage.getItem(PENDING_SAVE_KEY)||'null');}catch{}if(pending){$('#build-name').value=String(pending.name||'');$('#save').click();}});
+  $('#save').addEventListener('click',async()=>{const button=$('#save');button.disabled=true;try{const builds=readBuilds();const target=$('#armory-save-slot')?.value||'';const existing=builds.find(b=>b.id===target);const build={id:existing?.id||'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds.filter(b=>b.id!==build.id),build])){announce('Build saved in this browser with equipment, runes, enchants, and upgrade settings.');}}finally{button.disabled=false;}});
   typeSelectors.forEach((select,slot)=>select.value=settings()['type-'+slot]||itemFor(slot)?.kind||'');render();
   const tabs=[$('#edit-tab'),$('#setup-tab')];
   function activateTab(index) {

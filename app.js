@@ -14,73 +14,7 @@ for(const link of document.querySelectorAll('[data-route]')) {
   link.setAttribute('href',route(link.getAttribute('href')));
   if(link.dataset.page===page) link.setAttribute('aria-current','page');
 }
-let client = null;
-let signedIn = false;
-const PENDING_SAVE_KEY='bh-pending-save-v1';
-const loginReturn=()=>query.get('save')==='1'?'index.html?save=1':'index.html';
-function updateAccountControl() {
-  const button=$('#logout');
-  if(button) button.textContent=signedIn?'Log Out':'Log In';
-}
-async function authenticate() {
-  // Building is public and never waits for an authentication service.
-  document.body.hidden=false;
-  updateAccountControl();
-  const config=window.PUBLIC_SUPABASE || {};
-  if(!config.url || !config.key) {
-    if(page==='login') announce('Sign-in is not configured yet. You can still build without logging in.');
-    return;
-  }
-  try {
-    await new Promise((resolve,reject)=>{
-      if(window.supabase) return resolve();
-      const script=document.createElement('script'); script.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-      script.onload=resolve; script.onerror=()=>reject(new Error('Sign-in could not load. Check your connection.')); document.head.append(script);
-    });
-    client=window.supabase.createClient(config.url,config.key);
-    const {data:sessionData,error}=await client.auth.getSession(); if(error) throw error;
-    signedIn=!!sessionData.session;
-    updateAccountControl();
-    if(page==='login'&&signedIn) location.replace(loginReturn());
-  } catch(error) {
-    if(page==='login') announce(error.message);
-  }
-}
-async function requireSaveSession(name,equipment) {
-  await authReady;
-  if(client) {
-    try {
-      const {data:sessionData,error}=await client.auth.getSession();
-      if(error) throw error;
-      signedIn=!!sessionData.session;
-      updateAccountControl();
-      if(signedIn) return true;
-    } catch(error) {announce('Could not verify login. Please log in to save your build.');}
-  }
-  try {
-    localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));
-    sessionStorage.setItem(PENDING_SAVE_KEY,JSON.stringify({name,slot:$('#armory-save-slot')?.value||''}));
-  } catch {announce('Browser storage is unavailable. Your draft could not be preserved for login.');return false;}
-  location.href='login.html?save=1';
-  return false;
-}
-$('#logout')?.addEventListener('click',async()=>{
-  await authReady;
-  if(!signedIn) {location.href='login.html';return;}
-  if(client) {const {error}=await client.auth.signOut(); if(error) {announce(error.message); return;}}
-  location.href='index.html';
-});
-$('#show-password')?.addEventListener('change',event=>{const password=$('#password');if(password)password.type=event.target.checked?'text':'password';});
-$('#auth-form')?.addEventListener('submit',async event=>{
-  event.preventDefault(); if(!client) {announce('Sign-in is not available yet. You can continue building without logging in.'); return;}
-  const submitter=event.submitter || $('#auth-form button[type=submit]');
-  const buttons=[...$('#auth-form').querySelectorAll('button')]; buttons.forEach(b=>b.disabled=true);
-  try {
-    const {data:result,error}=await client.auth[submitter.value]({email:$('#email').value,password:$('#password').value});
-    if(error) throw error; if(result.session) location.href=loginReturn(); else announce('Check your email to confirm your account, then log in.');
-  } catch(error) {announce(error.message);} finally {buttons.forEach(b=>b.disabled=false);}
-});
-if($('#preview-link')) $('#preview-link').hidden=!localReview;
+document.body.hidden=false;
 const BUILD_KEY='bh-builds-v1', DRAFT_KEY='bh-draft-v1';
 function validEquipment(equipment) {
   equipment=data.normalizeEquipment?data.normalizeEquipment(equipment):equipment;
@@ -261,4 +195,4 @@ if(page==='library') {
   renderLibrary();
 }
 
-const authReady=authenticate();
+
