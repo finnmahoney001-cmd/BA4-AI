@@ -59,7 +59,7 @@ async function requireSaveSession(name,equipment) {
   }
   try {
     localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));
-    sessionStorage.setItem(PENDING_SAVE_KEY,JSON.stringify({name}));
+    sessionStorage.setItem(PENDING_SAVE_KEY,JSON.stringify({name,slot:$('#armory-save-slot')?.value||''}));
   } catch {announce('Browser storage is unavailable. Your draft could not be preserved for login.');return false;}
   location.href='login.html?save=1';
   return false;
@@ -70,6 +70,7 @@ $('#logout')?.addEventListener('click',async()=>{
   if(client) {const {error}=await client.auth.signOut(); if(error) {announce(error.message); return;}}
   location.href='index.html';
 });
+$('#show-password')?.addEventListener('change',event=>{const password=$('#password');if(password)password.type=event.target.checked?'text':'password';});
 $('#auth-form')?.addEventListener('submit',async event=>{
   event.preventDefault(); if(!client) {announce('Sign-in is not available yet. You can continue building without logging in.'); return;}
   const submitter=event.submitter || $('#auth-form button[type=submit]');

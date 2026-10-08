@@ -65,7 +65,7 @@ if(page==='planner') {
       }
       const select=document.createElement('select');select.id='select-'+slot.id;
       select.addEventListener('change',()=>{delete settings()['t12-'+slot.id];if(select.value)equipment[slot.id]=select.value;else delete equipment[slot.id];selected=slot.id;render();});
-      selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg',group==='Enchants'));
+      selectors.set(slot.id,select);wrap.append(select);dropdowns.set(slot.id,BH_UI.dropdown(select,slot.label,id=>data.items.find(item=>item.id===id),()=>settings()['rarity-'+slot.id]||'Leg',group==='Enchants'||group==='Main Equips'));
       if(group!=='Runes') {const art=element('div','','selection-art');selectionArt.set(slot.id,art);wrap.prepend(art);}
       if(data.rarities[slot.id]) {
         const rarity=field(slot.label+' rarity','rarity-'+slot.id,data.rarities[slot.id].map(x=>({value:x,label:x})),settings()['rarity-'+slot.id]||data.rarities[slot.id][0],value=>{settings()['rarity-'+slot.id]=value;render();});
@@ -174,7 +174,7 @@ if(page==='planner') {
     }
     const info=element('section','','setup-group');info.append(element('h3','Build settings'));const list=document.createElement('dl');
     for(const [label,value] of [['Pet upgrades',settings()['pet-upgrades']||'Fully Upgraded'],['Accessory upgrades',settings()['accessory-upgrades']||'Fully Upgraded'],['MH Element',$('#mainhand-element').textContent]]){const row=document.createElement('div');row.append(element('dt',label,'technical'),element('dd',value));list.append(row);}info.append(list);$('#setup-extras').append(info);
-    renderEffects(report);renderMechanics(report);try{localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));}catch{}
+    renderEffects(report);renderMechanics(report);window.BH_MENU?.update(equipment);try{localStorage.setItem(DRAFT_KEY,JSON.stringify(equipment));}catch{}
   }
   function renderMechanics(report) {
     const root=$('#mechanics-summary');root.replaceChildren();
@@ -199,7 +199,7 @@ if(page==='planner') {
     if(report.warnings.length){notes.open=true;$('#calculation-status').textContent+=' '+report.warnings.length+' source/roll notice(s) — see Calculation coverage.';}
   }
   $('#reset').addEventListener('click',()=>{equipment={};selected='mainhand';typeSelectors.forEach(select=>select.value='');document.querySelectorAll('[id^=rarity-]').forEach(select=>{select.value=data.rarities[select.id.replace('rarity-','')][0];settings()[select.id]=select.value;});settings()['accessory-upgrades']='4';settings()['pet-upgrades']='4';$('#build-name').value='';render();announce('Build reset. All item slots are empty.');});
-  $('#save').addEventListener('click',async()=>{const button=$('#save');button.disabled=true;try{if(!await requireSaveSession($('#build-name').value,equipment))return;const builds=readBuilds();const build={id:'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds,build])){sessionStorage.removeItem(PENDING_SAVE_KEY);announce('Build saved with equipment, runes, enchants, and upgrade settings.');}}finally{button.disabled=false;}});
+  $('#save').addEventListener('click',async()=>{const button=$('#save');button.disabled=true;try{if(!await requireSaveSession($('#build-name').value,equipment))return;const builds=readBuilds();const target=$('#armory-save-slot')?.value||'';const existing=builds.find(b=>b.id===target);const build={id:existing?.id||'build-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:$('#build-name').value.trim()||'Build '+(builds.length+1),equipment:JSON.parse(JSON.stringify(equipment))};if(storeBuilds([...builds.filter(b=>b.id!==build.id),build])){sessionStorage.removeItem(PENDING_SAVE_KEY);announce('Build saved with equipment, runes, enchants, and upgrade settings.');}}finally{button.disabled=false;}});
   if(query.get('save')==='1')authReady.then(()=>{if(!signedIn)return;let pending;try{pending=JSON.parse(sessionStorage.getItem(PENDING_SAVE_KEY)||'null');}catch{}if(pending){$('#build-name').value=String(pending.name||'');$('#save').click();}});
   typeSelectors.forEach((select,slot)=>select.value=settings()['type-'+slot]||itemFor(slot)?.kind||'');render();
   const tabs=[$('#edit-tab'),$('#setup-tab')];
@@ -209,5 +209,6 @@ if(page==='planner') {
     if(index===1)render();
   }
   tabs.forEach((tab,index)=>{tab.addEventListener('click',()=>activateTab(index));tab.addEventListener('keydown',event=>{let next;if(event.key==='ArrowRight'||event.key==='ArrowLeft')next=1-index;else if(event.key==='Home')next=0;else if(event.key==='End')next=1;else return;event.preventDefault();activateTab(next);tabs[next].focus();});});
-  $('#build-name').addEventListener('input',()=>$('#setup-name').textContent=$('#build-name').value.trim()||'Untitled build');
+  $('#build-name').addEventListener('input',()=>{$('#setup-name').textContent=$('#build-name').value.trim()||'Untitled build';window.BH_MENU?.update(equipment);});
+  window.BH_MENU?.init({load(build){equipment=validEquipment(build.equipment);$('#build-name').value=build.name;typeSelectors.forEach((select,slot)=>select.value=itemFor(slot)?.kind||'');render();announce('Loaded '+build.name+'.');},current:()=>equipment});
 }

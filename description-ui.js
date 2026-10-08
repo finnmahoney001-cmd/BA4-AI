@@ -34,7 +34,7 @@ window.BH_UI=(()=>{
   trigger.type='button';trigger.className='item-choice';trigger.id='choice-'+select.id;trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label',label);
   list.className='item-choice-list';list.id=trigger.id+'-list';list.role='listbox';list.setAttribute('aria-label',label+' items');list.hidden=true;trigger.setAttribute('aria-controls',list.id);
   select.hidden=true;select.after(trigger);document.body.append(list);select.parentElement.querySelector('label[for="'+select.id+'"]')?.setAttribute('for',trigger.id);
-  const searchType=/rune/i.test(label)?'runes':'enchants';
+  const searchType=/rune/i.test(label)?'runes':/slot [1-6]|enchants/i.test(label)?'enchants':'items';
   if(search){search.type='search';search.className='enchant-search';search.id='search-'+select.id;search.placeholder='Search '+searchType+'…';search.autocomplete='off';search.setAttribute('aria-label','Search '+searchType+' for '+label);search.role='combobox';search.setAttribute('aria-autocomplete','list');search.setAttribute('aria-controls',list.id);search.setAttribute('aria-expanded','false');trigger.before(search);}
   function close(){list.hidden=true;trigger.setAttribute('aria-expanded','false');search?.setAttribute('aria-expanded','false');}
   function refresh(){trigger.textContent=getItem(select.value)?itemLabel(getItem(select.value)):(select.selectedOptions[0]?.textContent||'Empty slot');trigger.dataset.kind=getItem(select.value)?.kind||'';describe(trigger,getItem(select.value),getRarity());if(search)search.value='';close();}
@@ -77,7 +77,7 @@ window.BH_UI=(()=>{
  document.addEventListener('DOMContentLoaded',()=>{
   const popup=document.createElement('div');popup.id='item-description-popup';popup.className='description-popup';popup.role='tooltip';popup.hidden=true;document.body.append(popup);let owner;
   function hide(){popup.hidden=true;owner?.removeAttribute('aria-describedby');owner=null;}
-  function show(node){if(!node)return;hide();owner=node;popup.textContent=node.dataset.description;popup.hidden=false;node.setAttribute('aria-describedby',popup.id);const r=node.getBoundingClientRect(),box=popup.getBoundingClientRect();popup.style.left=Math.max(8,Math.min(r.left,innerWidth-box.width-8))+'px';popup.style.top=Math.max(8,r.bottom+box.height+12<innerHeight?r.bottom+8:r.top-box.height-8)+'px';}
+  function show(node){if(!node)return;hide();owner=node;popup.textContent=node.dataset.description;popup.hidden=false;node.setAttribute('aria-describedby',popup.id);const host=document.querySelector('.character-overlay:not([hidden])')||document.body;if(popup.parentElement!==host)host.append(popup);const r=node.getBoundingClientRect(),box=popup.getBoundingClientRect();popup.style.left=Math.max(8,Math.min(r.left,innerWidth-box.width-8))+'px';popup.style.top=Math.max(8,r.bottom+box.height+12<innerHeight?r.bottom+8:r.top-box.height-8)+'px';}
   document.addEventListener('pointerover',e=>show(e.target.closest('[data-description]')));
   document.addEventListener('pointerout',e=>{if(owner&&!owner.contains(e.relatedTarget))hide();});
   document.addEventListener('focusin',e=>show(e.target.closest('[data-description]')));document.addEventListener('focusout',hide);

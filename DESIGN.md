@@ -1,5 +1,15 @@
 # Bit Heroes Build Planner
 
+## Classic layout restored — 8 October 2026
+
+Use the classic Edit Build and Full Setup layout again. Do not load or offer the experimental character menu; retain its source files for a possible return later. Preserve current equipment, saved builds and calculations. Login has a Show password checkbox below the password field, unchecked by default. Checking reveals the current entry; unchecking masks it without changing the value, focus behavior, autocomplete or sign-in flow.
+
+## Deferred character menu revision — 6 October 2026
+
+Replace the planner's default dashboard with a compact character equipment window inspired by the supplied menu screenshots. Use a silver frame, dark blue title plaque, colored raised buttons and inset equipment tiles. Mainhand, Offhand, Head and Body appear down the left; Neck, Ring, Accessory and Pet down the right; Mount centered below. The supplied blank character stays fixed in the middle, with Level, Power, Stamina and Agility shown as XXXX. Do not construct a character from selected gear. Remove the right-hand inventory pane.
+
+I opens calculated bonuses, conditional additions, contributions and equipment effects. S opens a weapon skills panel; show explicit unavailable coverage until actual skill tables are supplied, without inventing skill names or damage. Armory opens saved builds with load, compare access and delete. Save opens build naming, a new/existing Armory slot choice and the existing authenticated save action. Selecting an existing slot replaces that saved build after authentication. Runes and Enchants open their existing selectors and bulk controls. Equipment tiles open their corresponding searchable item/type/tier controls; Options retains accessory/pet upgrade sliders and all Ancient/reforge/rolled-bonus controls. Preserve calculations, draft storage, guest entry, login-required saving and Library access. Popups support Escape, visible close buttons, focus return and keyboard focus containment. On phones keep the equipment frame together and fit panels to the viewport.
+
 ## Catalog exclusion — 5 October 2026
 
 Remove the set identified in the user's latest screenshot from every equipment selector, Library result, effect panel and saved-build display. It is explicitly disallowed. Old draft and saved item IDs resolve to empty slots; other equipment stays intact. Keep imported reference evidence unchanged.

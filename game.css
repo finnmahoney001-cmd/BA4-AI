@@ -170,3 +170,7 @@ body{background-color:var(--bg)}
 .upgrade-stack{display:grid;grid-auto-rows:1fr;gap:12px;align-self:start;min-width:0}
 .stat-comparison p>span:last-child{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap}
 .conditional-difference{color:#a9e4df;grid-column:2 / -1}
+
+/* Login visibility control remains separate from form submission. */
+#auth-form .password-visibility{display:flex;align-items:center;gap:10px;margin:12px 0 18px;min-height:44px;cursor:pointer;color:#211813}
+#auth-form .password-visibility input{width:20px;height:20px;min-height:20px;margin:0;flex:none;accent-color:#d1a974}
